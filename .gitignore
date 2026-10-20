@@ -1,0 +1,20 @@
+# Python & 가상환경
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# 주피터 노트북 임시/체크포인트 파일 (기기 간 충돌 방지)
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# 에디터 및 OS 설정 파일
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 대용량 파일 또는 개인 설정 (필요시 추가)
+*.tmp
