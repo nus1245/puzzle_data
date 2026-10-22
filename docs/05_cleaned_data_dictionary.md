@@ -2,7 +2,8 @@
 
 > **문서 목적**: 전처리 완료 데이터셋(`repair_cleaned.csv`)의 24개 전체 열 명세, 속성 정의, 결측 특성 및 SQL 환경에서의 집계·프로세스 마이닝 분석 참조 기준 제공.  
 > **기준 파일**: [repair_cleaned.csv](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/repair_cleaned.csv) (13,262행 x 24열, 2.18 MB, UTF-8-SIG)  
-> **연계 노트북**: [analysis.ipynb](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/analysis.ipynb) (Cell 75~84 종합 성과 검증 및 CSV 내보내기)
+> **연계 노트북**: [analysis.ipynb](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/analysis.ipynb) (Cell 75~84 종합 성과 검증 및 CSV 내보내기)  
+> **시각화 구성표**: [고해상도 슬라이드용 다이어그램 PNG](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/outputs/figures/01_cleaned_data_schema.png)  |  [인터랙티브 웹 스키마 뷰어 HTML](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/outputs/data_schema_viewer.html)
 
 ---
 

@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>전처리 완료 데이터셋(repair_cleaned.csv) 스키마 뷰어</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(148, 163, 184, 0.15);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-purple: #c084fc;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-slate: #64748b;
+      --font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background: radial-gradient(circle at 15% 15%, #1e1b4b 0%, #090d16 60%);
+      color: var(--text-main);
+      padding: 30px 20px;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 15px;
+    }
+
+    .title-group h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .title-group p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .stat-ribbon {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+
+    .stat-pill strong {
+      color: var(--accent-blue);
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    /* Filter & Search Toolbar */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 25px;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    .filter-btn.active {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 260px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    /* Group Sections */
+    .group-section {
+      margin-bottom: 30px;
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .group-badge {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .group-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .group-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-left: 6px;
+    }
+
+    /* Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .col-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .col-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .col-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .col-order {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .badges-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .type-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .null-badge {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    /* Badge Color Styles */
+    .type-timestamp { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+    .type-int { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .type-varchar { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); }
+    .type-bool { background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); }
+    .type-float { background: rgba(244, 114, 182, 0.2); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.4); }
+
+    .null-clean { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .null-struct { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .null-raw { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+    .card-desc {
+      font-size: 13px;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+      min-height: 38px;
+    }
+
+    .card-footer {
+      background: rgba(15, 23, 42, 0.5);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sample-val {
+      color: #38bdf8;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .copy-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
+    /* SQL Quick Panel */
+    .sql-panel {
+      margin-top: 40px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .sql-panel h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: var(--accent-blue);
+    }
+
+    pre {
+      background: #050811;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="title-group">
+      <h1>repair_cleaned.csv 데이터셋 구조표</h1>
+      <p>전처리 완료 데이터셋(13,262행 x 24열) 스키마 명세 및 SQL 분석 가이드</p>
+    </div>
+    <div class="stat-ribbon">
+      <div class="stat-pill">총 레코드 수: <strong>13,262건</strong></div>
+      <div class="stat-pill">총 컬럼 수: <strong>24개</strong></div>
+      <div class="stat-pill">정제 타임스탬프 결측: <strong>0건 (100% 무결)</strong></div>
+      <div class="stat-pill">정상 귀속 연도: <strong>1970년 100%</strong></div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="btn-group">
+      <button class="filter-btn active" onclick="filterGroup('all', this)">전체 24개 열 보기</button>
+      <button class="filter-btn" onclick="filterGroup('time', this)">시계열/정렬 기준 (6열)</button>
+      <button class="filter-btn" onclick="filterGroup('process', this)">프로세스 식별자/분류 (7열)</button>
+      <button class="filter-btn" onclick="filterGroup('domain', this)">수리 도메인 속성 (7열)</button>
+      <button class="filter-btn" onclick="filterGroup('raw', this)">원본 감사 이력 (4열)</button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" class="search-input" placeholder="컬럼명, 데이터타입, 설명 검색..." oninput="handleSearch()">
+    </div>
+  </div>
+
+  <!-- GROUP 1: 시계열 및 정렬 기준축 -->
+  <section class="group-section" id="group-time">
+    <div class="group-header">
+      <span class="group-badge" style="background: var(--accent-blue);"></span>
+      <h2 class="group-title" style="color: var(--accent-blue);">[그룹 1] 프로세스 마이닝 및 시계열 분석 핵심 정제 컬럼</h2>
+      <span class="group-desc">(리드타임, 대기시간, 전이순서 분석의 필수 기준축)</span>
+    </div>
+    <div class="card-grid">
+      <!-- clean_timestamp -->
+      <div class="col-card" data-col="clean_timestamp">
+        <div>
+          <div class="card-top">
+            <span class="col-name">clean_timestamp</span>
+            <span class="col-order">Col #24</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-timestamp">TIMESTAMP</span>
+            <span class="null-badge null-clean">결측 0건 (100% 무결)</span>
+          </div>
+          <p class="card-desc">최종 정제 타임스탬프. re_date와 re_time 결합. 리드타임/대기시간 계산의 절대적 기준축.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1970-01-02 08:08:00</strong></span>
+          <button class="copy-btn" onclick="copyText('clean_timestamp')">복사</button>
+        </div>
+      </div>
+
+      <!-- re_date -->
+      <div class="col-card" data-col="re_date">
+        <div>
+          <div class="card-top">
+            <span class="col-name">re_date</span>
+            <span class="col-order">Col #22</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-timestamp">DATE</span>
+            <span class="null-badge null-clean">결측 0건 (100% 1970년)</span>
+          </div>
+          <p class="card-desc">정제된 수행 일자 (YYYY-MM-DD). 1905년 및 2020~2022년 이상치 879건 전수 교정 완료.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1970-01-02</strong></span>
+          <button class="copy-btn" onclick="copyText('re_date')">복사</button>
+        </div>
+      </div>
+
+      <!-- re_time -->
+      <div class="col-card" data-col="re_time">
+        <div>
+          <div class="card-top">
+            <span class="col-name">re_time</span>
+            <span class="col-order">Col #23</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-timestamp">TIME</span>
+            <span class="null-badge null-clean">결측 0건 (정밀추정)</span>
+          </div>
+          <p class="card-desc">정제된 시각 (HH:MM). 결측 13건 및 더미 0:00 15건 총 28건 의심군 전수 인과 복원 완료.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">08:08</strong></span>
+          <button class="copy-btn" onclick="copyText('re_time')">복사</button>
+        </div>
+      </div>
+
+      <!-- seq -->
+      <div class="col-card" data-col="seq">
+        <div>
+          <div class="card-top">
+            <span class="col-name">seq</span>
+            <span class="col-order">Col #19</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-int">INTEGER</span>
+            <span class="null-badge null-clean">결측 0건 (1~13)</span>
+          </div>
+          <p class="card-desc">13대 표준 프로세스 대분류 순서. 시간 왜곡과 무관한 비즈니스 인과 정렬 축.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1</strong></span>
+          <button class="copy-btn" onclick="copyText('seq')">복사</button>
+        </div>
+      </div>
+
+      <!-- sub_seq -->
+      <div class="col-card" data-col="sub_seq">
+        <div>
+          <div class="card-top">
+            <span class="col-name">sub_seq</span>
+            <span class="col-order">Col #20</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-int">INTEGER</span>
+            <span class="null-badge null-clean">결측 0건 (1~2)</span>
+          </div>
+          <p class="card-desc">작업 내 세부 단계 순서 (start = 1, complete = 2, 단일 마일스톤 = 1).</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1</strong></span>
+          <button class="copy-btn" onclick="copyText('sub_seq')">복사</button>
+        </div>
+      </div>
+
+      <!-- 작업단계 -->
+      <div class="col-card" data-col="작업단계">
+        <div>
+          <div class="card-top">
+            <span class="col-name">작업단계</span>
+            <span class="col-order">Col #21</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(50)</span>
+            <span class="null-badge null-clean">결측 0건</span>
+          </div>
+          <p class="card-desc">시퀀스, 작업명, 이벤트 유형이 결합된 가독성 복합 라벨 표기.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">[1-1] FirstContact_complete</strong></span>
+          <button class="copy-btn" onclick="copyText('작업단계')">복사</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GROUP 2: 프로세스 식별자 및 비즈니스 분류 -->
+  <section class="group-section" id="group-process">
+    <div class="group-header">
+      <span class="group-badge" style="background: var(--accent-purple);"></span>
+      <h2 class="group-title" style="color: var(--accent-purple);">[그룹 2] 프로세스 필수 식별자 및 비즈니스 분류 컬럼</h2>
+      <span class="group-desc">(단일 케이스 인스턴스 추적 및 부서/주체별 집계)</span>
+    </div>
+    <div class="card-grid">
+      <!-- caseID -->
+      <div class="col-card" data-col="caseID">
+        <div>
+          <div class="card-top">
+            <span class="col-name">caseID</span>
+            <span class="col-order">Col #1</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-int">INTEGER</span>
+            <span class="null-badge null-clean">결측 0건 (1~1,000)</span>
+          </div>
+          <p class="card-desc">집 수리 요청 접수 번호. 단일 수리 사건(Process Instance) 고유 식별자.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1</strong></span>
+          <button class="copy-btn" onclick="copyText('caseID')">복사</button>
+        </div>
+      </div>
+
+      <!-- taskID -->
+      <div class="col-card" data-col="taskID">
+        <div>
+          <div class="card-top">
+            <span class="col-name">taskID</span>
+            <span class="col-order">Col #2</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(50)</span>
+            <span class="null-badge null-clean">결측 0건 (복원완료)</span>
+          </div>
+          <p class="card-desc">수행 액티비티 업무명. CASE 1 결측 2건 복원 완료 (총 13개 고유 작업).</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">FirstContact</strong></span>
+          <button class="copy-btn" onclick="copyText('taskID')">복사</button>
+        </div>
+      </div>
+
+      <!-- originator -->
+      <div class="col-card" data-col="originator">
+        <div>
+          <div class="card-top">
+            <span class="col-name">originator</span>
+            <span class="col-order">Col #3</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(50)</span>
+            <span class="null-badge null-clean">결측 0건 (복원완료)</span>
+          </div>
+          <p class="card-desc">업무 수행 담당자. CASE 2 결측 2건 복원 완료 (실무자 13명 + System).</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">Dian</strong></span>
+          <button class="copy-btn" onclick="copyText('originator')">복사</button>
+        </div>
+      </div>
+
+      <!-- eventtype -->
+      <div class="col-card" data-col="eventtype">
+        <div>
+          <div class="card-top">
+            <span class="col-name">eventtype</span>
+            <span class="col-order">Col #4</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(20)</span>
+            <span class="null-badge null-clean">결측 0건 (복원완료)</span>
+          </div>
+          <p class="card-desc">이벤트 라이프사이클 (start / complete). CASE 3 결측 5건 복원 완료.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">complete</strong></span>
+          <button class="copy-btn" onclick="copyText('eventtype')">복사</button>
+        </div>
+      </div>
+
+      <!-- task_group -->
+      <div class="col-card" data-col="task_group">
+        <div>
+          <div class="card-top">
+            <span class="col-name">task_group</span>
+            <span class="col-order">Col #15</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(20)</span>
+            <span class="null-badge null-clean">결측 0건</span>
+          </div>
+          <p class="card-desc">3대 업무 대분류 그룹 ('접수', '현장', '정산'). 단계별 병목 분석 축.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">접수</strong></span>
+          <button class="copy-btn" onclick="copyText('task_group')">복사</button>
+        </div>
+      </div>
+
+      <!-- SUBJECT -->
+      <div class="col-card" data-col="SUBJECT">
+        <div>
+          <div class="card-top">
+            <span class="col-name">SUBJECT</span>
+            <span class="col-order">Col #16</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(20)</span>
+            <span class="null-badge null-clean">결측 0건</span>
+          </div>
+          <p class="card-desc">업무 수행 주체 구분 ('사람', '시스템'). 자동화 vs 인적 처리 비교 지표.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">사람</strong></span>
+          <button class="copy-btn" onclick="copyText('SUBJECT')">복사</button>
+        </div>
+      </div>
+
+      <!-- 외주여부 -->
+      <div class="col-card" data-col="외주여부">
+        <div>
+          <div class="card-top">
+            <span class="col-name">외주여부</span>
+            <span class="col-order">Col #17</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(20)</span>
+            <span class="null-badge null-clean">결측 0건</span>
+          </div>
+          <p class="card-desc">현장 작업 외주 위탁 여부 ('내부', '외부', '-'). DoIt/FixIt 외주 성과 대조 지표.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">내부</strong></span>
+          <button class="copy-btn" onclick="copyText('외주여부')">복사</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GROUP 3: 도메인 수리 속성 -->
+  <section class="group-section" id="group-domain">
+    <div class="group-header">
+      <span class="group-badge" style="background: var(--accent-green);"></span>
+      <h2 class="group-title" style="color: var(--accent-green);">[그룹 3] 도메인 수리 속성 컬럼 (구조적 결측치)</h2>
+      <span class="group-desc">(수리 작업 시점에만 발생하는 정상적 비즈니스 속성)</span>
+    </div>
+    <div class="card-grid">
+      <!-- contact -->
+      <div class="col-card" data-col="contact">
+        <div>
+          <div class="card-top">
+            <span class="col-name">contact</span>
+            <span class="col-order">Col #5</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(20)</span>
+            <span class="null-badge null-struct">결측 92.5% (구조적)</span>
+          </div>
+          <p class="card-desc">최초 고객 접수 인입 채널 ('Web', 'Phone'). FirstContact 시점에만 발생.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">Phone</strong></span>
+          <button class="copy-btn" onclick="copyText('contact')">복사</button>
+        </div>
+      </div>
+
+      <!-- RepairType -->
+      <div class="col-card" data-col="RepairType">
+        <div>
+          <div class="card-top">
+            <span class="col-name">RepairType</span>
+            <span class="col-order">Col #6</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(20)</span>
+            <span class="null-badge null-struct">결측 93.0% (구조적)</span>
+          </div>
+          <p class="card-desc">수리 방식 분류 코드 ('P', 'E' 등). 실제 수리 task 이벤트 시점에 기록.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">E</strong></span>
+          <button class="copy-btn" onclick="copyText('RepairType')">복사</button>
+        </div>
+      </div>
+
+      <!-- objectKey -->
+      <div class="col-card" data-col="objectKey">
+        <div>
+          <div class="card-top">
+            <span class="col-name">objectKey</span>
+            <span class="col-order">Col #7</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-float">FLOAT</span>
+            <span class="null-badge null-struct">결측 93.0% (구조적)</span>
+          </div>
+          <p class="card-desc">수리 대상 주택/부품 고유 식별 번호. 동일 주택 반복 수리 분석 활용.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1340.0</strong></span>
+          <button class="copy-btn" onclick="copyText('objectKey')">복사</button>
+        </div>
+      </div>
+
+      <!-- RepairInternally -->
+      <div class="col-card" data-col="RepairInternally">
+        <div>
+          <div class="card-top">
+            <span class="col-name">RepairInternally</span>
+            <span class="col-order">Col #8</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-bool">BOOLEAN</span>
+            <span class="null-badge null-struct">결측 93.0% (구조적)</span>
+          </div>
+          <p class="card-desc">사내 직접 수리 여부 (True / False). 자체 수리 vs 외주 위탁 성과 비교 지표.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">True</strong></span>
+          <button class="copy-btn" onclick="copyText('RepairInternally')">복사</button>
+        </div>
+      </div>
+
+      <!-- EstimatedRepairTime -->
+      <div class="col-card" data-col="EstimatedRepairTime">
+        <div>
+          <div class="card-top">
+            <span class="col-name">EstimatedRepairTime</span>
+            <span class="col-order">Col #9</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-float">FLOAT</span>
+            <span class="null-badge null-struct">결측 93.0% (구조적)</span>
+          </div>
+          <p class="card-desc">계획 단계에서 산정된 예상 수리 소요 시간 (분 단위). 계획 대비 실적 오차 분석.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">240.0분</strong></span>
+          <button class="copy-btn" onclick="copyText('EstimatedRepairTime')">복사</button>
+        </div>
+      </div>
+
+      <!-- RepairCode -->
+      <div class="col-card" data-col="RepairCode">
+        <div>
+          <div class="card-top">
+            <span class="col-name">RepairCode</span>
+            <span class="col-order">Col #10</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-float">FLOAT</span>
+            <span class="null-badge null-struct">결측 93.0% (구조적)</span>
+          </div>
+          <p class="card-desc">수리 난이도 및 작업 유형 카테고리 상세 분류 코드.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1.0</strong></span>
+          <button class="copy-btn" onclick="copyText('RepairCode')">복사</button>
+        </div>
+      </div>
+
+      <!-- RepairOK -->
+      <div class="col-card" data-col="RepairOK">
+        <div>
+          <div class="card-top">
+            <span class="col-name">RepairOK</span>
+            <span class="col-order">Col #11</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-bool">BOOLEAN</span>
+            <span class="null-badge null-struct">결측 86.0% (구조적)</span>
+          </div>
+          <p class="card-desc">수리 정상 종료 여부 (True / False). 재수리 및 재작업(Rework) 유발 판별 핵심 지표.</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">True</strong></span>
+          <button class="copy-btn" onclick="copyText('RepairOK')">복사</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GROUP 4: 원본 감사 및 이력 보존 -->
+  <section class="group-section" id="group-raw">
+    <div class="group-header">
+      <span class="group-badge" style="background: var(--accent-slate);"></span>
+      <h2 class="group-title" style="color: var(--accent-slate);">[그룹 4] 원본 추적 및 정제 전 이력 컬럼 (검증 및 감사용)</h2>
+      <span class="group-desc">(전처리 전 최초 수집 상태 보존용 - SQL 분석 시 그룹 1 정제 컬럼 사용 권장)</span>
+    </div>
+    <div class="card-grid">
+      <!-- date -->
+      <div class="col-card" data-col="date">
+        <div>
+          <div class="card-top">
+            <span class="col-name">date</span>
+            <span class="col-order">Col #12</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(20)</span>
+            <span class="null-badge null-raw">이상치 866건 보존</span>
+          </div>
+          <p class="card-desc">원본 일자 컬럼. 엑셀 드래그 2020~2022년 원본 상태. (분석 시 re_date 사용)</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1970-01-02</strong></span>
+          <button class="copy-btn" onclick="copyText('date')">복사</button>
+        </div>
+      </div>
+
+      <!-- time -->
+      <div class="col-card" data-col="time">
+        <div>
+          <div class="card-top">
+            <span class="col-name">time</span>
+            <span class="col-order">Col #13</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(20)</span>
+            <span class="null-badge null-raw">더미 0:00 보존</span>
+          </div>
+          <p class="card-desc">원본 시각 컬럼. 초기 결측 및 더미 시각 상태. (분석 시 re_time 사용)</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">0:00</strong></span>
+          <button class="copy-btn" onclick="copyText('time')">복사</button>
+        </div>
+      </div>
+
+      <!-- timestamp -->
+      <div class="col-card" data-col="timestamp">
+        <div>
+          <div class="card-top">
+            <span class="col-name">timestamp</span>
+            <span class="col-order">Col #14</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-varchar">VARCHAR(30)</span>
+            <span class="null-badge null-raw">파손 879건 보존</span>
+          </div>
+          <p class="card-desc">초기 결합 타임스탬프 (정제 전). (분석 시 clean_timestamp 필수 사용)</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1970-01-02 00:00:00</strong></span>
+          <button class="copy-btn" onclick="copyText('timestamp')">복사</button>
+        </div>
+      </div>
+
+      <!-- 수정된연도 -->
+      <div class="col-card" data-col="수정된연도">
+        <div>
+          <div class="card-top">
+            <span class="col-name">수정된연도</span>
+            <span class="col-order">Col #18</span>
+          </div>
+          <div class="badges-row">
+            <span class="type-badge type-float">FLOAT</span>
+            <span class="null-badge null-raw">보조 컬럼</span>
+          </div>
+          <p class="card-desc">1905년 이상치 판정 보조 컬럼 (1970.0 기록).</p>
+        </div>
+        <div class="card-footer">
+          <span>샘플: <strong class="sample-val">1970.0</strong></span>
+          <button class="copy-btn" onclick="copyText('수정된연도')">복사</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SQL Cheat Sheet -->
+  <div class="sql-panel">
+    <h3>SQL 분석 쾌속 복사 (Click to Copy)</h3>
+    <pre>-- 1. 필수 6대 정제 컬럼 빠른 조회
+SELECT caseID, taskID, task_group, originator, seq, clean_timestamp
+FROM repair_logs
+ORDER BY caseID, clean_timestamp, seq, sub_seq;
+
+-- 2. 케이스별 총 소요시간(Lead Time, 일) 집계
+SELECT caseID,
+       ROUND((JULIANDAY(MAX(clean_timestamp)) - JULIANDAY(MIN(clean_timestamp))), 2) AS lead_time_days
+FROM repair_logs
+GROUP BY caseID;</pre>
+  </div>
+</div>
+
+<script>
+  function filterGroup(group, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const sections = document.querySelectorAll('.group-section');
+    sections.forEach(sec => {
+      if (group === 'all') {
+        sec.style.display = 'block';
+      } else {
+        sec.style.display = (sec.id === 'group-' + group) ? 'block' : 'none';
+      }
+    });
+  }
+
+  function handleSearch() {
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.col-card');
+    cards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      card.style.display = text.includes(q) ? 'flex' : 'none';
+    });
+  }
+
+  function copyText(val) {
+    navigator.clipboard.writeText(val).then(() => {
+      alert(`[${val}] 컬럼명이 클립보드에 복사되었습니다!`);
+    });
+  }
+</script>
+
+</body>
+</html>
