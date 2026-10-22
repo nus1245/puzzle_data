@@ -13,7 +13,8 @@ puzzle_data/
 │   ├── 01_project_overview.md  # 프로젝트 개요 및 컬럼 데이터 딕셔너리
 │   ├── 02_analysis_insights.md # 분석 진행 경과 및 핵심 인사이트 누적
 │   ├── 03_ppt_storyboard.md    # PPT 발표자료 제작용 스토리보드
-│   └── 04_handover_guide.md    # 인수인계 및 실행 가이드 (본 문서)
+│   ├── 04_handover_guide.md    # 인수인계 및 실행 가이드 (본 문서)
+│   └── 05_cleaned_data_dictionary.md # 전처리 24열 데이터 딕셔너리 및 SQL 참조 가이드
 ├── outputs/                    # 📊 생성된 그래프 이미지, 보고서 등 산출물 저장
 │   └── figures/                # (차트 이미지 저장용)
 ├── analysis.ipynb              # 📓 대화형 분석용 주피터 노트북

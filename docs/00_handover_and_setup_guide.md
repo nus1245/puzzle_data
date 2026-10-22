@@ -34,6 +34,7 @@
   7. **최종 데이터셋 CSV 내보내기 및 SQL 가이드 (Cell 83~84)**:
      - **`repair_cleaned.csv` 저장 완료**: 13,262행 x 24열, 2.18 MB, `utf-8-sig` 인코딩 적용 (한글 컬럼 깨짐 방지)
      - **SQL 스키마 매핑 가이드 제공**: DBeaver, SQLite, PostgreSQL 등 SQL DBMS 집계 분석 최적화 스키마 수립
+     - **참조 문서**: [05_cleaned_data_dictionary.md](docs/05_cleaned_data_dictionary.md)에 24열 명세 및 SQL 쿼리 템플릿 정리 완료
 
 ---
 

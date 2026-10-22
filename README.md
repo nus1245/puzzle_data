@@ -10,6 +10,7 @@
 - [00_handover_and_setup_guide.md](docs/00_handover_and_setup_guide.md): 노트북 환경 세팅 및 작업 인수인계 가이드
 - [01_eda_plan.md](docs/01_eda_plan.md): 5단계 EDA 및 분석 실행 계획서
 - [02_analysis_insights.md](docs/02_analysis_insights.md): 비즈니스 관점의 분석 인사이트 및 도출 내역
+- [05_cleaned_data_dictionary.md](docs/05_cleaned_data_dictionary.md): 24열 정제 데이터셋 딕셔너리 및 SQL 쿼리 가이드
 
 ## 💾 데이터 파일
 - `repair2.csv`: 원본 수리 데이터 파일 (13,262행 x 13열)
