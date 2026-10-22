@@ -10,18 +10,19 @@
 
 - **분석 파일**: [analysis.ipynb](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/analysis.ipynb)
 - **원본 데이터**: [repair2.csv](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/repair2.csv) (1,000건 caseID, 13,262행 이벤트 로그)
-- **현재 완료된 작업 (Cell 1 ~ 53)**:
-  1. **용어 및 컬럼 표준화**:
-     - `task_group`: '접수', '현장', '정산' (영문 snake_case)
-     - `seq`: 1~13 (작업 대분류 순서)
-     - `sub_seq`: 1~2 (start=1, complete=2)
-     - `작업단계`: `[seq-sub_seq] taskID_eventtype` 형태
-  2. **날짜 이상치(873건) 100% 복원**:
-     - 엑셀 드래그 오류(860건) 및 NaT(13건)을 케이스별 정상 날짜 기준 `re_date`로 복원 완료.
-  3. **접수 시간 더미값(`0:00`) 순차 보정**:
-     - `0:00`은 실제 자정이 아닌 누락/기본값(Placeholder)으로 판명.
-     - **3번 시작(`MakeTicket start`, 5건)**: `MakeTicket complete` 시각에서 중앙값 **4.0분**을 감산하여 보정.
-     - **1번(`FirstContact`, 6건)**: 정상 케이스에서 3번 시작과 100% 동일(시차 0.0분)하므로 복원된 3번 시작 시각으로 매핑 대체 완료.
+- **현재 완료된 작업 (Cell 1 ~ 63)**:
+- **현재 완료된 작업 (5대 CASE 전처리 체계)**:
+  1. **CASE 1 (`taskID` 2건 결측치 복원)**: FirstContact(7124행), InformClientSurvey(7785행) 복원 완료
+  2. **CASE 2 (`originator` 2건 결측치 복원)**: 1:1 시작-완료 짝 매칭으로 Anne(8217행, Survey), Paul(12880행, InternRepair) 복원 완료
+  3. **CASE 3 (`eventtype` 5건 결측치 복원)**: Pair(start 2건, complete 1건) 및 단일 마일스톤(complete 2건) 100% 매칭 복원 완료
+  4. **CASE 4 (`DATE` 873건 결측치 및 연도 이상치 복원)**: 1905년(6건) 및 2020~2022년(860건), NaT(13건)을 그룹 기준 일자 `re_date`로 100% 복원 완료
+  5. **CASE 5 (`TIME` 결측치 및 시간 이상치 정밀 추정)**:
+     - **[기준 표본 정의 1]**: 접수 공정(1·3번) 전용 무결점 기준 모수 `df_baseline_receipt`(751건, 75.1%) 구축
+     - **5-1 (`FirstContact`)**: 3번 start와의 시차 0.0분 완전 일치 규칙(명분) 확립 (실제 대체는 5-2 일괄 동기화)
+     - **5-2 (`MakeTicket start`)**: `MakeTicket complete` 앵커 무결성 확인 ➔ 중앙값(4.0분) 역산 대체 ➔ 1번 FirstContact 0분 일괄 동기화
+     - **[기준 표본 정의 2]**: 현장/조사 공정(4·5·6번) 전용 무결점 기준 모수 `df_baseline_survey`(655건, 65.5%) 구축
+     - **5-3 (`현장/조사 공정 7건`)**: 4·5번 동시 트리거(0.0분) 및 6번 Survey 현장조사(중앙값 40.0분) 역산 대체 완료
+     - *(잔여 과제: 5-4 수리 공정 4건, 5-5 정산 공정 6건)*
 
 ---
 
@@ -64,14 +65,14 @@ pip install -r requirements.txt
 
 ---
 
-## 3. 내일 이어갈 다음 분석 과제 (Next Roadmap)
+## 3. 이어갈 다음 분석 과제 (Stage 2 Roadmap)
 
-1. **잔여 시간 결측치(7건 NaT) 처리**:
-   - 현장(`task_group == '현장'`, seq 6~10) 및 정산(`task_group == '정산'`, seq 11~13)에 존재하는 7건의 time 결측치 확인 및 업무 규칙 기반 대체.
-2. **Stage 2: AS-IS 프로세스 마이닝 도출**:
-   - **Happy Path 분석**: 가장 빈번한 정상 수리 경로(전체 케이스의 몇 %를 차지하는지) 도출
-   - **DFG (Directly-Follows Graph)**: 작업 간 전이 관계 및 시각화
+1. **Stage 2: AS-IS 프로세스 마이닝 도출 (Happy Path & DFG)**:
+   - **Happy Path 분석**: 가장 빈번한 정상 수리 경로(전체 1,000개 케이스 중 점유율 %) 도출
+   - **DFG (Directly-Follows Graph)**: 작업 간 전이 매트릭스 및 빈도/시간 기반 시각화
    - **병목 및 재작업(루프) 분석**: 이동 시간 및 수리 지연, 재작업이 일어나는 특정 병목 지점 탐색
+2. **수리 유형별 리드타임 편차 분석**:
+   - 내부수리(`InternRepair`) vs 외주수리(`ExternRepair`) vs 즉시수리(`ImmediateRepair`) 리드타임 비교 및 성능 분석
 
 ---
 
