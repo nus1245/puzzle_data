@@ -14,11 +14,14 @@ puzzle_data/
 │   ├── 02_analysis_insights.md # 분석 진행 경과 및 핵심 인사이트 누적
 │   ├── 03_ppt_storyboard.md    # PPT 발표자료 제작용 스토리보드
 │   ├── 04_handover_guide.md    # 인수인계 및 실행 가이드 (본 문서)
-│   └── 05_cleaned_data_dictionary.md # 전처리 24열 데이터 딕셔너리 및 SQL 참조 가이드
+│   ├── 05_cleaned_data_dictionary.md # 전처리 24열 데이터 딕셔너리 및 SQL 참조 가이드
+│   └── 06_temporal_integrity_reinforcement.md # 일시 복원 가정·일괄 규칙·정합성 검증 정리
 ├── outputs/                    # 📊 생성된 그래프 이미지, 보고서 등 산출물 저장
 │   └── figures/                # (차트 이미지 저장용)
-├── analysis.ipynb              # 📓 대화형 분석용 주피터 노트북
-├── main.py                     # 🐍 파이썬 일괄 실행 스크립트
+├── scripts/
+│   └── import_to_mysql.py      # 🗄️ repair_cleaned.csv → MySQL(repair_db.repair_logs) 적재
+├── analysis.ipynb              # 📓 전처리 노트북 (CASE 1~5, 정합성 검증, CSV 저장)
+├── analysis.sql                # 🧮 SQL 집계 분석 쿼리
 ├── repair2.csv                 # 💾 원본 데이터 파일 (13,262행 x 13열)
 ├── repair_cleaned.csv          # 💾 전처리 완료 데이터 파일 (13,262행 x 24열, SQL 집계용)
 ├── requirements.txt            # 📦 필요한 파이썬 패키지 목록
@@ -45,16 +48,17 @@ pip install -r requirements.txt
 
 ## 3. 분석 작업 실행 방법
 
-### 방법 A: 주피터 노트북에서 실행 (추천)
+### 1단계: 전처리 (주피터 노트북)
 1. IDE에서 `analysis.ipynb` 파일 열기.
 2. 커널을 Python 환경으로 선택.
-3. 셀 단위로 `Shift + Enter` 또는 `Run All`을 통해 데이터 전처리 및 시각화 대화형 수행.
+3. `Restart & Run All`로 처음부터 끝까지 실행. 마지막 정합성 검증(5개 항목 위반 0건)을 통과해야 `repair_cleaned.csv`가 저장됨.
 
-### 방법 B: 파이썬 스크립트로 일괄 실행
-터미널에서 아래 명령어 실행 시 데이터 무결성 검증 및 기본 현황 출력:
+### 2단계: SQL 분석 (선택)
+1. 전처리 결과를 MySQL에 적재:
 ```powershell
-python main.py
+python scripts/import_to_mysql.py
 ```
+2. `analysis.sql`의 쿼리를 `repair_db` 연결에서 실행.
 
 ---
 
