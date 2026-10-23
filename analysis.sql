@@ -68,12 +68,12 @@ SELECT caseID,
         2
     ) AS duration_hours,
     CASE
-        WHEN complete_time < start_time THEN '❌ 음수 (시간 역전)'
-        WHEN complete_time = start_time THEN '⚡ 0분 (동시 발생)'
-        ELSE '✅ 정상'
+        WHEN complete_time < start_time THEN '시간 역전'
+        WHEN complete_time = start_time THEN '동시 발생'
+        ELSE '정상'
     END AS validation_status
 FROM TaskPivot
-ORDER BY validation_status DSEC;
+ORDER BY validation_status DESC;
 -- ---------------------------------------------------------------------
 -- 2. 케이스별 총 소요시간(Lead Time) 상위 지연 케이스 분석
 -- ---------------------------------------------------------------------
@@ -127,28 +127,36 @@ WITH CaseRepairSummary AS (
                 ELSE '기타'
             END
         ) AS repair_mode,
+        -- 1. 소요 일수 (Day): 분 단위를 1440(24*60)으로 나누어 정밀 소수점 일수 계산
         TIMESTAMPDIFF(
-            DAY,
+            MINUTE,
             MIN(clean_timestamp),
             MAX(clean_timestamp)
-        ) AS lead_time_days,
+        ) / 1440.0 AS lead_days,
+        -- 2. 소요 시간 (Hour): 분 단위를 60으로 나누어 정밀 시간 계산
         TIMESTAMPDIFF(
-            HOUR,
+            MINUTE,
             MIN(clean_timestamp),
             MAX(clean_timestamp)
-        ) / 24 AS lead_time_TIMES
+        ) / 60.0 AS lead_hours
     FROM repair_logs
-    WHERE taskID = '현장'
+    WHERE task_group = '현장'
     GROUP BY caseID
 )
 SELECT repair_mode,
     COUNT(*) AS case_count,
-    ROUND(AVG(lead_time_days), 2) AS avg_lead_days,
-    ROUND(MIN(lead_time_days), 2) AS min_lead_days,
-    ROUND(MAX(lead_time_days), 2) AS max_lead_days
+    -- [일(Day) 단위 통계]
+    ROUND(AVG(lead_days), 2) AS avg_lead_days,
+    ROUND(MIN(lead_days), 2) AS min_lead_days,
+    ROUND(MAX(lead_days), 2) AS max_lead_days,
+    -- [시간(Hour) 단위 통계]
+    ROUND(AVG(lead_hours), 1) AS avg_lead_hours,
+    ROUND(MIN(lead_hours), 1) AS min_lead_hours,
+    ROUND(MAX(lead_hours), 1) AS max_lead_hours
 FROM CaseRepairSummary
 GROUP BY repair_mode
 ORDER BY avg_lead_days DESC;
+
 -- ---------------------------------------------------------------------
 -- 5. [병목 탐색] 단계 간 이동 시간 및 대기시간(Waiting Time) 분석
 -- ---------------------------------------------------------------------
@@ -191,6 +199,7 @@ GROUP BY current_task,
     next_task
 HAVING COUNT(*) >= 10
 ORDER BY avg_waiting_hours DESC;
+
 -- ---------------------------------------------------------------------
 -- 6. 담당자(originator)별 처리 건수 및 고유 케이스 수 집계
 -- ---------------------------------------------------------------------
