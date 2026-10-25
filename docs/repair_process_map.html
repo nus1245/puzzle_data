@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수리 프로세스 맵</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Serif:ital@0;1&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #bf4520;
+      --font-sans:     'Geist', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif', 'Noto Serif KR', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1416px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--color-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 1416px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Process map · repair_cleaned.csv · 1,000 cases / 13,262 events</p>
+    <h1>수리 프로세스 맵 — 접수 · 현장 · 정산</h1>
+    <p class="subtitle">노드 수치는 이벤트(EV) 기준, 구간 머리말은 케이스 기준입니다.</p>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1416 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="repair-process-map-title repair-process-map-desc">
+        <title id="repair-process-map-title">수리 프로세스 맵 — 접수 · 현장 · 정산</title>
+        <desc id="repair-process-map-desc">1,000건의 수리 요청이 접수에서 73건 이탈한 뒤 927건이 현장 실사와 세 가지 수리 경로를 거쳐 정산으로 종결되며, 실사 전 방문 대기 평균 76.8시간과 접수 교차 인계 123건이 핵심 병목임을 보여준다.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#bf4520"/></marker>
+          <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
+        </defs>
+
+        <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+        <!-- ===== Zones (case sections) ===== -->
+        <rect x="32" y="104" width="468" height="344" rx="8" fill="rgba(45,49,66,0.025)" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="48" y="132" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif">01 접수</text>
+        <text x="48" y="150" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.06em">1,000 CASES IN · 73 EXIT · 927 PASS</text>
+
+        <rect x="524" y="104" width="504" height="344" rx="8" fill="rgba(45,49,66,0.025)" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="540" y="132" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif">02 현장</text>
+        <text x="540" y="150" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.06em">927 CASES</text>
+
+        <rect x="1052" y="104" width="332" height="344" rx="8" fill="rgba(45,49,66,0.025)" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="1068" y="132" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif">03 정산</text>
+        <text x="1068" y="150" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.06em">927 CASES · ALL CLOSED</text>
+
+        <!-- ===== Connectors (drawn before nodes) ===== -->
+        <!-- 접수 -->
+        <line x1="168" y1="300" x2="200" y2="300" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+        <line x1="112" y1="328" x2="112" y2="360" stroke="#4f5d75" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+        <line x1="304" y1="300" x2="336" y2="300" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <!-- 최대 병목: 실사 전 방문 대기 -->
+        <line x1="476" y1="300" x2="584" y2="300" stroke="#bf4520" stroke-width="2" marker-end="url(#arrow-accent)"/>
+        <rect x="492" y="278" width="76" height="14" rx="2" fill="#f5f5f5"/>
+        <text x="530" y="288" fill="#bf4520" font-size="8" font-weight="600" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">AVG WAIT 76.8H</text>
+        <rect x="496" y="308" width="68" height="14" rx="2" fill="#f5f5f5"/>
+        <text x="530" y="318" fill="#5a6580" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">MEDIAN 48.8H</text>
+
+        <!-- 현장: Survey 분기 -->
+        <path d="M 672 286 H 684 Q 692 286 692 278 V 220 Q 692 212 700 212 H 712" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+        <line x1="672" y1="300" x2="712" y2="300" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+        <path d="M 672 314 H 684 Q 692 314 692 322 V 380 Q 692 388 700 388 H 712" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <!-- 현장: 수리 → RepairReady 합류 -->
+        <path d="M 852 212 H 868 Q 876 212 876 220 V 278 Q 876 286 884 286 H 900" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+        <line x1="852" y1="300" x2="900" y2="300" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+        <path d="M 852 388 H 868 Q 876 388 876 380 V 322 Q 876 314 884 314 H 900" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <!-- 정산 -->
+        <line x1="1004" y1="300" x2="1076" y2="300" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+        <line x1="1224" y1="300" x2="1256" y2="300" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+        <!-- ===== Nodes ===== -->
+        <!-- FirstContact (input) -->
+        <rect x="56" y="272" width="112" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="56" y="272" width="112" height="56" rx="6" fill="rgba(79,93,117,0.10)" stroke="#5a6580" stroke-width="1"/>
+        <text x="112" y="296" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">FirstContact</text>
+        <text x="112" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">1,000 EV</text>
+
+        <!-- MakeTicket (focal: 교차 인계 병목) -->
+        <rect x="200" y="272" width="104" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="200" y="272" width="104" height="56" rx="6" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1.2"/>
+        <text x="252" y="296" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">MakeTicket</text>
+        <text x="252" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">927 EV</text>
+
+        <!-- ArrangeSurvey + InformClientSurvey (merged) -->
+        <rect x="336" y="272" width="140" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="336" y="272" width="140" height="56" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="406" y="296" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" text-anchor="middle">실사 일정 조율·통보</text>
+        <text x="406" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">927 EV × 2</text>
+
+        <!-- InformClientWrongPlace (early exit) -->
+        <rect x="56" y="360" width="176" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="56" y="360" width="176" height="56" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="144" y="384" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">InformClientWrongPlace</text>
+        <text x="144" y="400" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">73 EV · 7.3% EXIT</text>
+
+        <!-- Survey -->
+        <rect x="584" y="272" width="88" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="584" y="272" width="88" height="56" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="628" y="296" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Survey</text>
+        <text x="628" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">927 EV</text>
+
+        <!-- ExternRepair -->
+        <rect x="712" y="184" width="140" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="712" y="184" width="140" height="56" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+        <text x="782" y="208" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">ExternRepair</text>
+        <text x="782" y="224" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">132 EV · 132 CASES</text>
+
+        <!-- InternRepair -->
+        <rect x="712" y="272" width="140" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="712" y="272" width="140" height="56" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="782" y="296" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">InternRepair</text>
+        <text x="782" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">547 EV · 508 CASES</text>
+
+        <!-- ImmediateRepair -->
+        <rect x="712" y="360" width="140" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="712" y="360" width="140" height="56" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="782" y="384" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">ImmediateRepair</text>
+        <text x="782" y="400" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">383 EV · 383 CASES</text>
+
+        <!-- RepairReady -->
+        <rect x="900" y="272" width="104" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="900" y="272" width="104" height="56" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="952" y="296" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">RepairReady</text>
+        <text x="952" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">927 EV</text>
+
+        <!-- ReadyInformClient ∥ SendTicketToFinAdmin (merged parallel pair) -->
+        <rect x="1076" y="272" width="148" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="1076" y="272" width="148" height="56" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+        <text x="1150" y="296" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" text-anchor="middle">고객통보 ∥ 재무전달</text>
+        <text x="1150" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">927 EV × 2 · AND</text>
+
+        <!-- TicketReady (terminal) -->
+        <rect x="1256" y="272" width="104" height="56" rx="6" fill="#f5f5f5"/>
+        <rect x="1256" y="272" width="104" height="56" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+        <text x="1308" y="296" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">TicketReady</text>
+        <text x="1308" y="312" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">927 EV · END</text>
+
+        <!-- ===== Callouts (margin, below zones) ===== -->
+        <path d="M 252 484 V 336" fill="none" stroke="rgba(191,69,32,0.50)" stroke-width="1" stroke-dasharray="4,3"/>
+        <circle cx="252" cy="332" r="2" fill="#bf4520"/>
+        <text x="216" y="504" fill="#bf4520" font-size="14" font-family="'Instrument Serif', 'Noto Serif', 'Noto Serif KR', serif">교차 인계 123건 — 건당 +5.11h 지연</text>
+
+        <path d="M 782 484 V 424" fill="none" stroke="rgba(45,49,66,0.40)" stroke-width="1" stroke-dasharray="4,3"/>
+        <circle cx="782" cy="420" r="2" fill="#2d3142"/>
+        <text x="712" y="504" fill="#2d3142" font-size="14" font-family="'Instrument Serif', 'Noto Serif', 'Noto Serif KR', serif">수리 1,062 EV &gt; 927 케이스 — 복수 유형 91건 · 사내수리 반복 39회</text>
+
+        <!-- ===== Legend ===== -->
+        <line x1="32" y1="540" x2="1384" y2="540" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+        <text x="32" y="568" fill="#4f5d75" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">LEGEND</text>
+
+        <rect x="112" y="558" width="20" height="14" rx="3" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1.2"/>
+        <text x="140" y="568" fill="#4f5d75" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.06em">HANDOFF BOTTLENECK</text>
+
+        <line x1="272" y1="565" x2="300" y2="565" stroke="#bf4520" stroke-width="2" marker-end="url(#arrow-accent)"/>
+        <text x="308" y="568" fill="#4f5d75" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.06em">LONGEST WAIT</text>
+
+        <rect x="400" y="558" width="20" height="14" rx="3" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="428" y="568" fill="#4f5d75" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.06em">EARLY EXIT</text>
+
+        <rect x="516" y="558" width="20" height="14" rx="3" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+        <text x="544" y="568" fill="#4f5d75" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.06em">EXTERNAL VENDOR</text>
+
+        <text x="680" y="568" fill="#4f5d75" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.06em">EV = EVENT COUNT · ZONE HEADER = CASE COUNT · × 2 = MERGED PAIR</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>
