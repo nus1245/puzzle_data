@@ -1,0 +1,68 @@
+digraph RepairProcessMap {
+    rankdir=LR;
+    bgcolor="#0f172a";
+    // [보완 1] 한글 폰트(Malgun Gothic)로 지정하여 깨짐 방지
+    node [shape=box, style="filled,rounded", fontname="Malgun Gothic", fontsize=10, fontcolor="#ffffff", margin="0.2,0.1"];
+    edge [fontname="Malgun Gothic", fontsize=9, fontcolor="#94a3b8", color="#60a5fa"];
+
+    // 1. 접수 Group
+    subgraph cluster_receipt {
+        label = " 접수 ";
+        fontcolor = "#60a5fa";
+        color = "#3b82f6";
+        style = "dashed";
+        
+        FirstContact [label="FirstContact\n1,000 cases ", fillcolor="#1e3a5f", color="#60a5fa"];
+        InformClientWrongPlace [label="InformClientWrongPlace\n73 cases | 접수 종료", fillcolor="#334155", color="#94a3b8"];
+        MakeTicket [label="MakeTicket\n927 cases", fillcolor="#7f1d1d", color="#f87171"];
+        ArrangeSurvey [label="ArrangeSurvey\n927 cases", fillcolor="#1e3a5f", color="#60a5fa"];
+        InformClientSurvey [label="InformClientSurvey\n927 cases | System", fillcolor="#064e3b", color="#34d399"];
+
+        FirstContact -> InformClientWrongPlace [label="73 (7.3%)"];
+        FirstContact -> MakeTicket [label="927 (92.7%)"];
+        MakeTicket -> MakeTicket [label="인계 루프 (123건)\n+5.11h 지연", color="#f87171", style="dashed"];
+        MakeTicket -> ArrangeSurvey [label="927"];
+        ArrangeSurvey -> InformClientSurvey [label="927"];
+    }
+
+    // 2. 현장 Group
+    subgraph cluster_field {
+        label = " 현장 (Field) ";
+        fontcolor = "#f87171";
+        color = "#ef4444";
+        style = "dashed";
+
+        Survey [label="Survey\n927 cases ", fillcolor="#1e3a5f", color="#38bdf8"];
+        InternRepair [label="InternRepair\n547 (59%) ", fillcolor="#1e3a5f", color="#38bdf8"];
+        ImmediateRepair [label="ImmediateRepair\n383 (41%) ", fillcolor="#1e3a5f", color="#38bdf8"];
+        ExternRepair [label="ExternRepair\n132 (14%) | DoIt/FixIt", fillcolor="#1e3a5f", color="#f59e0b"];
+        RepairReady [label="RepairReady\n927 cases ", fillcolor="#064e3b", color="#34d399"];
+
+        Survey -> InternRepair [label="547"];
+        Survey -> ImmediateRepair [label="383"];
+        Survey -> ExternRepair [label="132"];
+        InternRepair -> RepairReady;
+        ImmediateRepair -> RepairReady;
+        ExternRepair -> RepairReady;
+    }
+
+    // 최대 병목 트랜지션
+    InformClientSurvey -> Survey [label="최대 병목 (76.8h 지연)", color="#ef4444", penwidth=2.5, fontcolor="#f87171"];
+
+    // 3. 정산 Group
+    subgraph cluster_billing {
+        label = "정산";
+        fontcolor = "#34d399";
+        color = "#10b981";
+        style = "dashed";
+
+        ReadyInformClient [label="ReadyInformClient\n927 cases | System", fillcolor="#064e3b", color="#34d399"];
+        SendTicketToFinAdmin [label="SendTicketToFinAdmin\n927 cases | System", fillcolor="#064e3b", color="#34d399"];
+        TicketReady [label="TicketReady\n927 cases | 종결", fillcolor="#064e3b", color="#34d399"];
+
+        RepairReady -> ReadyInformClient [label="병렬 수행"];
+        RepairReady -> SendTicketToFinAdmin [label="병렬 수행"];
+        ReadyInformClient -> TicketReady [label="Join"];
+        SendTicketToFinAdmin -> TicketReady [label="Join"];
+    }
+}
