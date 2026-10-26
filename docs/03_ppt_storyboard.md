@@ -303,40 +303,41 @@
 
 ---
 
-### Slide 06. [질문 1] 전처리 무결성 검증 및 정제 데이터 프로파일링 (After Profiling)
+### Slide 06. [질문 1] 전처리 무결성 검증 및 데이터 기반 운영 특성 발굴 (After Profiling)
 
-* **DOM Layout & Grid**: `Split-LeftTable-RightCohort` (좌측 검증표 50% + 우측 정제 프로파일 & 코호트 50%)
-* **Category Kicker**: `Part 01 · 질문 1 | After Profiling`
-* **Action Headline**: `"시간 역전 0건을 입증했고, 오접수 73건을 격리해 927건 클린 코호트를 확립했다"`
-* **Left Verification Table (Before vs After 4x3 매트릭스)**:
- * `Table Container: bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden`
+* **DOM Layout & Grid**: `Split-LeftTable-Right2Cards` (좌측 4x3 무결성 검증표 50% + 우측 운영 특성 발굴 2단 카드 50%: `grid grid-cols-2 gap-6`)
+* **Category Kicker**: `Part 01 · 질문 1 | After Profiling & Operational Discovery`
+* **Action Headline**: `"시간 역전 0건의 무결성을 입증했고, 24시간 상시 접수와 현장 무경계 통합 풀(Shared Pool)을 규명했다"`
+* **Left Verification Table (Before vs After 4x3 매트릭스 - 무결성 보증)**:
+ * `Table Container: bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between`
  * `Header: ["검증 항목" (text-left), "Before (원천)", "After (정제 무결성)" (text-emerald-600)]`
  * `Row 1: ["총 이벤트 행 수", "13,262행", "13,262행 (100% 완전 보존)"]`
  * `Row 2: ["필수 속성 결측", "20건 (0.15%)", "0건 (100% 인과 복원 완료)"]`
  * `Row 3: ["일자 연도 오기입", "866건 (미래연도)", "0건 (1970년 정상 주기 통일)"]`
  * `Row 4: ["공정 간 시간 역전", "음수 소요시간 존재", "0건 (3,711개 페어 양수 검증)"]`
- * `Table Callout Banner (하단 부착): "전처리 전 구간 무결성 100% 입증 ➔ 임의 행 삭제 0건" (bg-emerald-50 text-emerald-800 font-bold p-3 text-center text-sm)`
-* **Right Cohort & Channel Split (우측 코호트 분리 블록)**:
- * **Top 4-Chips Grid** (`grid grid-cols-4 gap-2 mb-4`):
- - `Chip 1: "1,000 케이스"` | `Chip 2: "890 고유 주택"` | `Chip 3: "13개 전체 속성"` | `Chip 4: "14행 케이스 중앙값"`
- * **Middle Cohort Isolation Cards** (`grid grid-cols-2 gap-4 mb-4`):
- - **Clean Cohort Card**:
- * `bg-emerald-50/50 border-2 border-emerald-500 rounded-xl p-4`
- * `Badge: "정상 수리 완결 코호트" (Green Pill)`
- * `BigNum: "927건 (92.7%)"` (`text-3xl font-extrabold text-emerald-700 font-mono`)
- * `Sub: "순수 현장수리 분석 대상 ➔ 질문 2 마이닝 모수 확립"`
- - **Noise Quarantine Card**:
- * `bg-slate-50 border border-slate-300 rounded-xl p-4`
- * `Badge: "오접수 조기 종결" (Gray Pill)`
- * `BigNum: "73건 (7.3%)"` (`text-3xl font-extrabold text-slate-500 font-mono`)
- * `Sub: "타 기관 관할 주택 (InformClientWrongPlace) ➔ 분석 노이즈 격리"`
- * **Bottom Channel Balance (927건의 채널 균등 분포)**:
- * `grid grid-cols-4 gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200 text-center`
- * `Phone: 251건 (27.1%)` | `Web: 241건 (26.0%)` | `Personal: 228건 (24.6%)` | `Letter: 207건 (22.3%)`
- * `Caption: "특정 채널 편향 없이 고르게 유입됨을 확증 (단일 채널 쏠림 가설 기각)"` (`text-xs text-slate-400 mt-1`)
-* **Source Bar**: `출처: repair_cleaned.csv (13,262행) 직접 집계 · 정상 코호트 = RepairReady 927건 전수`
+ * `Table Callout Banner (하단 부착): "전처리 전 구간 무결성 100% 입증 ➔ 임의 행 삭제 0건 (완전무결성 확립)" (bg-emerald-50 text-emerald-800 font-bold p-3 text-center text-sm rounded-xl m-3)`
+* **Right Operational Discovery (데이터가 밝혀낸 수리회사 2대 운영 진실 - 2단 카드)**:
+ 1. **Card 1: [근무 형태] 24시간 무중단 상시 접수 체제 (야간 방치 가설 완벽 기각)**
+ * `Card Container: bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between`
+ * `Badge: "01 근무 형태 진실" (Blue Pill)` | `Title: "24시간 상시 접수 & 야간 방치 가설 기각"` (`font-bold text-base text-slate-900 mt-1`)
+ * `BigNum Stat: "0시 ~ 23시 전 시간대 활동"` (`text-2xl font-extrabold text-blue-600 font-mono my-2`)
+ * `Key Insights`:
+ - `• 0시부터 23시까지 전 시간대 FirstContact 및 접수원(Dian/Monica) 활동 입증 (analysis.sql L1140~L1195)`
+ - `• 야간 접수 건 역시 정상 처리 ➔ 리드타임 지연 원인은 '영업외 방치'가 아닌 '비실시간 일정 핑퐁 마찰'`
+ 2. **Card 2: [조직 구조] '지역 전담제' 착시 규명 & 현장 무경계 전사 단일 풀(Shared Pool) 실증**
+ * `Card Container: bg-white rounded-2xl p-5 border border-orange-200 shadow-sm flex flex-col justify-between`
+ * `Badge: "02 조직 구조 진실" (Orange Pill)` | `Title: "'지역 전담제' 착시 해소 및 현장 무경계 배정 실증"` (`font-bold text-base text-slate-900 mt-1`)
+ * `BigNum Stat: "기사 배정비 46.9% : 53.1% 수렴"` (`text-2xl font-extrabold text-orange-600 font-mono my-2`)
+ * `Key Insights`:
+ - `• [접수 착시 해소]: 890채 중 1회 접수가 96.1%(855채)에 달해 지역 분담처럼 보였으나, 재접수 35채 추적 시 62.9%(22채)가 타 상담원에게 무작위 교차 연결됨 (이전 담당자 복귀율 8.6%에 불과, analysis.sql L772~L776)`
+ - `• [현장 스모킹 건]: 접수원(Dian vs Monica)별 현장 기사 출동 비중이 전체 평균(46.9% : 53.1%)에 완벽 수렴 (Anne 50:50, Edd 51.8:48.2, John 46.2:53.8, 외주 FixIt/DoIt 전 지역 출동, L782~L825)`
+ - `• [결론]: 접수단부터 현장까지 특정 구역 제한이 없는 '전사 단일 통합 공유 큐(Single Shared Pool)' 운영 확증`
+* **Source Bar**: `출처: repair_cleaned.csv (13,262행 전수), analysis.sql L760~828 (기사 배정비), L1138~1202 (24시간 접수 분포)`
 * **Presenter's Script (발표 대본)**:
- > "5대 전처리를 완료한 결과, 단 한 건의 결측과 시간 역전도 없는 완전무결한 13,262행 정제 데이터셋이 완성되었습니다. 정제된 데이터를 프로파일링하여 타 기관 관할 오접수 73건을 격리하고, 실제 현장 수리가 이루어진 '927건의 클린 분석 코호트'를 확립했습니다. 이제 질문 2, 대기가 집중된 현장의 진짜 병목을 파헤치겠습니다."
+ > "5대 전처리를 완료한 결과, 단 한 건의 결측과 시간 역전도 없는 완전무결한 13,262행 정제 데이터셋이 완성되었습니다. 특히 데이터 수사 과정에서 수리회사의 2대 운영 진실을 발굴했습니다.
+ > 첫째, 상담원들은 24시간 전 시간대 접수를 처리하고 있어 야간 방치로 인한 지연 가설은 기각되었습니다.
+ > 둘째, 단발성 접수가 96.1%에 달해 겉으로는 접수원이 지역을 분담하는 것처럼 보였으나, 재접수 건의 62.9%가 교차 인입되었고, 무엇보다 현장 기사들의 출동 비중이 50:50으로 완벽히 수렴하여 접수와 현장 모두 구역 제한 없는 '전사 단일 통합 풀(Shared Pool)'로 운영되고 있음을 실증했습니다."
+
 
 ---
 
