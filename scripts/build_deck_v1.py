@@ -1,0 +1,535 @@
+# -*- coding: utf-8 -*-
+"""퍼즐데이터 과제 분석 보고서 — v1 (스토리보드 충실 구현판, 14 Slides).
+
+규격: docs/03_ppt_storyboard.md (화이트 테마 · 60-30-10 · BigNum 앵커링 · 차트 contain · 발표자 노트)
+수치: scripts/verify_deck_facts.py 로 원천 재계산한 값만 사용 (정정 내역은 docs/07_fact_verification.md)
+"""
+import os
+
+from deck_common import *  # noqa: F401,F403
+
+OUT = os.path.join(OUT_DIR, "puzzledata_repair_report_v1.pptx")
+fig = lambda name: os.path.join(FIG_DIR, name)
+
+Y0, Y1 = 1.78, 6.88          # 본문 영역 상단/하단
+prs = new_presentation()
+
+
+def bullets(items, size=10.5, color=S600, after=3.0):
+    return [para(t, size, False, color, bullet=True, after=after) for t in items]
+
+
+def lead(label, body, size=11, label_color=S900, body_color=S600, after=0.0):
+    return para([R(label, size, True, label_color), R(body, size, False, body_color)], after=after)
+
+
+def section_card(s, x, y, w, h, pill, pill_style, title, title_color, items, *, line=S200, line_w=0.75,
+                 fill=WHITE, bullet_size=10.5, tag=None, tag_color=BLU600, title_size=13, big=None, big_color=S900,
+                 big_size=22, title_h=0.3, after=3.0):
+    """pill + 제목 + (BigNum) + 불릿 + (하단 태그) 로 구성된 표준 정보 카드."""
+    add_card(s, x, y, w, h, fill, line, line_w)
+    pf, pc, pl = pill_style
+    add_pill(s, x + 0.2, y + 0.16, pill, pf, pc, pl, size=9.5)
+    cy = y + 0.52
+    add_text(s, x + 0.2, cy, w - 0.4, title_h, para(title, title_size, True, title_color))
+    cy += title_h + 0.04
+    if big:
+        add_text(s, x + 0.2, cy, w - 0.4, big_size * 1.4 / 72 + 0.04,
+                 para(big, big_size, True, big_color, mono=True))
+        cy += big_size * 1.4 / 72 + 0.08
+    bottom = y + h - (0.38 if tag else 0.15)
+    add_text(s, x + 0.2, cy, w - 0.4, bottom - cy, bullets(items, bullet_size, after=after))
+    if tag:
+        add_text(s, x + 0.2, y + h - 0.34, w - 0.4, 0.22, para(tag, 9.5, True, tag_color, mono=True))
+
+
+PILL_BLUE = (BLU100, BLU800, BLU200)
+PILL_ORG = (ORG100, ORG800, ORG200)
+PILL_EMR = (EMR100, EMR800, EMR200)
+PILL_RED = (RED50, RED700, RED200)
+PILL_GRAY = (S100, S700, S300)
+
+# =================================================================== S01 표지
+s = blank_slide(prs, 1, S50)
+add_pill(s, 0.8, 0.95, "채용 과제 전형 최종 보고서", BLU50, BLU700, BLU200, size=11, h=0.32, padx=0.18)
+add_text(s, 0.8, 1.5, 7.7, 2.45,
+         para("프로세스 마이닝 기반\n공공임대주택 수리 프로세스\n진단 및 운영 최적화 방안", 38, True, S900, spacing=0.95),
+         name="CoverTitle")
+add_text(s, 0.8, 4.2, 7.4, 0.95,
+         para("5대 무손실 전처리, 실사 대기 병목(76.8h) 원인 규명 및 3대 데이터 기반 TO-BE 전략", 17, False, S600),
+         name="CoverSub")
+add_text(s, 0.8, 6.5, 7.6, 0.3,
+         para("퍼즐데이터 수리 프로세스 데이터 분석 과제  |  제출일 2026. 10. 27", 11, False, S500),
+         name="CoverMeta")
+kpis = [
+    ("13,262행", BLU600, S200, "전체 이벤트 로그 · 1,000 케이스 무손실 복원", "#ProcessMining", PILL_BLUE),
+    ("90.5%", ORG600, ORG200, "리드타임(105.9h) 중 공정 간 단순 대기시간", "#LeadTime_Wait", PILL_ORG),
+    ("▼ 64%", EMR600, EMR200, "TO-BE 1회 방문 패스트트랙 리드타임 감축 목표 (105.9h ➔ 38.0h)", "#TO-BE_ROI", PILL_EMR),
+]
+for i, (big, bc, bl, label, tag, ps) in enumerate(kpis):
+    y = 0.95 + i * 1.98
+    add_card(s, 8.85, y, 3.95, 1.78, WHITE, bl, 1.0, 0.14, f"KPI-{i + 1}")
+    add_text(s, 9.15, y + 0.16, 3.4, 0.62, para(big, 34, True, bc, mono=True))
+    add_text(s, 9.15, y + 0.84, 3.4, 0.5, para(label, 11.5, False, S600))
+    add_pill(s, 9.15, y + 1.38, tag, ps[0], ps[1], ps[2], size=9.5, mono=True)
+set_notes(s, "안녕하십니까, 퍼즐데이터 수리 프로세스 데이터 분석 결과 발표를 맡은 지원자입니다. 본 보고서는 네덜란드 공공임대주택 1,000건의 수리 로그를 바탕으로, 단순 통계를 넘어 프로세스 마이닝 관점에서 대기시간 약 90%의 구조적 원인을 밝히고 실질적 개선안을 제시합니다.\n\n[수치 메모] 90.5% = (105.9h − 현장 실작업 4.6h − 정산 5.5h) ÷ 105.9h. 정산 5.5h를 시스템 자동 처리로 본 보수적 산정이며, start→complete 구간만 작업으로 보는 엄격 정의에서는 94.6%입니다. ▼64%는 목표치(가정 기반)이며 검증된 하한은 −17.2h(−16%)입니다.")
+
+# =================================================================== S02 목차
+s = blank_slide(prs, 2)
+add_chrome(s, 2, "AGENDA · 전체 개요", "원천 데이터 전처리부터 TO-BE 전략까지, 4개 파트로 보고합니다",
+           "슬라이드 구성: 질문 1 (04–06) · 질문 2 (07–11) · 질문 3 (12–13) · 질의응답 (14)")
+tiles = [
+    ("01", S300, "질문 1", PILL_BLUE, "데이터 진단 및 전처리", "Slide 04 – 06",
+     ["13,262행 이벤트 로그 수사 프로파일링", "도메인 인과 기반 5대 결측치 100% 무손실 복원", "시간 역전 0건 입증 및 927건 코호트 확립"]),
+    ("02", ORG300, "질문 2", PILL_ORG, "프로세스 마이닝 심층 분석", "Slide 07 – 11",
+     ["AS-IS E2E 프로세스 표준 모델 (맵)", "3대 대기 병목 분해 (접수 6.6배 vs 현장 76.8h)", "OLS 다중회귀 영향인자 실증 & 수리·리워크"]),
+    ("03", EMR400, "질문 3", PILL_EMR, "프로세스 최적화 방안", "Slide 12 – 13",
+     ["사전 분류 정합 87.3%와 정보 해상도 한계 규명", "E형 직행 ➔ 실사 대기 20%(-15.4h) 단축", "체크리스트 고도화 & E형 정밀검사로 리워크 차단"]),
+    ("04", S300, "Q & A", PILL_GRAY, "질의응답 (Q&A)", "Slide 14",
+     ["프로젝트 핵심 진단 및 3대 전략 총괄", "데이터 기반 프로세스 혁신 총평", "질의응답"]),
+]
+tw, tg = 2.88, (CW - 4 * 2.88) / 3
+for i, (idx, ic, pl, ps, title, rng, bl) in enumerate(tiles):
+    x = MX + i * (tw + tg)
+    add_card(s, x, 1.85, tw, 4.9, WHITE, S200, 0.75, 0.14, f"Tile-{idx}")
+    add_text(s, x + 0.25, 2.05, 1.6, 0.7, para(idx, 40, True, ic, mono=True))
+    add_pill(s, x + 0.25, 2.95, pl, ps[0], ps[1], ps[2], size=10)
+    add_text(s, x + 0.25, 3.35, tw - 0.5, 0.8, para(title, 17, True, S900, spacing=0.95))
+    add_text(s, x + 0.25, 4.2, tw - 0.5, 1.9, bullets(bl, 11, after=5))
+    add_text(s, x + 0.25, 6.3, tw - 0.5, 0.25, para(rng, 10, True, S500, mono=True))
+set_notes(s, "오늘 발표는 4개 파트로 진행됩니다. 질문 1의 데이터 무손실 전처리를 거쳐, 질문 2의 프로세스 병목과 원인을 규명하고, 질문 3에서 실질적 개선안과 정량적 효과를 제시하며 마무리하겠습니다.")
+
+# =================================================================== S03 Executive Summary
+s = blank_slide(prs, 3)
+add_chrome(s, 3, "EXECUTIVE SUMMARY · 통괄 핵심 어젠다",
+           "현장의 '대기시간'을 줄이고 이해관계자 간 '소통'을 통제하면 프로세스 리드타임을 획기적으로 개선할 수 있다",
+           "※ 90.5% = 정산 5.5h(시스템 자동 처리)를 작업으로 본 보수적 산정, 엄격 정의(start→complete만 작업) 시 94.6% · 근거: analysis.sql 2~5절")
+add_box(s, MX, 1.85, CW, 1.0, S900, None, radius=0.12, name="InsightBanner")
+add_text(s, MX + 0.35, 1.85, 7.6, 1.0,
+         para("공정 리드타임 지연의 본질은 작업자 태만이 아닌 '공정 간 단순 대기(90.5%)'와 '비실시간 접수 소통 공백'에 있다",
+              14.5, True, WHITE, spacing=0.95), anchor="m")
+add_text(s, MX + 8.4, 1.85, 3.5, 1.0,
+         [para("E2E 리드타임 105.9시간 중", 11.5, False, S300),
+          para("순수 대기 95.8시간", 20, True, ORG300, mono=True)], anchor="m")
+cards3 = [
+    ("Step 01", (S900, WHITE, None), "데이터 무결성", "13,262행", S900, "100% 무손실 복원 완결", S200,
+     ["임의 행 삭제 0건 (13,262행 전수 보존)", "비정상 시스템 에러 20행(0.15%) 인과 복원", "접수 구간 정상 표본 751건(75.1%)으로 모수 확장"]),
+    ("Step 02", (ORG600, WHITE, None), "병목 실증", "대기 90.5%", ORG600, "현장 국면에 대기의 약 98% 편중", ORG200,
+     ["실사 방문 대기(76.8h)가 현장 시간의 78.2% 독점", "일 유입 134건 vs 기사 CAPA 68건 ➔ 403건 적체", "비실시간 채널 인계(123건) 발생 시 6.6배 지연"]),
+    ("Step 03", (EMR600, WHITE, None), "TO-BE 솔루션", "소통 통제", EMR600, "+ 대기시간 원천 소멸", EMR200,
+     ["사전 분류 정합(83~87%)을 활용해 헛걸음 실사 우회", "E형만 직행해도 실사 대기 20%(-15.4h) ➔ 리드타임 -17.2h", "E-1/E-2(리워크 84.6%) 정밀검사로 10일 루프 차단"]),
+]
+cw3 = (CW - 2 * 0.25) / 3
+for i, (step, sp, tag, big, bc, sub, bl, items) in enumerate(cards3):
+    x = MX + i * (cw3 + 0.25)
+    add_card(s, x, 3.1, cw3, 3.75, WHITE, bl, 1.0, 0.14, f"Summary-{i + 1}")
+    w1 = add_pill(s, x + 0.25, 3.3, step, sp[0], sp[1], sp[2], size=9.5)
+    add_pill(s, x + 0.25 + w1 + 0.1, 3.3, tag, S100, S700, S200, size=9.5)
+    add_text(s, x + 0.25, 3.7, cw3 - 0.5, 0.6, para(big, 30, True, bc, mono=True))
+    add_text(s, x + 0.25, 4.35, cw3 - 0.5, 0.3, para(sub, 12, True, S700))
+    add_text(s, x + 0.25, 4.8, cw3 - 0.5, 1.95, bullets(items, 11, after=5))
+set_notes(s, "본 분석을 관통하는 핵심 가설은 명확합니다. 수리가 늦어지는 것은 현장 기사가 느려서가 아니라, 공정 사이의 단순 대기와 접수 단계의 비동기 소통 지연 때문입니다. 이 두 가지를 통제하여 전체 프로세스를 획기적으로 개선하는 여정을 보여드리겠습니다.")
+
+# =================================================================== S04 원천 프로파일링
+s = blank_slide(prs, 4)
+add_chrome(s, 4, "Part 01 · 질문 1 | Before Profiling",
+           "정상 결측은 그대로 보존하고, 시스템 에러 20행(0.15%)만 수사 타겟으로 특정했다",
+           "출처: repair2.csv 원천 프로파일링 (EDA-01) · 20행 = 5개 속성 결측이 포함된 18개 케이스의 실제 행")
+add_card(s, MX, 1.85, 3.7, 4.95, WHITE, S200, 0.75, 0.14, "ProfileCard")
+add_text(s, MX + 0.25, 2.05, 3.2, 0.25, para("원천 데이터셋 프로파일", 10.5, True, S500))
+for i, (big, lab) in enumerate([("13,262", "원천 이벤트 행"), ("1,000", "총 관리 케이스"), ("13개", "전체 속성 수")]):
+    y = 2.45 + i * 1.07
+    add_text(s, MX + 0.25, y, 3.2, 0.6, para(big, 36, True, S900, mono=True))
+    add_text(s, MX + 0.25, y + 0.62, 3.2, 0.3, para(lab, 11.5, False, S500))
+add_box(s, MX + 0.2, 5.72, 3.3, 0.95, S50, S200, 0.75, 0.1, "ProfileCallout")
+add_text(s, MX + 0.35, 5.72, 3.0, 0.95,
+         para("1건 1행의 정형 데이터가 아닌 세부 공정 단위로 기록되는 이벤트 로그(Event Log)의 특성 반영 필수", 10.5, False, S600),
+         anchor="m")
+RX, RW = 4.5, 8.28
+add_card(s, RX, 1.85, RW, 2.7, S50, S200, 0.75, 0.12, "EDA01Frame")
+add_picture_contain(s, fig("EDA-01.png"), RX, 1.85, RW, 2.7, pad=0.08,
+                    alt="EDA-01 결측률 양극단 분포: 정상 결측 7개 속성 86~93%, 비정상 결측 5개 속성 0.015~0.098%")
+rows4 = [
+    (EMR50, EMR200, "정상 결측 (무죄)", PILL_EMR, "구조적 Null 86.0~93.0% · 7개 속성 (12,335행)",
+     "후속 공정이 없어 비어 있는 값 ➔ 임의 대체 없이 100% 보존", S500),
+    (RED50, RED200, "비정상 결측 (유죄)", PILL_RED, "시스템 에러 0.015~0.098% · 5개 속성 (20행)",
+     "필수 값 누락 ➔ 18개 케이스, 단 20행만 정밀 복원 타겟 특정", RED600),
+    (S50, S200, "진공 구간", PILL_GRAY, "0.1% ~ 86.0% 구간 컬럼 0개",
+     "완벽한 양극단 이봉분포 ➔ 정상/비정상 판별의 객관성 입증", S500),
+]
+for i, (bg, bl, pill, ps, main, side, sc) in enumerate(rows4):
+    y = 4.7 + i * 0.71
+    add_box(s, RX, y, RW, 0.64, bg, bl, 0.75, 0.1, f"Verdict-{i + 1}")
+    add_pill(s, RX + 0.15, y + 0.19, pill, ps[0], ps[1], ps[2], size=9.5, min_w=1.6)
+    add_text(s, RX + 1.95, y, 3.35, 0.64, para(main, 11, True, S800), anchor="m")
+    add_text(s, RX + 5.45, y, 2.7, 0.64, para(side, 10, sc == RED600, sc), anchor="m")
+set_notes(s, "데이터를 열어보았을 때 가장 먼저 확인한 것은 구조였습니다. 본 데이터는 공정마다 행이 쌓이는 이벤트 로그로, 90% 안팎의 결측치는 후속 수리가 발생하지 않아 생긴 자연스러운 정상 결측입니다. 반면 필수 속성임에도 비어 있는 값은 13,262행 중 단 20행에 불과했습니다. 이 20행만을 정밀 복원 타겟으로 특정했습니다.")
+
+# =================================================================== S05 CASE 1~5 복원
+s = blank_slide(prs, 5)
+add_chrome(s, 5, "Part 01 · 질문 1 | CASE 1 ~ 5 도메인 인과 복원",
+           "행 삭제나 단순 대체 없이, 업무 인과 근거로 결측 20행과 오기입·더미 일시까지 100% 무손실 복원했다",
+           "출처: analysis.ipynb Cell 18·20·51·53·77·81, analysis.sql · CASE 4·5의 건수에는 결측 행(각 13건)이 포함됨")
+cases = [
+    ("CASE 1", "taskID", "결측 2건", False, "contact 속성은 FirstContact에만 기록되는 고유 도메인 속성 (Cell 18)",
+     "FirstContact / InformClientSurvey 확정 복원"),
+    ("CASE 2", "originator", "결측 2건", False, "동일 작업의 시작(start)-완료(complete) 담당자 100.0% 일치 규칙 (Cell 18)",
+     "짝 이벤트 담당자(Anne, Paul) 상호 승계"),
+    ("CASE 3", "eventtype", "결측 5건", False, "기간 작업 1:1 페어(start→complete 추적) 및 마일스톤 단독 발생 (Cell 20)",
+     "1:1 페어 3건 + 마일스톤 2건 100% 복원"),
+    ("CASE 4", "date", "총 879건 (결측 13 + 오기입 866)", True,
+     "시각 정상 859건 선별, 선·후행 업무 순서 구간 제약(Interval Bounds) 적용 (Cell 51·53)",
+     "단일 후보 640건 + 앵커 최근접 219건 매핑 (1970년 통일)"),
+    ("CASE 5", "time", "총 28건 (결측 13 + 더미 15)", True,
+     "표본 34% 한계 극복 ➔ 접수 정상 표본 751건(75.1%) 확보 (중앙값 4.0분) (Cell 77·81)",
+     "정상 자정 7건 보존 + 기준 앵커 역산 21건 (역전 0건)"),
+]
+for i, (tag, attr, amt, hot, clue, fix) in enumerate(cases):
+    y = 1.85 + i * 0.83
+    add_card(s, MX, y, CW, 0.76, WHITE, S200, 0.75, 0.1, f"Case-{i + 1}")
+    ps = PILL_ORG if hot else PILL_GRAY
+    add_pill(s, MX + 0.2, y + 0.1, tag, ps[0], ps[1], ps[2], size=9.5)
+    add_text(s, MX + 1.2, y + 0.07, 1.6, 0.3, para(attr, 12.5, True, S900))
+    add_text(s, MX + 0.2, y + 0.43, 2.8, 0.28, para(amt, 10, True, ORG700 if hot else S600))
+    add_text(s, MX + 3.25, y, 4.65, 0.76, para(clue, 10.5, False, S600), anchor="m")
+    add_text(s, MX + 8.1, y, 3.95, 0.76,
+             para([R("➔ ", 10.5, True, EMR600), R(fix, 10.5, True, EMR700)]), anchor="m")
+for i, (t, d) in enumerate([("데이터 무손실", "임의 삭제 0건 · 13,262행 100% 완전 보존"),
+                            ("통계적 강건성", "표본 34% 축소 극복 ➔ 751건(75.1%) 모수 확보"),
+                            ("인과 무결성", "시간 역전 0건 달성 · 927건 정상 코호트 확립")]):
+    x = MX + i * (cw3 + 0.25)
+    add_box(s, x, 6.08, cw3, 0.76, EMR50, EMR200, 0.75, 0.1, f"Badge-{i + 1}")
+    add_text(s, x + 0.2, 6.08, cw3 - 0.4, 0.76,
+             [para("✓ " + t, 11.5, True, EMR700), para(d, 10, False, S600)], anchor="m")
+set_notes(s, "복원 시 단 한 행도 버리지 않았습니다. 시작-완료 담당자의 100% 일치성, 태스크 고유 속성을 활용했고, 일시는 표본 34% 축소 한계를 극복하여 확보한 751건 정상 모수의 대표값을 앵커로부터 역산 적용했습니다. 덕분에 시간 역전 0건의 완벽한 데이터셋을 완성했습니다.\n\n[수치 메모] '결측 20행'은 5개 속성에서 값이 비어 있던 실제 행 수이고, CASE 4의 오기입 866건(미래·1905년 연도)과 CASE 5의 더미 시각 15건은 값은 있으나 이상치인 별도 유형입니다.")
+
+# =================================================================== S06 After profiling
+s = blank_slide(prs, 6)
+add_chrome(s, 6, "Part 01 · 질문 1 | After Profiling",
+           "시간 역전 0건을 입증했고, 오접수 73건을 격리해 927건 클린 코호트를 확립했다",
+           "출처: repair_cleaned.csv (13,262행) 직접 집계 · 정상 코호트 = RepairReady 927건 전수")
+LW = 6.0
+add_card(s, MX, 1.85, LW, 5.0, WHITE, S200, 0.75, 0.14, "VerifyCard")
+add_text(s, MX + 0.25, 2.02, LW - 0.5, 0.3, para("Before vs After 데이터 무결성 검증표", 13.5, True, S900))
+H = lambda t, c=S700: dict(text=t, size=10.5, bold=True, color=c, fill=S100, border=S200)
+B = lambda t, c=S600, b=False, al="l": dict(text=t, size=11, bold=b, color=c, align=al)
+tbl = [
+    [H("검증 항목"), H("Before (원천)"), H("After (정제 무결성)", EMR700)],
+    [B("총 이벤트 행 수", S900, True), B("13,262행"), B("13,262행 (100% 완전 보존)", EMR700, True)],
+    [B("필수 속성 결측", S900, True), B("20건 (0.15%)", RED600), B("0건 (100% 인과 복원 완료)", EMR700, True)],
+    [B("일자 연도 오기입", S900, True), B("866건 (미래연도)", RED600), B("0건 (1970년 정상 주기 통일)", EMR700, True)],
+    [B("공정 간 시간 역전", S900, True), B("음수 소요시간 존재", RED600), B("0건 (3,711개 페어 양수 검증)", EMR700, True)],
+]
+add_table(s, MX + 0.25, 2.5, [1.5, 1.6, 2.4], [0.44, 0.66, 0.66, 0.66, 0.66], tbl, "IntegrityTable")
+add_box(s, MX + 0.25, 5.85, 5.5, 0.7, EMR50, EMR200, 0.75, 0.1, "IntegrityBanner")
+add_text(s, MX + 0.25, 5.85, 5.5, 0.7, para("전처리 전 구간 무결성 100% 입증 ➔ 임의 행 삭제 0건", 12, True, EMR800, align="c"),
+         anchor="m")
+RX, RW = 6.8, SLIDE_W - MX - 6.8
+cw4 = (RW - 3 * 0.13) / 4
+for i, (v, l) in enumerate([("1,000", "케이스"), ("890", "고유 주택"), ("13개", "전체 속성"), ("14행", "케이스 중앙값")]):
+    x = RX + i * (cw4 + 0.13)
+    add_card(s, x, 1.85, cw4, 0.8, S50, S200, 0.75, 0.1, f"Chip-{i + 1}")
+    add_text(s, x, 1.93, cw4, 0.4, para(v, 15, True, S900, mono=True, align="c"))
+    add_text(s, x, 2.3, cw4, 0.25, para(l, 10, False, S500, align="c"))
+hw = (RW - 0.14) / 2
+add_card(s, RX, 2.82, hw, 1.95, EMR50, EMR500, 2.0, 0.12, "CleanCohort")
+add_pill(s, RX + 0.18, 2.98, "정상 수리 완결 코호트", EMR100, EMR800, EMR200, size=9.5)
+add_text(s, RX + 0.18, 3.32, hw - 0.36, 0.55,
+         para([R("927건", 28, True, EMR700, mono=True), R(" (92.7%)", 13, True, EMR700, mono=True)]))
+add_text(s, RX + 0.18, 3.95, hw - 0.36, 0.75, para("순수 현장수리 분석 대상 ➔ 질문 2 마이닝 모수 확립", 10.5, False, S600))
+add_card(s, RX + hw + 0.14, 2.82, hw, 1.95, S50, S300, 0.75, 0.12, "NoiseCohort")
+add_pill(s, RX + hw + 0.32, 2.98, "오접수 조기 종결", S100, S700, S300, size=9.5)
+add_text(s, RX + hw + 0.32, 3.32, hw - 0.36, 0.55,
+         para([R("73건", 28, True, S500, mono=True), R(" (7.3%)", 13, True, S500, mono=True)]))
+add_text(s, RX + hw + 0.32, 3.95, hw - 0.36, 0.75,
+         para("타 기관 관할 주택 (InformClientWrongPlace) ➔ 분석 노이즈 격리", 10.5, False, S600))
+add_text(s, RX, 4.95, RW, 0.28, para("927건 코호트의 접수 채널 분포 (실측)", 11.5, True, S800))
+for i, (n, v) in enumerate([("Phone", "251건 (27.1%)"), ("Web", "241건 (26.0%)"), ("Personal", "228건 (24.6%)"),
+                            ("Letter", "207건 (22.3%)")]):
+    x = RX + i * (cw4 + 0.13)
+    add_card(s, x, 5.28, cw4, 0.85, S50, S200, 0.75, 0.1, f"Channel-{n}")
+    add_text(s, x, 5.34, cw4, 0.3, para(n, 11.5, True, S900, align="c"))
+    add_text(s, x, 5.68, cw4, 0.3, para(v, 9.5, False, S600, align="c"))
+add_text(s, RX, 6.25, RW, 0.3, para("특정 채널 편향 없이 고르게 유입됨을 확인 (단일 채널 쏠림 가설 기각)", 10, False, S500))
+set_notes(s, "5대 전처리를 완료한 결과, 단 한 건의 결측과 시간 역전도 없는 완전무결한 13,262행 정제 데이터셋이 완성되었습니다. 정제된 데이터를 프로파일링하여 타 기관 관할 오접수 73건을 격리하고, 실제 현장 수리가 이루어진 '927건의 클린 분석 코호트'를 확립했습니다. 이제 질문 2, 대기가 집중된 현장의 진짜 병목을 파헤치겠습니다.")
+
+# =================================================================== S07 AS-IS 프로세스 모델
+s = blank_slide(prs, 7)
+add_chrome(s, 7, "Part 02 · 질문 2-1 | AS-IS 기준 프로세스 모델",
+           "단방향 에스컬레이션과 병렬 정산이 입증된 E2E 기준 프로세스 모델을 확립했다",
+           "출처: repair_cleaned.csv 프로세스 맵 마이닝 (노드 = 이벤트 건수, 구간 머리말 = 케이스 건수 · 927건 코호트 전수)")
+add_card(s, MX, Y0, CW, 2.7, S50, S200, 0.75, 0.14, "ProcessMapFrame")
+add_picture_contain(s, fig("process_map_crop.png"), MX, Y0, CW, 2.7, pad=0.08,
+                    alt="접수·현장·정산 3국면 E2E 프로세스 맵: FirstContact에서 TicketReady까지 노드와 전이")
+cards7 = [
+    ("01 접수 국면", PILL_BLUE, "오접수 격리 & 시스템 앵커", S900,
+     ["FirstContact 1,000건 중 73건(7.3%) 타 기관 관할 조기 격리", "일정 조율 직후 InformClientSurvey가 0초에 자동 발송",
+      "접수 국면 공식 종료 앵커(기준점)로 확립"], "기준선: RepairReady 927건 확정", BLU600),
+    ("02 현장 국면 (단방향)", PILL_ORG, "역류 0건 & 완료 커밋 앵커", S900,
+     ["즉시수리 ➔ 사내수리 ➔ 외주수리로만 전이 (단방향 에스컬레이션)", "외주(DoIt/FixIt) 이관 후 사내 역류 케이스 0건 (0.0%)",
+      "수리 완료 커밋 시 RepairReady(927건) 자동 발행"], "완료 확증: 수리 완료 즉시 정산 이관", ORG600),
+    ("03 정산 국면 (병렬 AND)", PILL_EMR, "대칭 병렬 & 완벽한 AND-Join", S900,
+     ["고객 통보 선행 50.6%(469건) vs 재무 전송 선행 49.2%(456건)", "두 작업이 대칭적으로 선행하는 병렬(AND) 구조 입증",
+      "TicketReady는 후행 완료 시각과 99.8%(925건) 일치 종결"], "시스템 자동화: 대기시간 0.0시간", EMR600),
+]
+for i, (pill, ps, title, tc, items, tag, tagc) in enumerate(cards7):
+    x = MX + i * (cw3 + 0.25)
+    section_card(s, x, 4.6, cw3, 2.28, pill, ps, title, tc, items, tag=tag, tag_color=tagc, title_size=13, bullet_size=10, after=2)
+set_notes(s, "상세 병목 분석에 앞서, 모든 분석의 기준선이 될 'E2E 기준 프로세스 모델'입니다. 이 모델은 데이터의 3가지 명확한 실측 근거를 바탕으로 도출되었습니다.\n첫째, 접수 단계는 1,000건 중 관할 외 73건의 조기 이탈과 시스템 자동 알림 앵커로 경계가 확립되었습니다.\n둘째, 현장 수리 흐름은 철저한 단방향 에스컬레이션입니다. 사내 기사는 물론 외주 기사 역시 수리를 마친 뒤 완료 커밋을 하면 시스템이 RepairReady를 발송합니다. 외주로 넘어간 후 사내로 되돌아온 역류 케이스는 단 0건입니다.\n셋째, 정산 공정은 고객 통보와 재무 처리가 50.6% 대 49.2%로 대칭 선행하는 병렬 구조이며, 최종 티켓 마감은 늦게 끝난 시각과 99.8% 일치하여 0초에 자동 종결됩니다.\n이처럼 검증된 기준 지도를 토대로, 다음 장부터 90.5%의 대기시간이 어디서 발생하는지 거시적 분해로 들어가겠습니다.")
+
+# =================================================================== S08 거시 리드타임 분해
+s = blank_slide(prs, 8)
+add_chrome(s, 8, "Part 02 · 질문 2-2 | 거시 리드타임 분해",
+           "리드타임 105.9시간의 90.5%는 공정 간 단순 대기이며, 약 98%가 현장 국면에 집중된다",
+           "출처: analysis.sql 2절 · 정산 5.5h는 시스템 자동 처리로 대기 0.0h 간주(보수적 산정), 엄격 정의(start→complete만 작업) 시 대기 94.6%")
+add_card(s, MX, Y0, 7.5, 2.62, WHITE, S200, 0.75, 0.14, "LeadtimeChartFrame")
+add_picture_contain(s, fig("slide08_macro_leadtime_breakdown.png"), MX, Y0, 7.5, 2.62, pad=0.08,
+                    alt="3대 국면 실작업 대 단순 대기 리드타임 분해: 접수 2.1h, 현장 98.3h, 정산 5.5h, E2E 105.9h")
+KX, KW = MX + 7.5 + 0.25, CW - 7.5 - 0.25
+kp = [
+    (ORG50, ORG200, "E2E 전체 대기", PILL_ORG, "공정 간 순수 대기시간", "90.5%", ORG600, "95.8h / 105.9h"),
+    (RED50, RED200, "현장 국면 편중", PILL_RED, "대기시간 현장 독점도", "약 98%", RED600, "현장 약 94h / 전체 약 96h"),
+    (EMR50, EMR200, "정산 자동화", PILL_EMR, "정산 대기 0.0시간", "0.0h", EMR600, "시스템 100% 자동 처리 (5.5h)"),
+]
+for i, (bg, bl, pill, ps, lab, big, bc, sub) in enumerate(kp):
+    y = Y0 + i * 0.91
+    add_box(s, KX, y, KW, 0.8, bg, bl, 0.75, 0.1, f"KPI-{i + 1}")
+    add_pill(s, KX + 0.15, y + 0.12, pill, ps[0], ps[1], ps[2], size=9.5)
+    add_text(s, KX + 0.15, y + 0.46, 1.9, 0.26, para(lab, 10, False, S500))
+    add_text(s, KX + 1.95, y + 0.04, KW - 2.1, 0.48, para(big, 25, True, bc, mono=True, align="r"))
+    add_text(s, KX + 1.95, y + 0.52, KW - 2.1, 0.24, para(sub, 9.5, False, S600, mono=True, align="r"))
+b8 = [
+    ("01 접수 병목", PILL_BLUE, "일정 조율 대기 1.9h", S900, S200, 0.75,
+     ["전화·대면(479건): 15분 내 즉시 완결 (지연율 0%)", "웹·우편(448건): 비동기 회신 핑퐁으로 일정 지체",
+      "교차 인계 123건 발생 시 6.6배 폭증 (1.2h ➔ 7.9h)"]),
+    ("02 현장 1위 병목", PILL_RED, "실사 방문 대기 76.8h", RED600, RED600, 1.5,
+     ["현장 소요시간 98.3h 중 78.2% 독점 (압도적 1위)", "일 유입 134건 vs 기사 실사 CAPA 68건 (소화율 51%)",
+      "매일 66건 누적 ➔ 피크 시 403건 미처리 적체(WIP)"]),
+    ("03 현장 수리 병목", PILL_ORG, "자재 대기 30.5h & 하자 루프", S900, S200, 0.75,
+     ["즉시·외주 대기 0.0h, 사내수리만 부품 대기 30.5h", "하자 재방문 26건 발생 ➔ 평균 +32.9시간 추가 대기",
+      "재수리 시 최대 10.1일(241.6h) 장기 억류"]),
+]
+for i, (pill, ps, title, tc, lc, lw, items) in enumerate(b8):
+    x = MX + i * (cw3 + 0.25)
+    section_card(s, x, 4.62, cw3, 2.26, pill, ps, title, tc, items, line=lc, line_w=lw, title_size=13, bullet_size=10.5)
+set_notes(s, "수리 프로세스가 지연되는 진짜 원인은 무엇일까요? 기사가 작업을 느리게 해서일까요? 데이터를 쪼개보니 완전히 달랐습니다.\n전체 105.9시간(약 4.4일) 중 실작업과 시스템 처리 시간은 10.1시간(9.5%)에 불과하며, 나머지 95.8시간(90.5%)은 공정 사이에서 멈춰 서 있는 단순 대기시간이었습니다. 특히 정산 국면은 인간 개입 없이 시스템이 100% 자동 처리하므로 대기가 0시간이며, 대기의 약 98%가 '현장 국면'에 집중되어 있었습니다.\n이 대기시간의 발원지를 3대 병목으로 정리했습니다. 첫째, 웹·우편의 비동기 소통 부재로 일정이 늘어지는 '일정 조율 병목(1.9h)'. 둘째, 현장 국면의 78%가 쏠려 있는 압도적 1위의 '실사 방문 대기 병목(76.8h)'. 셋째, 사내 수리 시 자재 조달과 재작업으로 인한 '수리 준비 대기(30.5h) 및 하자 루프(최대 10일)'입니다.\n그렇다면 프로세스의 첫 관문인 접수 국면에서 왜 6.6배의 시간 폭증이 일어났는지, 다음 장에서 살펴보겠습니다.\n\n[예상 질문] 90.5%의 정의는? → 정산 5.5h를 시스템 처리(비대기)로 본 보수적 값. start→complete 구간만 작업으로 보면 94.6%. 어느 쪽이든 '대기가 압도적'이라는 결론은 동일합니다.")
+
+# =================================================================== S09 제1병목: 접수
+s = blank_slide(prs, 9)
+add_chrome(s, 9, "Part 02 · 질문 2-2 | 제1대 병목 (접수 국면)",
+           "접수 지연은 물량 과부하가 아닌 '교차 인계(123건)'에서 비롯되며, 비실시간 채널 공백이 6.6배 폭증을 유발했다",
+           "출처: analysis.sql 접수 단독 OLS (R² = 0.300, F = 131.9, p < 0.001) · 접수 모델 VIF ≤ 1.20")
+add_card(s, MX, Y0, CW, 2.52, WHITE, S200, 0.75, 0.14, "ReceptionChartFrame")
+add_picture_contain(s, fig("slide09_reception_bottleneck_3panel.png"), MX, Y0, CW, 2.52, pad=0.06,
+                    alt="접수 3패널: 인계 여부별 소요시간 1.2h 대 7.9h, 채널별 완료 속도 분포, 15분 이내 완료 건 평균 소요시간")
+c9 = [
+    ("가설 기각", PILL_GRAY, "물량 과부하 가설 완전 기각", S900, "r = 0.01", S700, S200, 0.75,
+     ["일일 인입량(10~141건)과 소요시간의 무상관성", "다중 OLS 회귀 계수 p = 0.752 (비유의)", "접수 지연은 창구 처리 용량(CAPA) 부족이 아님"]),
+    ("핵심 원인", PILL_ORG, "교차 인계 시 6.6배 시간 폭증", ORG600, "6.6배 (▲ 6.7h)", ORG600, ORG200, 0.75,
+     ["단독 처리군(804건): 평균 1.2시간 (중앙값 8분) 종결", "교차 인계군(123건): 평균 7.9시간 (중앙값 5.6시간)",
+      "인계 123건 전수가 웹(69건)·우편(54건)에서만 발생"]),
+    ("반전 통찰", PILL_EMR, "Web 채널 6.8분의 본질적 우수성", EMR700, "6.8분 (최속)", EMR600, EMR200, 0.75,
+     ["15분 내 완료 건 비교: 웹 6.8분 < 전화 8.2분", "웹 시스템이 아닌 '일정 조율 공백'이 지연의 원인",
+      "Direct Booking(자가 일정 확정) 도입 시 지연 제거"]),
+]
+for i, (pill, ps, title, tc, big, bc, lc, lw, items) in enumerate(c9):
+    x = MX + i * (cw3 + 0.25)
+    section_card(s, x, 4.45, cw3, 2.43, pill, ps, title, tc, items, line=lc, line_w=lw, big=big, big_color=bc,
+                 big_size=20, title_size=12.5, bullet_size=10, after=2)
+set_notes(s, "접수 국면의 지연은 왜 발생했을까요? 특정 날짜에 접수량이 몰려서였을까요? 데이터를 분석해보니 일별 접수량과 소요시간은 전혀 상관이 없었습니다(r=0.01, 회귀계수 p=0.752). 물량 문제가 아니었습니다.\n상단 좌측 Panel 1을 보시면, 진짜 원인은 상담원 간의 '교차 인계(Handover)'였습니다. 단독으로 처리할 때는 1.2시간이면 끝나던 접수가, 상담원 2명 이상 개입되는 순간 7.9시간으로 6.6배 폭증했습니다.\n그렇다면 이 인계는 어디서 발생했을까요? 가운데 Panel 2를 보시면 전화와 대면은 15분 이내 완료율이 100%(대면 99.6%)였고 인계가 0건이었습니다. 반면 웹과 우편은 약 50%가 60분을 초과하는 장기 지체에 빠졌으며, 발생한 인계 123건 전수가 오직 웹과 우편에서만 나왔습니다.\n그렇다면 웹 채널이 비효율적인 시스템일까요? 우측 Panel 3을 주목해 주십시오. 15분 이내 완료 건만 비교하면, 웹은 평균 6.8분으로 전화(8.2분)나 대면(8.5분)보다 오히려 가장 빨랐습니다.\n즉, 웹 시스템 자체가 느린 게 아닙니다. 신청 접수 후 실시간으로 방문 일정을 확정하지 못해 고객 회신을 기다리다 담당자가 교체되는 '비동기 일정 조율 공백'이 6.6배 지연의 본질이었습니다.\n이제 전체 대기시간의 약 98%가 집중된 최대 핵심 병목, '현장 국면'으로 넘어가겠습니다.")
+
+# =================================================================== S10 제2병목: 현장
+s = blank_slide(prs, 10)
+add_chrome(s, 10, "Part 02 · 질문 2-2 | 제2대 병목 (현장 국면)",
+           "현장 소요시간(98.3h)의 95.3%가 대기이며, 기사 CAPA를 2배 넘는 유입이 403건의 미처리 적체(WIP)를 만들었다",
+           "출처: analysis.sql 2-3(Wait 1·2), 3-1~3-5(일별 유입 vs CAPA, WIP) · 유입 = 1/2~1/7 일평균 현장 이관, CAPA = 1/1~1/8 일평균 실사 착수")
+LW10 = 5.0
+add_card(s, MX, Y0, LW10, 5.1, WHITE, S200, 0.75, 0.14, "FieldDonutCard")
+add_picture_contain(s, fig("slide10_field_donut_breakdown.png"), MX, Y0 + 0.05, LW10, 2.62, pad=0.04,
+                    alt="현장 98.3시간 4대 소요시간 구조: 실사 방문 대기 78.2%, 수리 착수·공정 대기 17.2%, 본수리 4.0%, 실사 점검 0.7%")
+strips = [
+    (RED50, RED200, "① 실사 방문 대기 (Wait 1)", "76.81h (78.2%)", RED600, True),
+    (ORG50, ORG200, "② 수리 착수·공정 대기 (Wait 2)", "16.90h (17.2%)", ORG600, True),
+    (S50, S200, "③ 본수리 순수 작업", "3.90h (4.0%)", S700, False),
+    (S50, S200, "④ 실사 점검 순수 작업", "0.68h (0.7%, 40.5분)", S700, False),
+]
+for i, (bg, bl, lab, val, vc, b) in enumerate(strips):
+    y = Y0 + 2.8 + i * 0.57
+    add_box(s, MX + 0.18, y, LW10 - 0.36, 0.48, bg, bl, 0.75, 0.08, f"Strip-{i + 1}")
+    add_text(s, MX + 0.3, y, 2.7, 0.48, para(lab, 10.5, b, S800), anchor="m")
+    add_text(s, MX + 2.9, y, LW10 - 0.36 - 2.82, 0.48, para(val, 10.5, True, vc, mono=True, align="r"), anchor="m")
+RX10 = MX + LW10 + 0.25
+RW10 = SLIDE_W - MX - RX10
+add_card(s, RX10, Y0, RW10, 5.1, WHITE, S200, 0.75, 0.14, "WipCard")
+add_picture_contain(s, fig("slide10_field_bottleneck_wip.png"), RX10, Y0 + 0.05, RW10, 2.78, pad=0.04,
+                    alt="일별 현장 이관 유입 대 실사 착수 막대와 미처리 적체 대기열(WIP) 꺾은선, 1/7 피크 403건")
+mw = (RW10 - 0.36 - 2 * 0.1) / 3
+metrics = [
+    (BLU50, BLU200, "일일 현장 이관 유입", "134.3건/일", BLU700, "1/2~1/7 평균 · 피크 141건"),
+    (S50, S200, "현장 실사 CAPA (기사 11인)", "68.0건/일", S700, "소화율 50.6% 한계"),
+    (RED50, RED200, "미처리 적체 피크 (WIP)", "403건 (20배)", RED600, "1/1 20건 ➔ 1/7 403건"),
+]
+for i, (bg, bl, t, big, bc, sub) in enumerate(metrics):
+    x = RX10 + 0.18 + i * (mw + 0.1)
+    add_box(s, x, Y0 + 2.95, mw, 1.12, bg, bl, 0.75, 0.1, f"Metric-{i + 1}")
+    add_text(s, x + 0.1, Y0 + 3.02, mw - 0.2, 0.28, para(t, 9.5, True, S600))
+    add_text(s, x + 0.1, Y0 + 3.3, mw - 0.2, 0.42, para(big, 17, True, bc, mono=True))
+    add_text(s, x + 0.1, Y0 + 3.76, mw - 0.2, 0.25, para(sub, 9.5, False, S500))
+add_box(s, RX10 + 0.18, Y0 + 4.2, RW10 - 0.36, 0.72, S900, None, radius=0.1, name="TakeawayBanner")
+add_text(s, RX10 + 0.35, Y0 + 4.2, RW10 - 0.7, 0.72,
+         para("기사가 게으른 것이 아니라, CAPA(68건)의 2배에 이르는 전수 방문 실사 관행(유입 134건)이 403건 적체와 76.8h 대기를 만든 본질이다",
+              11, True, WHITE, align="c"), anchor="m")
+set_notes(s, "현장 국면의 문제점을 살펴보겠습니다. 좌측 도넛 차트를 보시면, 현장에서 보낸 98.3시간 중 기사가 땀 흘려 일한 순수 작업 시간은 4.7%(수리 3.9h, 점검 0.7h)에 불과합니다. 나머지 95.3%(93.7시간)가 전부 대기시간이었습니다.\n특히 전체 리드타임의 72.5%를 단독 차지한 '실사 방문 대기(76.8시간, 3.2일)'는 왜 발생했을까요?\n우측 통합 차트를 보시면 물리적 원인이 드러납니다. 파란색 막대인 일일 현장 이관 유입량은 매일 134건씩 쏟아졌지만, 회색 막대인 현장 기사 11명이 하루에 소화한 실사는 68건에 불과했습니다.\n유입이 처리 능력을 2배 가까이 초과하자, 빨간색 꺾은선인 '미처리 적체 대기열(WIP)'은 첫날 20건에서 7일 만에 403건으로 20배 폭증합니다. 저수조에 물이 넘치듯 403건이 쌓이니, 뒤늦게 방문받는 세입자는 평균 3일 넘게 기다릴 수밖에 없었습니다. 즉, 기사가 게으른 것이 아니라 'CAPA를 초과하는 전수 방문 실사 관행'이 현장 병목의 진짜 원인이었습니다.\n\n[예상 질문] 유입 134.3건과 CAPA 68.0건의 산출 창? → 유입은 인입이 안정된 1/2~1/7(6일) 평균 현장 이관량, CAPA는 1/1~1/8 평균 실사 착수량입니다. 14일 지속 평균으로 보면 CAPA는 63.7건/일(소화율 47%)로 더 낮아져 결론은 동일합니다.")
+
+# =================================================================== S11 OLS & 리워크
+s = blank_slide(prs, 11)
+add_chrome(s, 11, "Part 02 · 질문 2-3 & 2-2 | 소요시간 영향 요인 & 리워크",
+           "전체 리드타임은 사내수리(+31.8h)와 실사 지연(+1.12h/h)이 지배하며, 사내 하자 루프(26건)가 장기 적체를 유발했다",
+           "출처: hypothesis_testing_and_visualization.ipynb Part 5 (E2E OLS, n = 927) · analysis.sql 2-4 (수리 착수 대기·리워크 26건)")
+HW = (CW - 0.25) / 2
+add_card(s, MX, Y0, HW, 4.42, WHITE, S200, 0.75, 0.14, "OlsCard")
+add_picture_contain(s, fig("slide11_regression_leadtime_drivers.png"), MX, Y0 + 0.06, HW, 2.3, pad=0.04,
+                    alt="E2E 리드타임 결정 요인 OLS 회귀계수: 사내수리 +31.75h, 실사 방문 대기 +1.12h/h, 비실시간 채널 +4.89h")
+ols = [
+    (ORG50, ORG200, "1. 사내 수리 방식 (is_intern_repair)", "+31.75h (p < 0.001)", ORG700),
+    (RED50, RED200, "2. 실사 방문 지연 (visit_lag_hours)", "+1.12h/h (p < 0.001)", RED700),
+    (S50, S200, "3. 비실시간 접수 채널 (is_async_channel)", "+4.89h (p = 0.030)", S700),
+]
+for i, (bg, bl, t, v, vc) in enumerate(ols):
+    y = Y0 + 2.46 + i * 0.5
+    add_box(s, MX + 0.18, y, HW - 0.36, 0.44, bg, bl, 0.75, 0.08, f"Ols-{i + 1}")
+    add_text(s, MX + 0.3, y, 3.4, 0.44, para(t, 10, False, S800), anchor="m")
+    add_text(s, MX + 3.6, y, HW - 0.36 - 3.5, 0.44, para(v, 10.5, True, vc, mono=True, align="r"), anchor="m")
+add_text(s, MX + 0.2, Y0 + 4.02, HW - 0.4, 0.34,
+         para("R² = 0.878 (설명력 87.8%) · F = 1,652.8 · p < 0.001 · VIF 최대 1.02 · 4개 변수 투입(2차 에스컬레이션은 비유의, p = 0.079)",
+              9, False, S500))
+RX11 = MX + HW + 0.25
+add_card(s, RX11, Y0, HW, 4.42, WHITE, S200, 0.75, 0.14, "ReworkCard")
+add_picture_contain(s, fig("slide11_repair_delay_rework.png"), RX11, Y0 + 0.06, HW, 2.3, pad=0.04,
+                    alt="수리 방식별 착수 대기: 즉시·외주 0.0h, 사내수리 1차 30.5h, 사내 하자 재방문 루프 +32.9h")
+add_box(s, RX11 + 0.18, Y0 + 2.46, HW - 0.36, 0.82, S50, S200, 0.75, 0.1, "Rework-Block1")
+add_text(s, RX11 + 0.3, Y0 + 2.5, HW - 0.6, 0.76,
+         [para("1차 수리 착수 지연 격차: 사내수리 자재 대기 30.5h", 10.5, True, S900, after=2),
+          para("즉시·외주수리는 대기 0.0h로 즉시 착수. 사내수리만 부품 조달·2차 일정 조율로 30.5시간 대기가 발생.", 10, False, S600)])
+add_box(s, RX11 + 0.18, Y0 + 3.36, HW - 0.36, 0.98, RED50, RED200, 0.75, 0.1, "Rework-Block2")
+add_text(s, RX11 + 0.3, Y0 + 3.4, HW - 0.6, 0.92,
+         [para("사내 하자 리워크 루프 26건: 평균 +32.9시간 추가 지연", 10.5, True, RED700, after=2),
+          para("1차 수리 실패 후 재수리 시 부품 재출하로 대기 발생. 26건 중 E-1/E-2가 22건(84.6%)에 집중, 최대 10.1일(241.6h) 억류.", 10, False, RED700)])
+add_box(s, MX, 6.35, CW, 0.52, S900, None, radius=0.1, name="OlsBanner")
+add_text(s, MX + 0.3, 6.35, 8.4, 0.52,
+         para("OLS 계수: 실사 대기가 1시간 길어질수록 전체 리드타임은 평균 1.12시간 길어진다 (관측 기반 연관)", 11, True, WHITE), anchor="m")
+add_text(s, MX + 8.7, 6.35, CW - 9.0, 0.52, para("β = +1.12h/h (p < 0.001)", 11.5, True, EMR400, mono=True, align="r"),
+         anchor="m")
+set_notes(s, "슬라이드 11은 리드타임을 결정하는 핵심 요인과 품질 결함으로 인한 리워크 문제를 함께 보여줍니다.\n좌측의 다중 회귀 모델(설명력 87.8%)을 보시면, 전체 시간을 좌우하는 요인은 사내수리 배정(+31.8h)과 실사 대기(시간당 +1.12h), 그리고 비실시간 접수(+4.9h)였습니다. 실사 지연 계수가 1.12라는 것은, 실사 대기가 1시간 줄면 전체 리드타임이 평균 1.12시간 줄어드는 관계가 있다는 뜻으로, 강력한 지렛대 효과를 시사합니다.\n우측을 보시면, 즉시수리와 외주는 대기가 0시간이지만 사내수리는 부품 준비로 기본 30.5시간이 걸립니다. 특히 1차 수리 실패로 다시 사내수리에 들어간 26건은 부품을 다시 조달하느라 평균 32.9시간, 최대 10일(241.6시간)이나 더 갇히게 됩니다.\n이제 사전 분류의 높은 정합도를 활용하여 이 병목들을 해소하는 전략으로 넘어가겠습니다.\n\n[예상 질문] 회귀가 인과를 증명하나? → 관측 데이터 기반 연관이며, 시뮬레이션 효과는 이 계수를 가정하고 보수적으로(20%) 적용했습니다. 2차 에스컬레이션(is_escalation) 계수는 p=0.079로 비유의입니다.")
+
+# =================================================================== S12 핵심 문제 규명
+s = blank_slide(prs, 12)
+add_chrome(s, 12, "Part 02 & Part 03 발단 | 핵심 문제 규명 & 해결 아젠다",
+           "사전 분류가 이미 83~87%의 현장 결과와 맞는데도, '정보 해상도 단절'로 403건 적체와 이중 출장이 고착되었다",
+           "출처: analysis.sql 4절(사전 분류 정합성)·5절 시나리오 1 · 87.3% = E+P 전체(낙관 상한), 83.2% = 내부 완결 771건(보수 기준)")
+H12 = 5.1
+# Card 1
+x = MX
+add_card(s, x, Y0, cw3, H12, WHITE, S200, 0.75, 0.14, "Fact87")
+add_pill(s, x + 0.2, Y0 + 0.16, "데이터 팩트", *PILL_BLUE, size=9.5)
+add_text(s, x + 0.2, Y0 + 0.52, cw3 - 0.4, 0.5, para("사전 분류 정합 87.3%(상한)와 이중 출장 모순", 13, True, S900, spacing=0.95))
+add_picture_contain(s, fig("slide12_intake_matching_donut.png"), x, Y0 + 1.05, cw3, 1.65, pad=0.03,
+                    alt="접수 사전 분류의 현장 정합도 도넛: E형 370건, P형 439건, B형 118건, 합 809/927건 87.3%")
+add_text(s, x + 0.2, Y0 + 2.78, cw3 - 0.4, 1.4,
+         bullets(["E형 (370건, 39.9%): 100.0% 전원 사내수리 완결", "P형 (439건, 47.4%): 91.3%(401건) 내부 완결 (즉시 365 + 사내 36)",
+                  "E+P 809건 = 87.3% (상한) · 외주 전환 P-4(38건) 제외 시 83.2%(보수)"], 10, after=3))
+add_box(s, x + 0.2, Y0 + 4.2, cw3 - 0.4, 0.78, BLU50, BLU200, 0.75, 0.08, "Question")
+add_text(s, x + 0.32, Y0 + 4.2, cw3 - 0.64, 0.78,
+         para("이미 83~87%를 맞히는데 왜 40분짜리 헛걸음 실사로 403건 적체를 자초했는가?", 10.5, True, BLU800), anchor="m")
+# Card 2
+x = MX + cw3 + 0.25
+add_card(s, x, Y0, cw3, H12, WHITE, ORG200, 1.0, 0.14, "ResolutionGap")
+add_pill(s, x + 0.2, Y0 + 0.16, "원인 규명", *PILL_ORG, size=9.5)
+add_text(s, x + 0.2, Y0 + 0.52, cw3 - 0.4, 0.5, para("정보 해상도 단절 (Resolution Gap)", 13, True, ORG600, spacing=0.95))
+for j, (hd, a, b) in enumerate([("현행 접수 상담원", "알파벳 대분류(B·P·E)만 수집", "한계: 알파벳만으로는 차에 실을 자재 규격을 특정할 수 없음"),
+                                ("현장 방문 기사", "40분 방문 실사 후 세부 코드(1~4) 판정", "결과: 실사(40분) ➔ 부품 주문(30.5h) ➔ 재방문 수리 = 이중 출장 고착")]):
+    y = Y0 + 1.1 + j * 1.5
+    add_box(s, x + 0.2, y, cw3 - 0.4, 1.38, S50, S200, 0.75, 0.08, f"Contrast-{j + 1}")
+    add_text(s, x + 0.34, y + 0.1, cw3 - 0.68, 1.22,
+             [para(hd, 11, True, S900, after=2), para("➔ " + a, 10.5, True, S700, after=4), para(b, 10, False, S600)])
+add_box(s, x + 0.2, Y0 + 4.2, cw3 - 0.4, 0.78, ORG50, ORG200, 0.75, 0.08, "GapSummary")
+add_text(s, x + 0.32, Y0 + 4.2, cw3 - 0.64, 0.78,
+         para("접수와 현장의 정보 해상도 단절이 이중 출장 비효율의 핵심 원인", 10.5, True, ORG800), anchor="m")
+# Card 3
+x = MX + 2 * (cw3 + 0.25)
+add_card(s, x, Y0, cw3, H12, WHITE, EMR500, 2.0, 0.14, "ConservativeFix")
+add_pill(s, x + 0.2, Y0 + 0.16, "보수적 해결책", *PILL_EMR, size=9.5)
+add_text(s, x + 0.2, Y0 + 0.52, cw3 - 0.4, 0.5, para("E형 우선 신뢰 시 즉각적 대기 단축", 13, True, EMR700, spacing=0.95))
+add_text(s, x + 0.2, Y0 + 1.05, cw3 - 0.4, 3.0,
+         [para("① CAPA 부하 경감", 10.5, True, S900, after=2),
+          para("E형 370건(100% 사내 완결) 직행 ➔ 일 실사 유입 40% 감소 (134 ➔ 80.7건)", 10, False, S600, bullet=True, after=2),
+          para("적체 누적 속도 80.8% 격감 (일 66.3건 ➔ 12.7건)", 10, False, S600, bullet=True, after=8),
+          para("② 보수적 20% 대기 단축", 10.5, True, S900, after=2),
+          para("실사 대기(76.8h) 20% 단축 ➔ -15.4시간", 10, False, S600, bullet=True, after=8),
+          para("③ OLS 계수(+1.12h/h) 연동", 10.5, True, S900, after=2),
+          para("15.4h × 1.12 = 전체 리드타임 -17.2시간 (약 0.7일)", 10, False, S600, bullet=True)])
+add_box(s, x + 0.2, Y0 + 4.05, cw3 - 0.4, 0.93, EMR50, EMR200, 0.75, 0.1, "FloorBig")
+add_text(s, x + 0.2, Y0 + 4.08, cw3 - 0.4, 0.55, para("▼ 17.2시간", 26, True, EMR600, mono=True, align="c"), anchor="m")
+add_text(s, x + 0.2, Y0 + 4.62, cw3 - 0.4, 0.3, para("검증된 하한 (리드타임의 16.2%)", 10, True, EMR800, align="c"))
+set_notes(s, "앞선 분석을 종합하면, 병목을 없애기 위한 핵심은 명확합니다. 실사 CAPA의 적체 부담을 덜어내고, 수리 품목 준비 기간을 줄여야 합니다.\nCard 1에서 보시듯, 접수원의 사전 분류는 이미 실제 수리와 매우 높게 일치하고 있었습니다. E형과 P형을 합치면 809건, 87.3%이고, 외주로 빠지는 P-4 38건을 빼는 보수적 기준으로도 83.2%입니다. 특히 E형은 100% 사내수리였습니다.\n이렇게 잘 맞추면서 왜 굳이 40분짜리 실사를 먼저 보내 400건의 대기열을 만들었을까요?\nCard 2의 '정보 해상도의 한계' 때문이었습니다. 접수부는 단순 알파벳(B, P, E)만 넘겨주고, 현장 기술자는 1~4 세부 코드를 써야 부품을 알 수 있어 차에 실을 수가 없었습니다.\n따라서 Card 3의 해결책을 제시합니다. 가장 보수적으로 100% 사내수리인 E형만 실사 없이 직행시켜도, 실사 유입은 40% 줄고 적체 누적 속도는 81% 격감합니다. 여기서 실사 대기를 단 20%만 줄인다고 보수적으로 잡아도 15.4시간이 줄며, 앞선 OLS 계수 1.12에 따라 전체 리드타임 17.2시간 단축이 기대됩니다.\n다음 장에서 두 번째 과제인 '수리 품목 준비 단축 및 리워크 방지'의 구체적 실행 방안을 설명해 드리겠습니다.\n\n[예상 질문] 87.3%는 '적중률'인가? → E형+P형이 차지하는 비중(809/927)으로 낙관 상한입니다. 사내 완결이 확정된 771건 기준 보수 정합도는 83.2%이며 발표에서는 두 값을 함께 제시합니다.")
+
+# =================================================================== S13 TO-BE 실행 전략
+s = blank_slide(prs, 13)
+add_chrome(s, 13, "Part 03 · 질문 3 | TO-BE 구체적 실행 전략",
+           "사전 체크리스트로 자재 대기(30.5h)를 압축하고, E-1/E-2 정밀검사로 리워크 84.6%(+32.9h)를 표적 차단한다",
+           "출처: analysis.sql 2-4(리워크 26건: E-1 16·E-2 6)·5절 시나리오 · 통합 목표치는 시나리오 가정 기반이며 검증된 하한은 -17.2h")
+c13 = [
+    ("전략 1: 자재 대기 단축", PILL_BLUE, "스마트폰 사진 기반 부품 사전 특정", BLU700, BLU200, "30.5h ➔ 사전 패킹", BLU600,
+     ["접수 시 고장 부위·모델 라벨 사진 1장 필수 등록", "출동 전 기사가 부품 규격을 사전에 파악",
+      "방문 후 주문하던 30.5h 자재 대기를 '출동 전 사전 패키징'으로 압축", "실사(40.5분) 생략으로 회수되는 공수 496.1h(735건 기준)를 부품 준비·상차에 재배치"]),
+    ("전략 2: 품질 루프 차단", PILL_RED, "E-1/E-2 2차 정밀검사 프로토콜", RED600, RED200, "리워크 84.6% 표적", RED600,
+     ["사내 하자 리워크 26건 중 84.6%(22건)가 E-1(16건)·E-2(6건)에 집중", "정밀검사 체크리스트: 인접 배관·연계 부속 2차 노후도 점검 의무화",
+      "부품 규격 불일치·2차 하자 누락을 현장에서 차단", "재수리 평균 +32.9h(최대 10.1일) 재방문 루프 방지"]),
+    ("전략 3: 물류·외주 최적화", PILL_EMR, "모듈형 번들 키트 & 외주 직행", EMR700, EMR200, "외주 대기 0.0h 유지", EMR600,
+     ["E-1/E-2 출동 시 빈번 고장 연관 부품을 번들 키트로 사전 적재", "도착 후 부품 재출하를 기다리는 대기시간 제로화",
+      "외주 패스트트랙(P-4 38건): 사진상 대규모 배관·전문 공사 식별 시 실사 생략", "전문 외주업체(FixIt/DoIt)로 직접 전산 이관"]),
+]
+for i, (pill, ps, title, tc, lc, big, bc, items) in enumerate(c13):
+    x = MX + i * (cw3 + 0.25)
+    section_card(s, x, Y0, cw3, 4.42, pill, ps, title, tc, items, line=lc, big=big, big_color=bc, big_size=19,
+                 title_size=13, bullet_size=10.5, after=4)
+add_box(s, MX, 6.3, CW, 0.58, S900, None, radius=0.1, name="RoiBar")
+add_text(s, MX + 0.3, 6.3, 8.1, 0.58,
+         para("TO-BE 통합 목표: 실사 대기(-15.4h)·자재 대기(30.5h 사전화)·리워크(+32.9h)를 함께 차단 ➔ 전체 리드타임 60% 이상 단축 (가정 기반 목표 · 검증된 하한 -17.2h)",
+              10.5, True, WHITE), anchor="m")
+add_text(s, MX + 8.5, 6.3, CW - 8.8, 0.58, para("105.9h ➔ 약 38h (목표)", 13, True, EMR400, mono=True, align="r"), anchor="m")
+set_notes(s, "슬라이드 12에서 제시한 두 번째 과제, '수리 품목 준비 기간 단축과 리워크 방지'의 구체적 실행 방안입니다.\nCard 1을 보시면, 접수 단계에서 스마트폰 사진 1장을 의무 등록받아 부품 모델 라벨을 사전에 특정합니다. 기사가 부품을 미리 알고 챙겨 나가기 때문에, 30.5시간이나 걸리던 자재 대기를 사전에 크게 압축할 수 있습니다.\nCard 2는 품질 리워크의 해결책입니다. 10일씩 걸리기도 하는 사내 리워크 26건의 85%(22건)가 E-1과 E-2 코드에 쏠려 있었습니다. 따라서 E코드 건에 대해서는 '인접 배관 2차 정밀검사 체크리스트' 작성을 의무화하여, 추가 하자를 현장에서 즉시 잡아냅니다.\n마지막 Card 3처럼 연관 부품을 묶은 '모듈형 번들 키트'를 들고 나가고, 사진상 외주 공사(P-4)는 즉시 외주업체로 패스트트랙 이관하면, 자재 대기(30.5h)와 리워크 루프(+32.9h)를 함께 줄일 수 있습니다.\n\n[예상 질문] 38시간 목표의 근거는? → 시뮬레이션으로 검증된 값은 '실사 대기 20% 단축 → −17.2h(−16%)'입니다. 자재 대기 사전화와 리워크 차단까지 더한 통합 목표(약 60% 이상)는 가정에 기반한 목표치이며, 파일럿 후 실측으로 확정해야 합니다. 496.1h는 E형 370건 + P형 즉시 365건(735건) × 40.5분입니다.")
+
+# =================================================================== S14 Q&A
+s = blank_slide(prs, 14)
+add_chrome(s, 14, "Part 04 · 마무리 | 질의응답 (Q&A)",
+           "경청해 주셔서 감사합니다. 수리 프로세스 최적화 방안에 대한 질의응답을 진행하겠습니다",
+           "출처: 퍼즐데이터 과제 분석 보고서 (Slide 01 ~ 14 완결)")
+journey = [
+    ("Part 01", PILL_BLUE, S50, S200, S900, "13,262행 전수 보존 & 결측 20행 인과 복원 완료",
+     "임의 삭제 0건, 시간 역전 0건 입증 ➔ 분석 대상 927건 정상 코호트 확립"),
+    ("Part 02", PILL_ORG, ORG50, ORG200, ORG800, "76.8h 실사 대기(WIP 403건) & 접수 인계 6.6배 실증",
+     "일 134건 유입 vs 기사 11인 CAPA 68건 불균형 및 비실시간 채널 소통 공백 특정"),
+    ("Part 03", PILL_EMR, EMR50, EMR200, EMR800, "E형 직행(-17.2h) + 사전 패킹(30.5h) + 리워크 84.6% 표적 차단",
+     "사진 1장 사전 특정, E-1/E-2 정밀검사 체크리스트 ➔ 총 리드타임 60% 이상 단축 목표"),
+]
+for i, (pl, ps, bg, bl, tc, t, d) in enumerate(journey):
+    y = 1.85 + i * 1.7
+    add_card(s, MX, y, 6.0, 1.5, bg, bl, 0.75, 0.12, f"Journey-{i + 1}")
+    add_pill(s, MX + 0.22, y + 0.2, pl, ps[0], ps[1], ps[2], size=9.5)
+    add_text(s, MX + 1.3, y + 0.15, 4.5, 1.25, [para(t, 12.5, True, tc, after=4), para(d, 10.5, False, S600)])
+HX = 6.85
+add_card(s, HX, 1.85, SLIDE_W - MX - HX, 4.9, WHITE, EMR500, 2.0, 0.16, "QaHero")
+hw_ = SLIDE_W - MX - HX
+pw = text_w("QUESTION & ANSWER", 10.5, True) + 0.4
+add_pill(s, HX + (hw_ - pw) / 2, 2.2, "QUESTION & ANSWER", EMR100, EMR800, None, size=10.5, h=0.32)
+add_text(s, HX, 2.8, hw_, 1.2, para("Q & A", 66, True, S900, mono=True, align="c"))
+add_text(s, HX, 4.2, hw_, 0.5, para("경청해 주셔서 감사합니다", 22, True, S900, align="c"))
+add_text(s, HX, 4.85, hw_, 0.8,
+         para("데이터 진단부터 병목 규명, 실행 전략까지\n자유롭게 질문해 주시기 바랍니다.", 13, False, S600, align="c"))
+add_text(s, HX + 0.3, 6.15, hw_ - 0.6, 0.4,
+         para("퍼즐데이터 채용 과제 수리 프로세스 데이터 분석 및 운영 최적화 방안  |  2026. 10. 27", 9.5, False, S500, align="c"))
+set_notes(s, "이상으로 공공임대주택 수리 프로세스 데이터 분석 및 운영 최적화 방안 발표를 모두 마칩니다. 13,262행의 무손실 전처리부터 76.8시간의 실사 대기 병목 규명, 그리고 현장에 즉시 적용 가능한 3대 최적화 전략까지 전 과정에 대해 궁금하신 점이나 추가 논의하고 싶으신 부분에 대해 편하게 질문해 주시기 바랍니다. 경청해 주셔서 대단히 감사합니다.")
+
+save_deck(prs, OUT, "프로세스 마이닝 기반 공공임대주택 수리 프로세스 진단 및 운영 최적화 방안 (v1)",
+          "퍼즐데이터 채용 과제 — 수리 프로세스 데이터 분석")

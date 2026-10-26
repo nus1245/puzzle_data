@@ -13,6 +13,7 @@
 | **[03_ppt_storyboard.md](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/docs/03_ppt_storyboard.md)** | 장표별 헤드라인, 핵심 메시지, 들어갈 차트 구성안 | 보고용 PPT / 발표자료 제작 시 바로 활용 |
 | **[04_handover_guide.md](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/docs/04_handover_guide.md)** | 분석 환경(Python/라이브러리), 파일 구조, 재현 가이드 | 타 담당자 인수인계 및 사후 유지보수 |
 | **[05_cleaned_data_dictionary.md](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/docs/05_cleaned_data_dictionary.md)** | 24열 정제 데이터셋 딕셔너리, 허용값, SQL DDL 및 쿼리 템플릿 | SQL 집계 분석 및 작업 참조 가이드 |
+| **[07_ppt_build_log.md](file:///c:/Users/nextb/.gemini/antigravity-ide/scratch/puzzle_data/docs/07_ppt_build_log.md)** | PPTX v1~v3 반복 개선 이력, 스토리보드 수치 76항목 재검증(정정 9건), 사용자 판단 필요 사항 | 최종 덱 선택·발표 전 수치 방어 |
 
 ---
 
