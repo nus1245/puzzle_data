@@ -670,6 +670,8 @@ FROM HouseVisits v1
     AND v2.visit_order = 2
 WHERE v1.visit_order = 1
 ORDER BY v1.objectKey;
+
+
 -- CNT 및 RATIO
 WITH ReceiptEvents AS (
     SELECT r.caseID,
@@ -1239,7 +1241,7 @@ WHERE objectKey IS NOT NULL;
 -- [거시 진단 요약]:
 -- - 전체 프로세스 리드타임: 평균 105.9시간 (약 4.4일)
 -- - 현장 공정 소요시간  : 평균 98.3시간 (약 4.1일, 전체의 92.8% 차지)
--- => 수리 프로세스 지연의 '절대적 몸통'은 접수 이후의 현장 공정임이 입증됨.
+-- => 수리 프로세스 지연의 핵심은 접수 이후의 현장 공정임이 입증됨.
 -- ---------------------------------------------------------------------
 -- 2-2. [구조 분해] 실작업 시간 vs 대기시간 비중 분해 (기사 생산성 검증)
 -- ---------------------------------------------------------------------
@@ -1400,6 +1402,41 @@ WHERE objectKey IS NOT NULL;
 -- ---------------------------------------------------------------------
 -- [분석 의도]:
 -- - 1차 수리 원샷 종결률 및 실패 시 2차/3차 전환에 따른 추가 대기시간 산출
+-- 0) [수리 메커니즘 정합성 검증] 단방향 에스컬레이션 및 RepairInternally 판정 일치성 검증
+--    • 외주수리(ExternRepair) 이후 사내수리/즉시수리로 역류(Rollback)한 케이스가 존재하는가?
+--    • 실사(Survey) 시점의 RepairInternally 속성 판정과 1차 실행 수리작업 간의 100% 정합성 검증
+-- ---------------------------------------------------------------------
+-- [검증 1] 외주수리 이후 후속 수리 역류 탐색 (0건 확인 -> 외주는 최종 종결)
+SELECT 
+    caseID,
+    rep1_task,
+    rep2_task,
+    rep3_task
+FROM case_master_view
+WHERE (rep1_task = 'ExternRepair' AND rep2_task IS NOT NULL)
+   OR (rep2_task = 'ExternRepair' AND rep3_task IS NOT NULL);
+
+-- [검증 2] Survey 시점 RepairInternally 판정과 1차 실행 수리작업 일치성 검증
+-- (False 59건 전원 외주 직행 / True 868건 전원 즉시/사내 착수 확인)
+SELECT 
+    CASE 
+        WHEN l.RepairInternally = 1 THEN 'True (사내 수리 판정)'
+        WHEN l.RepairInternally = 0 THEN 'False (외주 위탁 판정)'
+        ELSE '기타/결측'
+    END AS planned_internally_flag,
+    c.rep1_task AS actual_rep1_task,
+    COUNT(*) AS case_count,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY l.RepairInternally), 1) AS match_ratio_pct
+FROM repair_logs l
+JOIN case_master_view c ON l.caseID = c.caseID
+WHERE l.taskID = 'Survey'
+GROUP BY l.RepairInternally, c.rep1_task
+ORDER BY l.RepairInternally, case_count DESC;
+
+-- [수리 메커니즘 검증 결론]:
+-- 1) 외주수리(ExternRepair) 이후 사내/즉시수리 역류 0건 (완벽한 단방향 에스컬레이션: 즉시 ➔ 사내 ➔ 외주)
+-- 2) RepairInternally 판정 정합도: False(59건) 100.0% 외주 직행 / True(868건) 100.0% 사내/즉시 착수 (정합도 100%)
+-- ---------------------------------------------------------------------
 -- 1) 수리 차수별 작업 유형 분포
 SELECT taskID,
     repair_order,
@@ -1456,8 +1493,58 @@ ORDER BY case_count DESC;
 --   • 사내 하자 재방문(26건): 평균 32.9시간(최대 10.1일) 대기 발생 ➔ 핵심 품질 리스크
 --   • 즉시수리 후 사내연계(23건): 평균 0.9시간(최대 6.0시간) 대기 발생
 --   • 1차 실패 후 외주 이관(68건): 즉시수리 실패 38건 + 사내수리 실패 30건 (대기 0.0h, 즉시 외주 접수)
--- - 3차 수리 전환율: 5.1% (2차 117건 중 6건, 전체 대비 0.65%) ➔ 6건 전원 즉시➔사내 연계 후 외주(5건) 및 사내(1건)로 최종 이관
+-- 3) [핵심 진단] 사내 하자 재방문(26건)의 현장 실사 수리코드(RepairCode) 및 사전분류(RepairType) 심층 조회
+-- [목적]: 32.9시간 추가 대기를 초래하는 26건의 원인 고장유형을 식별하여 '정밀검사 및 사전 패키징' 집중 대상 도출
+SELECT 
+    c.repair_code AS `현장 실사 수리코드(RepairCode)`,
+    c.planned_repair_type AS `접수 사전분류(RepairType)`,
+    COUNT(*) AS `리워크 발생건수(건)`,
+    ROUND(COUNT(*) * 100.0 / 26.0, 1) AS `26건 내 비중(%)`,
+    -- 해당 수리코드 전체 1차 사내수리 모수 대비 리워크 발생률
+    ROUND(
+        COUNT(*) * 100.0 / (
+            SELECT COUNT(*) 
+            FROM case_master_view sub 
+            WHERE sub.rep1_task = 'InternRepair' 
+              AND sub.repair_code = c.repair_code
+        ), 1
+    ) AS `해당코드 사내수리 대비 리워크율(%)`
+FROM case_master_view c
+WHERE c.rep1_task = 'InternRepair' 
+  AND c.rep2_task = 'InternRepair'
+GROUP BY c.repair_code, c.planned_repair_type WITH ROLLUP
+ORDER BY GROUPING(c.repair_code), c.repair_code, `리워크 발생건수(건)` DESC;
+
+-- 4) 사내 하자 재방문 26건 상세 케이스 원천 추적 (기사, 대기시간, 주택번호)
+SELECT 
+    c.caseID,
+    c.objectKey AS `주택번호`,
+    c.contact_channel AS `접수채널`,
+    c.planned_repair_type AS `접수코드`,
+    c.repair_code AS `실사코드`,
+    c.rep1_worker AS `1차수리기사`,
+    c.rep2_worker AS `2차재수리기사`,
+    ROUND(TIMESTAMPDIFF(MINUTE, c.rep1_complete, c.rep2_start) / 60.0, 1) AS `재출하_추가대기(시간)`,
+    ROUND(TIMESTAMPDIFF(MINUTE, c.contact_time, c.ticket_ready_time) / 60.0, 1) AS `총리드타임(시간)`
+FROM case_master_view c
+WHERE c.rep1_task = 'InternRepair' 
+  AND c.rep2_task = 'InternRepair'
+ORDER BY `재출하_추가대기(시간)` DESC;
+
+-- [26건 리워크 수리코드 분석 결론 및 TO-BE 방안]:
+-- 1) 현장 실사 수리코드(RepairCode) 편중:
+--    • Code 1 (16건, 61.5%): 26건 중 과반 이상이 1번 코드에 집중! (사내 1번 코드 234건 중 6.8% 리워크 발생)
+--    • Code 2 (9건, 34.6%): 사내 2번 코드 224건 중 4.0% 리워크 발생
+--    • Code 3 (1건, 3.8%): 사내 3번 코드 27건 중 3.7% 리워크 발생
+--    • Code 4 (0건, 0.0%): 외주 전담 코드이므로 사내 리워크 0건
+-- 2) 접수 사전분류와의 연계:
+--    • E-1 조합(접수 E형 + 실사 1번 코드)이 16건으로 26건 전체의 61.5%를 독점.
+-- 3) 비즈니스 액션 플랜 (TO-BE 전략 연계):
+--    • 현장 실사에서 '수리코드 1번(특히 E-1)'이 확정되는 즉시,
+--      단순 부품 교체로 끝내지 않고 '배관/전기 연계부품 2차 체크리스트 정밀검사'를 의무화.
+--    • 1번 코드 전용 '사전 패키징 예비 부품 키트'를 기사에게 동봉 출고하여 부품 재주문으로 인한 32.9시간 지연을 원천 차단.
 -- ---------------------------------------------------------------------
+
 -- 3. [심층 대기행렬 분석] 접수-현장 간 이월(Spillover) 및 대기열 적체(WIP) 동역학 검증
 -- ---------------------------------------------------------------------
 -- [분석 가설]:
@@ -1839,3 +1926,61 @@ ORDER BY planned_repair_type,
 --         * 웹 접수(241건, 26%): 온라인 접수 양식의 질문 체크리스트 고도화(사진/라벨 필수 첨부, 증상 세분화)로 초기 인입 해상도 극대화.
 --         * 전화/대면 접수(479건, 52%): 접수원 표준 질의 스크립트 적용 및 통화 중 '모바일 사진 등록 링크(SMS)' 발송 연계.
 --         ➔ 이를 통해 접수원의 P, B, E 코드를 세부 자재/수리 하위 코드 수준으로 정밀화하여 현장 수리팀으로 다이렉트 인계.
+
+-- -----------------------------------------------------------------------------------------
+-- 5. [TO-BE 정량 검증] 패스트트랙 시나리오별 실사 CAPA 부하 경감 및 OLS 리드타임 단축 시뮬레이션
+-- -----------------------------------------------------------------------------------------
+-- [목적]: 접수 신뢰 수준에 따른 4단계 시나리오(극보수 E형만 ~ 낙관적 전체)별 
+--         일일 실사 유입량, 기사 11인 CAPA(68건) 대비 부하율, 그리고 OLS(+1.12h/h) 리드타임 단축치 산출
+WITH ScenarioBase AS (
+    SELECT 
+        caseID,
+        planned_repair_type,
+        repair_code,
+        rep1_task
+    FROM case_master_view
+    WHERE objectKey IS NOT NULL
+),
+ScenarioMetrics AS (
+    SELECT 
+        -- 시나리오 1: [극보수] E형만 신뢰 (실패 리스크 0%, E형 100% 직행)
+        '1. 극보수 (E형만 직행)' AS scenario_name,
+        SUM(CASE WHEN planned_repair_type = 'E' THEN 1 ELSE 0 END) AS bypass_cases,
+        COUNT(*) - SUM(CASE WHEN planned_repair_type = 'E' THEN 1 ELSE 0 END) AS remaining_survey_cases
+    FROM ScenarioBase
+    UNION ALL
+    SELECT 
+        -- 시나리오 2: [보수 1안] E형 + P-1, P-3(즉시수리 완결) 직행
+        '2. 보수 1안 (E형 + P-1,3 즉시 직행)' AS scenario_name,
+        SUM(CASE WHEN planned_repair_type = 'E' OR (planned_repair_type = 'P' AND repair_code IN (1, 3)) THEN 1 ELSE 0 END) AS bypass_cases,
+        COUNT(*) - SUM(CASE WHEN planned_repair_type = 'E' OR (planned_repair_type = 'P' AND repair_code IN (1, 3)) THEN 1 ELSE 0 END) AS remaining_survey_cases
+    FROM ScenarioBase
+    UNION ALL
+    SELECT 
+        -- 시나리오 3: [보수 2안] 외주 리스크 제외 E형 + P형 사내종결(401건) 직행
+        '3. 보수 2안 (E형 + P형 사내자체 완결)' AS scenario_name,
+        SUM(CASE WHEN planned_repair_type = 'E' OR (planned_repair_type = 'P' AND rep1_task IN ('ImmediateRepair', 'InternRepair')) THEN 1 ELSE 0 END) AS bypass_cases,
+        COUNT(*) - SUM(CASE WHEN planned_repair_type = 'E' OR (planned_repair_type = 'P' AND rep1_task IN ('ImmediateRepair', 'InternRepair')) THEN 1 ELSE 0 END) AS remaining_survey_cases
+    FROM ScenarioBase
+    UNION ALL
+    SELECT 
+        -- 시나리오 4: [낙관적] E형 전체 + P형 전체 (809건) 직행
+        '4. 낙관적 (E형 + P형 전체 직행)' AS scenario_name,
+        SUM(CASE WHEN planned_repair_type IN ('E', 'P') THEN 1 ELSE 0 END) AS bypass_cases,
+        COUNT(*) - SUM(CASE WHEN planned_repair_type IN ('E', 'P') THEN 1 ELSE 0 END) AS remaining_survey_cases
+    FROM ScenarioBase
+)
+SELECT 
+    scenario_name AS `패스트트랙 시나리오`,
+    bypass_cases AS `실사우회 건수(건)`,
+    ROUND(bypass_cases * 100.0 / 927.0, 1) AS `우회비율(%)`,
+    remaining_survey_cases AS `실사큐 잔여(건)`,
+    -- 일일 실사 유입량 (8일 피크 일평균 134.3건 기준)
+    ROUND(134.3 * (remaining_survey_cases / 927.0), 1) AS `일일 실사유입(건/일)`,
+    -- 현장 기사 11인 일일 CAPA(68.0건) 대비 부하율 (%)
+    ROUND((134.3 * (remaining_survey_cases / 927.0) / 68.0) * 100.0, 1) AS `기사CAPA 부하율(%)`,
+    -- 보수적 대기 20% 단축 시 절감시간 (76.8h 기준)
+    ROUND(76.81 * 0.20, 1) AS `보수적20%_실사대기절감(h)`,
+    -- OLS 회귀계수(+1.12h/h) 적용 전체 리드타임 순단축 효과
+    ROUND(76.81 * 0.20 * 1.12, 1) AS `OLS_리드타임_순단축(h)`
+FROM ScenarioMetrics;
