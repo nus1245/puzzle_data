@@ -118,6 +118,12 @@ check("인계군 중앙값(h)", 5.6, m[m.is_handover == 1].receipt_hours.median(
 hc = m[m.is_handover == 1].contact_channel.value_counts()
 check("인계 Web", 69, hc.get("Web", 0), 0, "{:.0f}")
 check("인계 Letter", 54, hc.get("Letter", 0), 0, "{:.0f}")
+arrange = hrs("survey_arrange_start", "survey_arrange_complete")
+check("일정 조율(ArrangeSurvey) 평균(h) [스토리보드 1.9h]", 1.9, arrange.mean())
+check("일정 조율 비중(% of 접수 2.1h) [스토리보드 90.4%]", 90.4, arrange.mean() / reception.mean() * 100)
+check("일정 조율 중앙값(분)", 4.0, arrange.median() * 60, 0.3)
+check("웹 일정 조율 평균(h)", 4.5, arrange[m.contact_channel == "Web"].mean())
+check("우편 일정 조율 평균(h)", 3.6, arrange[m.contact_channel == "Letter"].mean())
 m["daily_intake_volume"] = m.groupby(day(m.contact_time)).caseID.transform("count")
 check("일별 접수량-소요시간 r", 0.01, np.corrcoef(m.daily_intake_volume, m.receipt_hours)[0, 1], 0.005, "{:.3f}")
 

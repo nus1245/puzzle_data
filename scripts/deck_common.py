@@ -22,7 +22,9 @@ from pptx.util import Emu, Inches, Pt
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIG_DIR = os.path.join(BASE_DIR, "outputs", "figures")
-OUT_DIR = os.path.join(BASE_DIR, "outputs", "pptx")
+# 다른 세션의 스크립트(build_full_deck.py)가 outputs/pptx/ 의 파일명을 덮어쓰거나 정리하므로,
+# 이 파이프라인의 산출물은 충돌하지 않는 별도 폴더에 둔다.
+OUT_DIR = os.path.join(BASE_DIR, "outputs", "pptx_claude")
 
 # ------------------------------------------------------------------ 캔버스
 SLIDE_W, SLIDE_H = 13.333, 7.5

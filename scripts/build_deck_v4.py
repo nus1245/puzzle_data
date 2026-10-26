@@ -673,15 +673,30 @@ a4 = [
      ["OLS는 관측 기반 연관이며 인과 추정이 아님, 평균 기여는 분산 설명력이 아님",
       "대기 비율은 정의에 따라 90.5% ~ 95.7% (본문은 가장 보수적인 값)",
       "CAPA는 산출 구간에 따라 63.7~69.2건/일, 결론(유입의 약 2배)은 동일"]),
-    ("TO-BE 가정 · 후속 검증", PILL_EMR, "검증된 하한 −17.2h, 목표는 가정", EMR700, EMR500,
+    ("TO-BE 가정", PILL_EMR, "검증된 하한 −17.2h, 목표는 가정", EMR700, EMR500,
      ["검증: 실사 대기 20% 단축 × OLS 1.12 = −17.2h (리드타임의 16.2%)",
       "가정: 자재 대기·리워크 차단을 더한 통합 목표(약 38h)는 파일럿 실측으로 확정",
-      "제안: E형 직행 2주 파일럿, 지표는 실사 대기·WIP·리워크율·리드타임 (성공 기준: 실사 대기 −15.4h 이상)"]),
+      "산출 근거가 없는 수치는 본문에서 '목표'로만 표기"]),
 ]
 for i, (pill, ps, title, tc, lc, items) in enumerate(a4):
     x = MX + i * (cw3 + 0.25)
-    section_card(s, x, Y0, cw3, 4.95, pill, ps, title, tc, items, line=lc, line_w=2.0 if i == 2 else 0.75,
-                 title_size=13, bullet_size=12, after=9)
+    section_card(s, x, Y0, cw3, 3.1, pill, ps, title, tc, items, line=lc, line_w=2.0 if i == 2 else 0.75,
+                 title_size=13, bullet_size=11.5, after=6)
+# 파일럿 설계 제안 (후속 검증 계획)
+add_card(s, MX, 5.0, CW, 1.88, S50, S200, 0.75, 0.14, "PilotPlan")
+add_pill(s, MX + 0.25, 5.14, "후속 검증: 파일럿 설계 제안", *PILL_EMR, size=9.5)
+add_text(s, MX + 3.0, 5.14, CW - 3.25, 0.27, para("분석에서 도출한 검증 하한(−17.2h)을 실측으로 확인하고 통합 목표를 확정하기 위한 제안", 10.5, False, S500), anchor="m")
+pilot = [("E형 직행", "대상", "사전 분류 E형(370건 규모, 사내수리 100% 완결)을 실사 없이 직행"),
+         ("2주", "기간", "인입 피크가 포함되도록 설정해 적체(WIP) 동역학까지 관측"),
+         ("4개 KPI", "측정", "실사 대기 · WIP · 리워크율 · 케이스 리드타임"),
+         ("−15.4h 이상", "성공 기준", "실사 대기 20% 단축, OLS 환산 리드타임 −17.2h 이상")]
+pw_ = (CW - 0.5 - 3 * 0.15) / 4
+for i, (big, lab_, d) in enumerate(pilot):
+    x = MX + 0.25 + i * (pw_ + 0.15)
+    add_box(s, x, 5.55, pw_, 1.2, WHITE, EMR200, 0.75, 0.1, f"Pilot-{i + 1}")
+    add_text(s, x + 0.15, 5.6, pw_ - 0.3, 0.4, para([R(big, 15, True, EMR700, True)]), anchor="m")
+    add_text(s, x + 0.15, 6.0, pw_ - 0.3, 0.7,
+             [para(lab_, 9.5, True, S500, after=1), para(d, 10, False, S600)])
 set_notes(s, "부록입니다. 결론의 적용 범위를 정직하게 밝혀 두었습니다. 검증된 효과는 17.2시간 단축이고, 통합 목표인 약 38시간은 가정에 기반한 목표라 파일럿에서 확정해야 한다는 점을 질문받으면 이 장으로 답합니다.")
 
 # ---- 슬라이드 쇼 내비게이션: 목차 타일 점프, 하단 인디케이터 점프, PowerPoint 섹션

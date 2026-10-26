@@ -9,19 +9,20 @@
 
 | 파일 | 설명 | 미리보기 |
 |:---|:---|:---|
-| `outputs/pptx/puzzledata_repair_report_v1.pptx` | v1 — 스토리보드 충실 구현판 (14 Slides, 화이트 테마) | `outputs/pptx/preview/v1/` |
-| `outputs/pptx/puzzledata_repair_report_v2.pptx` | v2 — 가독성·정합성 개선판 | `outputs/pptx/preview/v2/` |
-| **`outputs/pptx/puzzledata_repair_report_v3.pptx`** | **v3 — 최종본 (제출 후보)**: 스토리·내비게이션·근거 투명성 개선판 | `outputs/pptx/preview/v3/` |
-| `outputs/html/puzzledata_repair_report.html` | v3 와 같은 소스에서 생성한 **단일 파일 HTML 프레젠테이션** (←/→ 이동, `S` 발표 대본 시트, `F` 전체화면, 하단 점 클릭 이동, 인쇄 시 슬라이드당 1페이지) | — |
+| `outputs/pptx_claude/puzzledata_repair_report_v1.pptx` | v1 — 스토리보드 충실 구현판 (14 Slides, 화이트 테마) | `outputs/pptx_claude/preview/v1/` |
+| `outputs/pptx_claude/puzzledata_repair_report_v2.pptx` | v2 — 가독성·정합성 개선판 | `outputs/pptx_claude/preview/v2/` |
+| `outputs/pptx_claude/puzzledata_repair_report_v3.pptx` | v3 — 스토리·내비게이션·근거 투명성 개선판 (14 Slides) | `outputs/pptx_claude/preview/v3/` |
+| **`outputs/pptx_claude/puzzledata_repair_report_v4_final.pptx`** | **v4 — 제출용 완성본**: 본문 14장(Q&A 종결) + 부록 4장, 병목 히트 프로세스 맵, 접수 수치 정정 | `outputs/pptx_claude/preview/v4/` |
+| `outputs/html/puzzledata_repair_report.html` | v4 와 같은 소스에서 생성한 **단일 파일 HTML 프레젠테이션** 18장 (←/→ 이동, `S` 발표 대본 시트, `F` 전체화면, 하단 점 클릭 이동, 인쇄 시 슬라이드당 1페이지) | — |
 
 기존 `repair_analysis_*.pptx`(19 Slides, 다크 표지, "엔지니어링 신뢰성" 슬라이드 포함)는 스토리보드(14 Slides, 화이트 100%, Q&A 종결)와 규격이 달라 **대체 대상**이며 삭제하지 않고 남겨 두었다.
 
 ### 재빌드
 ```powershell
-python scripts/verify_deck_facts.py            # 수치 76항목 재계산 (OK 69 / DIFF 7)
-python scripts/make_slide_charts.py            # 슬라이드 실측 크기 차트 8종 → outputs/figures/v2/
-python scripts/build_deck_v3.py                # 최종본 (v1, v2 도 동일 방식)
-.\scripts\render_pptx.ps1 -Pptx outputs\pptx\puzzledata_repair_report_v3.pptx -OutDir <폴더>   # PowerPoint COM 으로 PNG 렌더링
+python scripts/verify_deck_facts.py            # 수치 81항목 재계산 (OK 72 / DIFF 9)
+python scripts/make_slide_charts.py            # 슬라이드 실측 크기 차트 9종 → outputs/figures/v2/ (프로세스 맵은 chart_process_map.py)
+python scripts/build_deck_v4.py                # 제출용 완성본 (v1~v3 도 동일 방식)
+.\scripts\render_pptx.ps1 -Pptx outputs\pptx\puzzledata_repair_report_v4_final.pptx -OutDir <폴더>   # PowerPoint COM 으로 PNG 렌더링
 python scripts/build_html_deck.py              # 같은 슬라이드 정의로 HTML 판 생성 → outputs/html/
 ```
 공용 라이브러리는 `scripts/deck_common.py` (디자인 토큰, 텍스트 폭 측정·어절 줄바꿈, 카드/알약/표, 이미지 contain 배치, 점프 링크, 섹션).
@@ -57,11 +58,27 @@ S04 EDA 차트 판독 불가 / S13 카드 하단 공백 및 "검증치 vs 목표
 
 검증: `validate.py` PASSED(v2·v3), 14/14 슬라이드 발표 노트 보유, PowerPoint 렌더링(COM) 14/14 성공.
 
+### v3 → 읽고 찾은 결함 (심사자 관점: 프로세스 마이닝 전문 기업)
+| # | 결함 | 증상 |
+|:--:|:---|:---|
+| 1 | S07 프로세스 맵 | 글자가 작고, **구간별 대기시간(병목)이 맵 위에 보이지 않음** — 프로세스 마이닝 과제의 핵심 시각화가 약함 |
+| 2 | 접수 병목 수치 | "일정 조율 1.9h(접수의 90.4%)"가 원천에서 재현되지 않음 → 재계산: ArrangeSurvey 평균 **2.01h (접수 2.08h의 96%)**, 중앙값 **4분**, 웹 4.5h·우편 3.6h·전화·대면 0.06h (일부 케이스 집중) |
+| 3 | 방어 근거 부재 | 지표 정의, 전처리 규칙, 가정·한계가 본문에만 흩어져 있어 심사 질의 시 근거 제시가 어려움 |
+| 4 | 제출 메타데이터 | 문서 제목에 버전 표기 "(v3)" 포함 |
+
+### v4 (v3 결함 수정) — 제출용 완성본
+- **S07 프로세스 맵 재설계** (`scripts/chart_process_map.py`): 화살표 굵기 = 1차 수리 케이스 수, 색 = 평균 대기시간(빨강 ≥24h / 주황 1~24h / 회색 <1h). 접수→실사 76.8h(중앙값 48.8h), 사내수리 착수 30.5h, 교차 인계 123건(1.2h→7.9h), 리워크 26건(+32.9h)이 한 장에서 읽힌다. 모든 수치는 원천에서 계산.
+- **S08 접수 병목 정정**: "일정 조율 2.0h(접수 2.1h의 96%) — 중앙값 4분, 웹·우편에 집중"으로 수정하고 발표 노트도 동일하게 정정.
+- **부록 4장 추가**(Q&A 뒤, 본문 14장 구조는 그대로): A-1 원본 프로세스 맵(이벤트 수 기준), A-2 핵심 지표 정의·산식 10종, A-3 전처리 규칙 CASE 1~5, A-4 가정·한계 + **파일럿 설계 제안**(E형 직행 2주, KPI 4종, 성공 기준 −15.4h).
+- PowerPoint 섹션 6개(Part 00~04 + Appendix), 문서 제목에서 버전 표기 제거, 파일명 `…_v4_final.pptx`.
+
+검증: `validate.py` PASSED(v1~v4), 18/18 슬라이드 발표 노트, 점프 링크 186개, PowerPoint 렌더링(COM) 18/18, HTML 판 Edge 캡처 확인.
+
 ---
 
 ## 3. 수치 검증 결과 (AGENTS.md 3단계 프로토콜)
 
-`scripts/verify_deck_facts.py` 가 스토리보드의 76개 수치를 원천에서 재계산한다. **69개 일치, 7개 불일치**. 덱에는 재계산 값을 채택했다.
+`scripts/verify_deck_facts.py` 가 스토리보드의 81개 수치를 원천에서 재계산한다. **72개 일치, 9개 불일치**. 덱에는 재계산 값을 채택했다.
 
 ### 3-1. 정정한 항목 (스토리보드 → 덱)
 | # | 항목 | 스토리보드 | 원천 재계산 | 덱 반영 |
@@ -75,6 +92,7 @@ S04 EDA 차트 판독 불가 / S13 카드 하단 공백 및 "검증치 vs 목표
 | 7 | 사전 적중률 87.3% | "적중률 87.3%" 단일값 | 87.3% = E+P 비중(809/927)의 **낙관 상한**, 내부 완결 771건 기준 **83.2%** | "83.2% ~ 87.3%" 병기 |
 | 8 | S05 제목 "20행 100% 복원" | 20행만 언급 | 20행은 결측 행. 오기입 866건·더미 시각 15건은 별도 이상치 | 제목·주석에 3유형 명시 |
 | 9 | 95.8h / 90.5% / 10.1h | SQL·문서에 근거 문구 없음 | 정산 5.5h를 시스템 처리로 보면 **(105.87−4.57−5.51)/105.87 = 90.5% 재현** | 정의를 각주로 명시 |
+| 10 | 접수 일정 조율 | "1.9h, 접수의 90.4%" | ArrangeSurvey **평균 2.01h (96.4%)**, 중앙값 4분, 웹 4.5h·우편 3.6h | "2.0h(접수 2.1h의 96%) — 중앙값 4분, 웹·우편에 집중" (v4) |
 
 ### 3-2. 90.5% 정의 (발표 시 가장 먼저 받을 질문)
 | 정의 | 대기 비율 |
@@ -108,7 +126,7 @@ S04 EDA 차트 판독 불가 / S13 카드 하단 공백 및 "검증치 vs 목표
 | HTML: Tailwind CDN + Pretendard + Lucide | 인라인 CSS(오프라인 동작) + Pretendard/JetBrains Mono CDN(실패 시 맑은 고딕·Consolas 폴백) + 인라인 Lucide SVG | 인터넷이 없어도 레이아웃이 깨지지 않게 하기 위함 |
 | 타이틀 하단 장식선·단측 스트라이프 금지 | 준수 | — |
 | 차트 `object-contain` | `add_picture_contain` 로 종횡비 보존 중앙 배치 | — |
-| Slide 14 = Q&A 종결, 14장 | 준수 | — |
+| Slide 14 = Q&A 종결, 14장 | 본문 14장·Q&A 종결 준수. **부록 4장(A-1~A-4)을 Q&A 뒤에 별첨** | 심사 질의 방어용 근거. 제외하려면 `build_deck_v4.py` 의 Appendix 블록을 삭제하거나 v3 사용 |
 
 ---
 
@@ -116,3 +134,15 @@ S04 EDA 차트 판독 불가 / S13 카드 하단 공백 및 "검증치 vs 목표
 - `scripts/deck_html.py` 는 `deck_common` 과 같은 함수 이름(add_text / add_box / add_pill / add_picture_contain / add_table …)을 HTML 로 렌더링한다. `scripts/build_html_deck.py` 가 `build_deck_v3.py` 를 수정 없이 실행하면서 모듈만 바꿔 끼우므로 **PPTX 와 HTML 의 좌표·문구·차트·발표 대본이 항상 동일**하다(13.333in = 1920px, 1pt = 2px).
 - 한글은 `word-break: keep-all` 로 어절 단위 줄바꿈, 차트는 `object-fit: contain` 으로 종횡비를 보호하고 base64 로 내장해 파일 하나로 동작한다.
 - 검증: Edge 헤드리스로 슬라이드 1·2·5·7·8·9·10·11·12·13·14 캡처 확인, `S` 시트(`#8,notes`) 확인. **`Ctrl+P` 인쇄(PDF) CSS 는 작성했지만 시각 검증하지 못했다.**
+
+---
+
+## 7. 병행 작업 충돌 기록 (2026-10-26 23:40)
+
+같은 저장소에서 다른 세션이 동시에 작업해 다음 일이 있었다.
+
+- 커밋 `41efee4`(작성자 `next`, 메시지 "rebuild submission-grade 14-slide PPTX…")가 `git add -A` 로 **이 문서의 산출물(스크립트·차트·HTML·미리보기·PPTX)을 함께 커밋**했다.
+- 그 세션의 `scripts/build_full_deck.py` 는 자기 덱을 `outputs/pptx/puzzledata_repair_report_v3.pptx` 에도 저장한다(`"overwriting user target"`). 그래서 **커밋 41efee4 의 v3 파일(1,484,327바이트)은 이 문서의 v3 가 아니라 그 세션의 덱**이다.
+- 이어서 `outputs/pptx/` 에서 이 문서의 v1~v4 와 `repair_analysis_full_presentation.pptx` 가 작업 트리에서 삭제됐다(HEAD 에는 남아 있음).
+- 조치: 파이프라인 출력 폴더를 `outputs/pptx_claude/` 로 분리(`scripts/deck_common.py` 의 `OUT_DIR`)하고 v1~v4 를 재빌드했다. `outputs/pptx/` 의 다른 세션 파일은 건드리지 않았다.
+- 다른 세션의 덱: `outputs/pptx/repair_analysis_presentation_14slides_white.pptx` (14장, 나눔고딕·Noto Sans, 발표 노트 없음).
