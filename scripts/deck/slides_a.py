@@ -91,7 +91,7 @@ def s03(doc, F):
     banner.draw(sl, MX, BODY_TOP + 0.05, CW, bh)
     y = BODY_TOP + 0.05 + bh + 0.2
     c1 = Card([label("STEP 01 · 데이터 진단", ACC), big(F("n_events"), "행", ACC, 44, name="n1"), body("전수 보존 · 임의 삭제 0건", 12, INK, name="s1"),
-               Gap(0.04), bullets([f"결측 {F('n_null_rows')}행({F('null_rows_pct')}%)을 업무 인과로 복원",
+               Gap(0.04), bullets([f"결측 {F('n_null_rows')}행({F('null_rows_pct')}%)을 업무 순서로 복원",
                                    f"정상 접수 표본 {F('baseline_n')}건({F('baseline_pct')}%)으로 대체 기준 확보",
                                    f"시간 역전 0건, 정상 접수 {F('n_valid')}건, 오접수 {F('n_wrongplace')}건"], 12)], pad=0.22, name="step1",
               foot=Txt([T("DETAIL → p.04–06", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
@@ -149,8 +149,8 @@ def s04(doc, F):
 # ------------------------------------------------------------------ S05 CASE 1~5
 def s05(doc, F):
     sl = doc.new_slide(5, "Part 01")
-    chrome(sl, "[ 05 / Q1 · CASE 1–5 ]", "삭제 없이, 업무 인과로 결측을 복원했다",
-           sub=f"결측 {F('n_null_rows')}행에 더해 날짜 오기입 {F('date_miswritten')}건·더미 시각 {F('time_dummy')}건까지 5개 유형을 근거 기반으로 복원",
+    chrome(sl, "[ 05 / Q1 · CASE 1–5 ]", "업무 순서로 결측과 오기입을 교정 복원했다",
+           sub=f"비정상 결측 {F('n_null_rows')}행에 더해 날짜 오기입 {F('date_miswritten')}건·더미 시각 {F('time_dummy')}건까지 5개 유형을 근거 기반으로 복원",
            source="출처: analysis.ipynb Cell 18·20·53·63·77·81")
 
     def tg(t, c=INK):
@@ -205,7 +205,7 @@ def s06(doc, F):
 
     rows_ = [
         [c("총 이벤트 행"), c(f"{F('n_events')}행"), c(f"{F('n_events')}행 · 삭제 0건", GRN, True)],
-        [c("필수 속성 결측 행"), c(f"{F('n_null_rows')}행 ({F('null_rows_pct')}%)"), c("0건 · 업무 인과 복원", GRN, True)],
+        [c("필수 속성 결측 행"), c(f"{F('n_null_rows')}행 ({F('null_rows_pct')}%)"), c("0건 · 업무 순서 복원", GRN, True)],
         [c("일자 연도 오기입"), c(f"{F('date_miswritten')}건"), c("0건 · 1970년 통일", GRN, True)],
         [c("리드타임 정상 산출"), c(f"{F('lead_ok_before_pct')}% ({F('lead_ok_before_n')}/{F('n_cases_all')})"), c(f"100% ({F('n_cases_all')}/{F('n_cases_all')})", GRN, True)],
         [c("시간 왜곡·역전"), c(f"{F('lead_distort_before')}건 왜곡"), c(f"0건 · {F('pairs_checked')}개 페어 검증", GRN, True)],
