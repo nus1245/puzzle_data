@@ -12,7 +12,7 @@ def _side_cards_right(sl, F, x, y, w, h_total, cards, gutter=0.12):
 # ------------------------------------------------------------------ S10 현장① 구성
 def s10(doc, F):
     sl = doc.new_slide(12, "Part 02")
-    chrome(sl, "[ 12 / Q2-2 · BOTTLENECK 2 · FIELD ]", f"현장 지연 요인: 현장 {F('field_total')}h 중 실사 방문 대기 {F('wait1_pct')}%",
+    chrome(sl, sec_tag(12), f"현장 지연 요인: 현장 {F('field_total')}h 중 실사 방문 대기 {F('wait1_pct')}%",
            sub=f"현장 대기 {F('field_wait')}h = 현장 시간의 {F('field_wait_pct')}% · 기사의 실작업은 {F('field_work_pct')}%({F('field_work')}h)에 불과",
            source="출처: analysis.sql L1246~1395 · hypothesis 노트북 Cell 11·13 (Wait 2는 재수리 인계 대기 포함 정의)")
     top, H = BODY_TOP + 0.08, 5.15
@@ -49,7 +49,7 @@ def s10(doc, F):
 # ------------------------------------------------------------------ S11 현장② 적체
 def s11(doc, F):
     sl = doc.new_slide(13, "Part 02")
-    chrome(sl, "[ 13 / Q2-2 · BOTTLENECK 2 · QUEUE ]", f"Wait 1 원인: 일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건, 최대 적체 물량 {F('wip_peak')}건",
+    chrome(sl, sec_tag(13), f"Wait 1 원인: 일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건, 최대 적체 물량 {F('wip_peak')}건",
            sub=f"실사 대기의 원인 — {F('n_surveyed')}건 전수가 방문 실사를 거치는 구조 · 소화율 {F('digest_pct')}% (같은 구간 기준 {F('digest_pct_samewin')}%)",
            source="출처: analysis.sql L1556~1670·L1978~1981 · 유입 1/2~1/7 평균, CAPA 1/1~1/8 평균(기사 11인) · hypothesis 노트북 Cell 15")
     top = BODY_TOP + 0.08
@@ -78,7 +78,7 @@ def s11(doc, F):
 # ------------------------------------------------------------------ S12 OLS
 def s12(doc, F):
     sl = doc.new_slide(15, "Part 02")
-    chrome(sl, "[ 15 / Q2-3 · DRIVERS · OLS ]", "E2E 리드타임 영향 요인: 실사 방문 대기 ≫ 사내수리 배정",
+    chrome(sl, sec_tag(15), "E2E 리드타임 영향 요인: 실사 방문 대기 ≫ 사내수리 배정",
            sub=f"E2E 리드타임 OLS · R² {F('ols2_r2_pct')}% · F {F('ols2_f')} · N {F('n_valid')} · VIF 최대 {F('ols2_vif_max')}",
            source="출처: hypothesis 노트북 Cell 19 (statsmodels OLS, 재계산 일치) · 종속변수 total_hours")
     top = BODY_TOP + 0.08
@@ -108,7 +108,7 @@ def s12(doc, F):
 # ------------------------------------------------------------------ S13 수리·리워크
 def s13(doc, F):
     sl = doc.new_slide(14, "Part 02")
-    chrome(sl, "[ 14 / Q2-2 · BOTTLENECK 3 · REPAIR ]", f"Wait 2 요인: 사내수리는 자재 조달 {F('wait2_intern')}h, 재수리 시 +{F('rework_gap_mean')}h 지연",
+    chrome(sl, sec_tag(14), f"Wait 2 요인: 사내수리는 자재 조달 {F('wait2_intern')}h, 재수리 시 +{F('rework_gap_mean')}h 지연",
            sub=f"사내 재수리 {F('n_rework')}건은 평균 총 리드타임 {F('rework_lead_mean')}h — 전체 평균의 {F('rework_lead_x')}배",
            source="출처: analysis.sql L1403~1546 · hypothesis 노트북 Cell 16~17 (정정 차트: 최대 지연과 평균 리드타임 라벨 분리)")
     top = BODY_TOP + 0.08
@@ -137,7 +137,7 @@ def s13(doc, F):
 # ------------------------------------------------------------------ S14 규명
 def s14(doc, F):
     sl = doc.new_slide(16, "Part 03")
-    chrome(sl, "[ 16 / Q2→Q3 · ROOT CAUSE ]", "적중률은 높은데 정보 해상도가 끊겨 있다",
+    chrome(sl, sec_tag(16), "적중률은 높은데 정보 해상도가 끊겨 있다",
            sub=f"접수 알파벳 분류가 실제 수리 방식과 맞는데도(E→사내 {F('E_intern_pct')}%, P→즉시 {F('fast_p_prec')}%) 모든 건이 실사 큐 한 줄에 선다",
            source=f"출처: analysis.sql L1888~1928 · case_pivot_table.csv 재계산 · 큐 점유시간 = 실사 착수 후 기사가 그 건에 묶이는 시간(즉시 수리는 실사+수리)")
     top = BODY_TOP + 0.08
@@ -183,7 +183,7 @@ def s14(doc, F):
 # ------------------------------------------------------------------ S15 전략 (하나의 구체적 전략)
 def s15(doc, F):
     sl = doc.new_slide(17, "Part 03")
-    chrome(sl, "[ 17 / Q3 · TO-BE STRATEGY ]", "Direct Booking 전략: 하나의 병목 줄을 두 갈래로",
+    chrome(sl, sec_tag(17), "Direct Booking 전략: 하나의 병목 줄을 두 갈래로",
            sub="접수 코드를 세분화해 즉시 수리 건을 실사 줄에서 빼고, 기사 캘린더로 바로 예약해 작업 줄로 보낸다",
            source="출처: analysis.sql L1888~1928(사전 분류) · case_pivot_table.csv 재계산 · UI는 제안이며 효과는 다음 장에서 가정과 파일럿으로 다룸")
     top = BODY_TOP + 0.08
@@ -253,7 +253,7 @@ def s15(doc, F):
 # ------------------------------------------------------------------ S16 기대 효과
 def s16(doc, F):
     sl = doc.new_slide(18, "Part 03")
-    chrome(sl, "[ 18 / Q3 · EXPECTED IMPACT ]", f"실사 대기 20% 단축 시 평균 리드타임 ▼{F('eff_total_pct')}%",
+    chrome(sl, sec_tag(18), f"실사 대기 20% 단축 시 평균 리드타임 ▼{F('eff_total_pct')}%",
            sub="줄 분리의 순수 효과는 로그로 식별할 수 없어 단축률을 가정하고, 실험으로 검증한다",
            source="출처: case_pivot_table.csv 재계산 · 실사 대기는 리드타임의 구성요소라 1:1 반영(OLS 계수 미적용) · 단축률은 가정")
     top = BODY_TOP + 0.08
@@ -306,7 +306,7 @@ def s16(doc, F):
 # ------------------------------------------------------------------ S17 Q&A
 def s17(doc, F):
     sl = doc.new_slide(19, "Part 04")
-    chrome(sl, "[ 19 / CLOSING & Q&A ]", "마무리 및 Q&A", source="퍼즐데이터 수리 프로세스 데이터 분석 과제 · 조승훈 · 2026.10.27")
+    chrome(sl, sec_tag(19), "마무리 및 Q&A", source="퍼즐데이터 수리 프로세스 데이터 분석 과제 · 조승훈 · 2026.10.27")
     top, H = BODY_TOP + 0.08, 4.75
     lw_ = 6.3
 

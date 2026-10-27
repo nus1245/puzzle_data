@@ -135,8 +135,9 @@
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
+| `E_intern_pct` | 100.0 | case_pivot_table.csv · SQL L1888~1910 |
 | `eff_total_pct` | 14.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `match_upper_pct` | 87.3 | case_pivot_table.csv · SQL L1888~1910 |
+| `fast_p_prec` | 83.1 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `n_events` | 13,262 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_wrongplace` | 73 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
@@ -489,7 +490,6 @@
 | `b_wait1` | 0.1 | 재계산 |
 | `eff_total` | 15.4 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
 | `eff_total_pct` | 14.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `fast_p_prec` | 83.1 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `fast_pct` | 39.4 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `inflow_day` | 134.3 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `inflow_rest` | 81.4 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
@@ -497,7 +497,6 @@
 | `n_B` | 118 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_fast` | 365 | 재계산 |
 | `n_field_workers` | 11 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
-| `n_rework` | 26 | case_pivot_table.csv · SQL L1470~1546 |
 | `qm_cut_pct` | 18 | 재계산 |
 | `qm_freed_pct` | 7.2 | 재계산 |
 | `sens10_after` | 98.2 | 재계산 |
@@ -514,13 +513,13 @@
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
+| `E_intern_pct` | 100.0 | case_pivot_table.csv · SQL L1888~1910 |
 | `capa_day` | 68.0 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `eff_total_pct` | 14.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `fast_p_prec` | 83.1 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `handover_ratio` | 6.6 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `inflow_day` | 134.3 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `lead_total` | 105.9 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
-| `match_cons_pct` | 83.2 | case_pivot_table.csv · SQL L1888~1910 |
-| `match_upper_pct` | 87.3 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_events` | 13,262 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_null_rows` | 20 | repair2.csv 결측 재계산 · NB-A Cell 53·77·81 · EDA-01 |
 | `n_rework` | 26 | case_pivot_table.csv · SQL L1470~1546 |

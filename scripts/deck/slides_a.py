@@ -47,7 +47,7 @@ def s01(doc, F):
 # ------------------------------------------------------------------ S02 목차
 def s02(doc, F):
     sl = doc.new_slide(2, "Part 00")
-    chrome(sl, "[ 02 / PREVIEW ]", "목차 소개",
+    chrome(sl, sec_tag(2), "목차 소개",
            source="PART 01 p.04–06 · PART 02 p.07–15 · PART 03 p.16–18 · PART 04 p.19")
     tiles = [
         ("01", ACC, "질문 1", ACC, ACC_BG, "데이터 진단 및 전처리", 4,
@@ -57,7 +57,7 @@ def s02(doc, F):
          ["AS-IS 표준 프로세스 모델", "2개 병목 구간: 접수 · 실사", "1개 반복 작업: 반복 수리", "상관·OLS로 소요시간 영향 요인 실증"],
          f"{F('wait_B_pct')}%", "리드타임 중 대기"),
         ("03", GRN, "질문 3", GRN, GRN_BG, "TO-BE 개선 방안", 16,
-         [f"사전 분류 적중률 {F('match_upper_pct')}%와 정보 해상도 한계", "Direct Booking 전략: 하나의 병목 줄을 두 갈래로", "단축률 가정 시 감축 효과"],
+         [f"사전 분류 적중(E→사내 {F('E_intern_pct')}%, P→즉시 {F('fast_p_prec')}%)과 정보 해상도 한계", "Direct Booking 전략: 하나의 병목 줄을 두 갈래로", "단축률 가정 시 감축 효과"],
          f"▼{F('eff_total_pct')}%", "전체 평균 감축(가정)"),
         ("04", MUTED, "마무리", MUTED, SLATE_BG, "핵심 요약", 19,
          ["파트별 핵심 결과 정리"],
@@ -81,7 +81,7 @@ def s02(doc, F):
 # ------------------------------------------------------------------ S03 요약
 def s03(doc, F):
     sl = doc.new_slide(3, "Part 00")
-    chrome(sl, "[ 03 / EXECUTIVE SUMMARY ]", f"총 리드타임의 {F('wait_B_pct')}%는 작업이 아닌 대기 시간이다",
+    chrome(sl, sec_tag(3), f"총 리드타임의 {F('wait_B_pct')}%는 작업이 아닌 대기 시간이다",
            source=f"대기 = 총 {F('lead_total')}h − 작업(현장 실작업 {F('field_work')}h + 정산 시스템 처리 {F('stl_total')}h) · 접수 구간은 전부 대기로 산정")
     banner = Card([label("THESIS · 통괄 가설"),
                    Txt([rich(f"수리 지연의 본질은 작업자 태만이 아니라 **공정 간 대기**와 **비실시간 접수의 소통 공백**이다. "
@@ -116,7 +116,7 @@ def s03(doc, F):
 # ------------------------------------------------------------------ S04 진단
 def s04(doc, F):
     sl = doc.new_slide(4, "Part 01")
-    chrome(sl, "[ 04 / Q1 · BEFORE PROFILING ]", f"정상 결측은 보존, 비정상 결측 {F('n_null_rows')}행만 복원 대상",
+    chrome(sl, sec_tag(4), f"정상 결측은 보존, 비정상 결측 {F('n_null_rows')}행만 복원 대상",
            sub="결측치를 '정상 결측'과 '비정상 결측'으로 2원화하고, 복원 대상을 최소로 특정했다",
            source="출처: repair2.csv 프로파일링 (EDA-01) · 비정상 결측 20행 = 5개 속성 결측이 포함된 18개 케이스의 실제 행")
     top = 1.75
@@ -149,7 +149,7 @@ def s04(doc, F):
 # ------------------------------------------------------------------ S05 CASE 1~5
 def s05(doc, F):
     sl = doc.new_slide(5, "Part 01")
-    chrome(sl, "[ 05 / Q1 · CASE 1–5 ]", "삭제 없이, 업무 순서로 결측과 오기입 교정 복원",
+    chrome(sl, sec_tag(5), "삭제 없이, 업무 순서로 결측과 오기입 교정 복원",
            sub=f"비정상 결측 {F('n_null_rows')}행에 더해 날짜 오기입 {F('date_miswritten')}행·더미 시각 {F('time_dummy')}행까지 5개 유형을 근거 기반으로 복원",
            source="출처: analysis.ipynb Cell 18·20·53·63·77·81")
     sl.text(SLIDE_W - MX - 7.0, BODY_TOP + 0.02, 7.0, [T("단위 · 행 = 이벤트 로그 1행 / 케이스 = 수리 요청 1건", 10, False, MUTED, "m", align="r", balance=False)],
@@ -199,7 +199,7 @@ def s05(doc, F):
 # ------------------------------------------------------------------ S06 무결성·운영 특성
 def s06(doc, F):
     sl = doc.new_slide(6, "Part 01")
-    chrome(sl, "[ 06 / Q1 · AFTER PROFILING ]", "시간 역전 0건, 접수·현장 모두 단일 풀",
+    chrome(sl, sec_tag(6), "시간 역전 0건, 접수·현장 모두 단일 풀",
            source="출처: analysis.ipynb Cell 81·83, analysis.sql L760~828(배정비)·L1138~1202(24시간 접수), repair_cleaned.csv")
 
     def c(t, color=INK2, bold=False, size=11.5):
@@ -245,7 +245,7 @@ def s06(doc, F):
 # ------------------------------------------------------------------ S07 AS-IS 프로세스
 def s07(doc, F):
     sl = doc.new_slide(7, "Part 02")
-    chrome(sl, "[ 07 / Q2-1 · AS-IS PROCESS ]", "수리 프로세스(E2E) 라인",
+    chrome(sl, sec_tag(7), "수리 프로세스(E2E) 라인",
            source=f"※ 맵의 '+5.11h'는 채널 통제 OLS 계수, S09의 +{F('handover_penalty_h')}h는 단순 평균 차이 · 노드 EV = 이벤트 수")
     cw_ = CW
     chart = Card([cap("FIG.07", "E2E 기준 프로세스 맵 (접수 → 현장 → 정산) · 케이스 기준 927건"),
@@ -273,7 +273,7 @@ def s07(doc, F):
 # ------------------------------------------------------------------ S08 거시 분해
 def s08(doc, F):
     sl = doc.new_slide(8, "Part 02")
-    chrome(sl, "[ 08 / Q2-2 · MACRO DECOMPOSITION ]", f"리드타임 {F('lead_total')}h의 {F('wait_B_pct')}%는 공정 간 대기",
+    chrome(sl, sec_tag(8), f"리드타임 {F('lead_total')}h의 {F('wait_B_pct')}%는 공정 간 대기",
            sub=f"대기 = {F('lead_total')}h − 작업({F('field_work')}h 현장 실작업 + {F('stl_total')}h 정산 처리) = {F('wait_B')}h · 현장 국면이 대기의 {F('field_wait_of_all_wait_pct')}%",
            source=f"출처: analysis.sql L1206~1395 · 접수 {F('rec_total')}h는 일정 조율 구간이 대부분이라 전부 대기로 산정(현장 실작업만 작업이면 {F('wait_fieldwork_only_pct')}%)")
     chart = Card([cap("FIG.08", "3대 국면별 실작업 vs 단순 대기 (정정본)"),
@@ -298,7 +298,7 @@ def s08(doc, F):
 # ------------------------------------------------------------------ S09 접수 병목
 def s09(doc, F):
     sl = doc.new_slide(9, "Part 02")
-    chrome(sl, "[ 09 / Q2-2 · BOTTLENECK 1 · RECEPTION ]", "접수 지연은 물량이 아닌 교차 인계 탓",
+    chrome(sl, sec_tag(9), "접수 지연은 물량이 아닌 교차 인계 탓",
            sub=f"접수 소요시간 = 최초 접수 → 방문 일정 확정 · 15분 이내는 ≤15분 · 인계 효과 +{F('handover_penalty_h')}h(단순 차이), +{F('ols1_handover_b')}h(OLS)",
            source=f"출처: analysis.sql L863~1135 · hypothesis 노트북 Cell 9 (접수 OLS R²={F('ols1_r2')}, F={F('ols1_f')}, VIF 최대 {F('ols1_vif_max')})")
     charts = [Card([cap(tag, title), Img(os.path.join(DECK, fn), name=nm)], pad=0.14, gap=0.06, name="rec-" + nm)
@@ -336,7 +336,7 @@ def s09(doc, F):
 # ------------------------------------------------------------------ S10 접수 영향 요인① 상관 히트맵
 def s10r(doc, F):
     sl = doc.new_slide(10, "Part 02")
-    chrome(sl, "[ 10 / Q2-3 · RECEPTION DRIVERS ]", "접수 시간은 인계·채널과 연동, 물량과는 무관",
+    chrome(sl, sec_tag(10), "접수 시간은 인계·채널과 연동, 물량과는 무관",
            sub="접수 국면 9개 변수의 피어슨 상관 — 방향을 보여주고, 다음 장의 OLS가 순수 효과를 분리한다",
            source=f"출처: hypothesis 노트북 Cell 7 (피어슨 r, N={F('n_valid')}) · 전 칸 재계산 일치 · 소요시간 = 최초 접수 → 방문 일정 확정(조율 완료)")
     top, H = BODY_TOP + 0.08, 5.15
@@ -368,7 +368,7 @@ def s10r(doc, F):
 # ------------------------------------------------------------------ S11 접수 영향 요인② 접수 단독 OLS
 def s11r(doc, F):
     sl = doc.new_slide(11, "Part 02")
-    chrome(sl, "[ 11 / Q2-3 · RECEPTION OLS ]", "접수 지연 요인: 교차 인계·비실시간 채널, 물량은 무관",
+    chrome(sl, sec_tag(11), "접수 지연 요인: 교차 인계·비실시간 채널, 물량은 무관",
            sub=f"접수 소요시간 OLS · R² {F('ols1_r2_pct')}% · F {F('ols1_f')} · N {F('n_valid')} · VIF 최대 {F('ols1_vif_max')}",
            source="출처: hypothesis 노트북 Cell 9 (statsmodels OLS, 재계산 일치) · 종속변수 receipt_hours · 채널 세분화는 전화 기준")
     top = BODY_TOP + 0.08

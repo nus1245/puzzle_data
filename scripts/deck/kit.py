@@ -4,6 +4,17 @@ from engine import _hex
 
 BODY_TOP, BODY_BOTTOM = 1.62, 6.90
 
+# 목차(S02)의 PART 구분과 같은 기준의 페이지 라벨: [ 파트 · 요약 문구 · 페이지 범위 ]
+_SECTIONS = [(0, "프리뷰", 2, 3), (1, "데이터 진단 및 전처리", 4, 6), (2, "AS-IS 심층 분석", 7, 15), (3, "TO-BE 개선 방안", 16, 18), (4, "마무리", 19, 19)]
+
+
+def sec_tag(no):
+    for idx, name, a, b in _SECTIONS:
+        if a <= no <= b:
+            rng = f"{a:02d}" if a == b else f"{a:02d}~{b:02d}"
+            return f"[ {idx:02d} · {name} · P.{rng} ]"
+    raise ValueError(no)
+
 
 # ------------------------------------------------------------------ 흐름 요소
 class Txt:

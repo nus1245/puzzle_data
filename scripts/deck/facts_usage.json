@@ -4,8 +4,9 @@
   "wait_B_pct"
  ],
  "2": [
+  "E_intern_pct",
   "eff_total_pct",
-  "match_upper_pct",
+  "fast_p_prec",
   "n_events",
   "n_valid",
   "n_wrongplace",
