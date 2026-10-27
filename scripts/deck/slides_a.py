@@ -230,9 +230,9 @@ def s06(doc, F):
               pad=0.2, gap=0.06, name="op1")
     c2 = Card([label("02 · 조직 구조", ORG), heading("지역 전담제 X, 단일 공유 풀", 14, INK, name="h2"),
                big(f"{F('dian_share')} : {F('monica_share')}", "%", RED, 36, name="n2"),
-               body("현장 출동 케이스의 접수 담당 비중(Dian : Monica) — 기사별로도 고르게 분산", 11.5, INK2),
-               bullets([f"1회 접수 주택 {F('houses_once_pct')}%({F('n_houses_once')}/{F('n_houses')}채)라 지역 분담처럼 보임",
-                        f"재접수 {F('recontact_houses')}채 중 {F('recontact_diff_pct')}%({F('recontact_diff')}채)는 다른 상담원이 접수"], 11)],
+               body("정상 접수 케이스 접수 비중 (Dian : Monica)", 11.5, INK2),
+               bullets(["배정 현장 기사 고르게 분산",
+                        f"2회 이상 접수 주택 {F('recontact_houses')}채 중 {F('recontact_diff_pct')}%({F('recontact_diff')}채)는 초기 접수 담당자에게 비인계"], 11)],
               pad=0.2, gap=0.06, name="op2")
     stack(sl, rx, BODY_TOP + 0.08, rw, [c1, c2], gutter=0.14, h_total=5.18)
     sl.notes(f"전처리를 마친 결과, 행 손실 없이 시간 역전 0건인 {F('n_events')}행 데이터셋을 확보했습니다. 이 과정에서 수리회사의 운영 특성 두 가지가 드러났습니다. "
