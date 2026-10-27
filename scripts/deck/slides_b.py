@@ -12,7 +12,7 @@ def _side_cards_right(sl, F, x, y, w, h_total, cards, gutter=0.12):
 # ------------------------------------------------------------------ S10 현장① 구성
 def s10(doc, F):
     sl = doc.new_slide(12, "Part 02")
-    chrome(sl, "[ 12 / Q2-2 · BOTTLENECK 2 · FIELD ]", f"현장 {F('field_total')}h 중 실사 방문 대기가 {F('wait1_pct')}%",
+    chrome(sl, "[ 12 / Q2-2 · BOTTLENECK 2 · FIELD ]", f"현장 지연 요인: 현장 {F('field_total')}h 중 실사 방문 대기 {F('wait1_pct')}%",
            sub=f"현장 대기 {F('field_wait')}h = 현장 시간의 {F('field_wait_pct')}% · 기사의 실작업은 {F('field_work_pct')}%({F('field_work')}h)에 불과",
            source="출처: analysis.sql L1246~1395 · hypothesis 노트북 Cell 11·13 (Wait 2는 재수리 인계 대기 포함 정의)")
     top, H = BODY_TOP + 0.08, 5.15
@@ -35,7 +35,8 @@ def s10(doc, F):
     h2 = row(sl, rx, top + h1 + 0.14, rw, [s3, s4], gutter=0.14)
     ty = top + h1 + 0.14 + h2 + 0.14
     take = Card([label("TAKEAWAY", RED),
-                 Txt([rich(f"대기 합계 **{F('field_wait')}h = 현장 시간의 {F('field_wait_pct')}%**. 병목은 기사의 작업 속도가 아니라 방문 전 대기 관리다.", 15, INK, accent=RED)], name="take")],
+                 Txt([rich(f"대기 합계 **{F('field_wait')}h = 현장 시간의 {F('field_wait_pct')}%**.", 15, INK, accent=RED),
+                      rich("병목은 기사의 작업 속도가 아니라 방문 전 대기 관리다.", 15, INK, accent=RED)], name="take")],
                 pad=0.18, gap=0.05, name="take-card", line=RED)
     take.draw(sl, rx, ty, rw, top + H - ty)
     assert_body(sl, top + H)
