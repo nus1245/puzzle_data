@@ -81,7 +81,7 @@ def s02(doc, F):
 # ------------------------------------------------------------------ S03 요약
 def s03(doc, F):
     sl = doc.new_slide(3, "Part 00")
-    chrome(sl, "[ 03 / EXECUTIVE SUMMARY ]", f"리드타임의 {F('wait_B_pct')}%는 작업이 아닌 대기다",
+    chrome(sl, "[ 03 / EXECUTIVE SUMMARY ]", f"총 리드타임의 {F('wait_B_pct')}%는 작업이 아닌 대기 시간이다",
            source=f"대기 = 총 {F('lead_total')}h − 작업(현장 실작업 {F('field_work')}h + 정산 시스템 처리 {F('stl_total')}h) · 접수 구간은 전부 대기로 산정")
     banner = Card([label("THESIS · 통괄 가설"),
                    Txt([rich(f"수리 지연의 본질은 작업자 태만이 아니라 **공정 간 대기**와 **비실시간 접수의 소통 공백**이다. "
