@@ -254,7 +254,7 @@ def s15(doc, F):
 def s16(doc, F):
     sl = doc.new_slide(18, "Part 03")
     chrome(sl, "[ 18 / Q3 · EXPECTED IMPACT ]", f"실사 대기 20% 단축 시 평균 리드타임 ▼{F('eff_total_pct')}%",
-           sub="줄 분리의 순수 효과는 로그로 식별할 수 없어 단축률을 가정하고, 파일럿으로 검증한다",
+           sub="줄 분리의 순수 효과는 로그로 식별할 수 없어 단축률을 가정하고, 실험으로 검증한다",
            source="출처: case_pivot_table.csv 재계산 · 실사 대기는 리드타임의 구성요소라 1:1 반영(OLS 계수 미적용) · 단축률은 가정")
     top = BODY_TOP + 0.08
     lw_ = 6.2
@@ -264,12 +264,12 @@ def s16(doc, F):
         track = w - 2.05
         cy = y
         for lab, val, col in [("AS-IS", F("lead_total"), "94A3B8"), ("TO-BE", F("tobe_total"), GRN)]:
-            sl_.text(x, cy + 0.04, 0.62, [T(lab, 9.5, True, MUTED, "m", balance=False)], parent=parent, name=f"b-{lab}", structural=True, role="label", max_lines=1)
+            sl_.text(x, cy + 0.08, 0.62, [T(lab, 9.5, True, MUTED, "m", balance=False)], parent=parent, name=f"b-{lab}", structural=True, role="label", max_lines=1)
             bw = track * float(val) / mx
-            sl_.rect(x + 0.7, cy, bw, 0.34, fill=col, line=None, parent=parent, name=f"b-{lab}-bar")
-            sl_.text(x + 0.7 + bw + 0.08, cy + 0.04, 1.1, [T(f"{val}h", 12.5, True, INK, "m", balance=False)], parent=parent, name=f"b-{lab}-v", role="body", max_lines=1)
-            cy += 0.46
-        sl_.text(x + 0.7, cy + 0.02, w - 0.7, [T(f"▼ {F('eff_total_pct')}% (−{F('eff_total')}h)", 15, True, GRN, "m", balance=False)], parent=parent, name="b-delta", role="body", max_lines=1)
+            sl_.rect(x + 0.7, cy, bw, 0.46, fill=col, line=None, parent=parent, name=f"b-{lab}-bar")
+            sl_.text(x + 0.7 + bw + 0.08, cy + 0.08, 1.1, [T(f"{val}h", 15, True, INK, "m", balance=False)], parent=parent, name=f"b-{lab}-v", role="body", max_lines=1)
+            cy += 0.62
+        sl_.text(x + 0.7, cy + 0.04, w - 0.7, [T(f"▼ {F('eff_total_pct')}% (−{F('eff_total')}h)", 18, True, GRN, "m", balance=False)], parent=parent, name="b-delta", role="body", max_lines=1)
 
     def c(t, col=INK2, bold=False, size=11.5, font="k", align="l"):
         return [T(t, size, bold, col, font, align=align, balance=False)]
@@ -278,33 +278,24 @@ def s16(doc, F):
         [c("10%"), c(f"{F('lead_total')} → {F('sens10_after')}h (−{F('sens10_total')}h)", INK2, False, 11.5, "m"), c(f"▼ {F('sens10_pct')}%", INK2, False, 11.5, "m")],
         [c("20% · 기준", INK, True), c(f"{F('lead_total')} → {F('tobe_total')}h (−{F('eff_total')}h)", GRN, True, 11.5, "m"), c(f"▼ {F('eff_total_pct')}%", GRN, True, 11.5, "m")],
         [c("30%"), c(f"{F('lead_total')} → {F('sens30_after')}h (−{F('sens30_total')}h)", INK2, False, 11.5, "m"), c(f"▼ {F('sens30_pct')}%", INK2, False, 11.5, "m")],
-    ], pad_y=0.07, name="sens", row_fills={1: GRN_BG})
-    left = Card([label("TO-BE vs AS-IS · 평균 리드타임"), Custom(1.3, bars), Rule(), label("SENSITIVITY · 단축률별 효과"), sens], pad=0.22, gap=0.1, name="bars-card")
+    ], pad_y=0.16, name="sens", row_fills={1: GRN_BG})
+    left = Card([label("실사 대기 단축 20% 가정", ORG), Custom(1.78, bars), Rule(), label("SENSITIVITY · 단축률별 효과"), sens], pad=0.22, gap=0.16, name="bars-card")
 
     prow = [
-        [c("대상", INK, True), c(f"즉시 코드 P-1·3 {F('n_fast')}건만 별도 줄로 분리(예약 슬롯 확보), 나머지는 현행 유지", MUTED, False, 11)],
-        [c("비교", INK, True), c(f"나머지 실사 줄의 대기(AS-IS {F('wait1')}h)와 즉시 줄의 예약 대기", MUTED, False, 11)],
-        [c("품질", INK, True), c(f"직행 적중률(AS-IS P {F('fast_p_prec')}%)과 재방문 건수(AS-IS {F('n_rework')}건)", MUTED, False, 11)],
-        [c("판정", INK, True), c("실사 대기 단축률이 가정(10·20·30%)의 어느 구간인지 보고 확대 여부를 정한다", MUTED, False, 11)],
+        [c("대상", INK, True), c("현행 작업 경로 케이스와 통합 경로 케이스", INK2, False, 13.5)],
+        [c("비교", INK, True), c("통합 경로로 빠진 이후, 현행 작업 경로의 실사 대기 시간 증감 추이", INK2, False, 13.5)],
+        [c("평가", INK, True), c("통합 경로 유도 적중률 · 현행 작업 경로의 실사 대기 시간 감소폭 · 적체(WIP) 부담률 등", INK2, False, 13.5)],
     ]
-    ptbl = Table([(1.0, "", "l"), (4.4, "", "l")], prow, pad_y=0.13, head=False, name="pilot")
-    right = Card([label("PILOT · 순수 효과 검증 설계"), ptbl,
-                  Txt([T("미반영(상방 요인): 자재 사전 확보, 재방문 방지, 접수 인계 제거 — 근거가 부족해 효과에서 제외했습니다.", 11, False, MUTED, balance=True)], name="excl")],
-                 pad=0.2, gap=0.12, name="eff-card")
+    ptbl = Table([(1.0, "", "l"), (4.4, "", "l")], prow, pad_y=0.5, head=False, name="pilot")
+    right = Card([label("실험 설계 구상"), ptbl], pad=0.2, gap=0.12, name="eff-card")
     rw = CW - lw_ - 0.2
-    hh = max(left.natural_h(lw_), right.natural_h(rw))
+    hh = BODY_BOTTOM - top
     left.draw(sl, MX, top, lw_, hh)
     right.draw(sl, MX + lw_ + 0.2, top, rw, hh)
-    y = top + hh + 0.15
-    ban = Card([label("ASSUMPTIONS · 읽는 법", ACC),
-                Txt([rich(f"단축률 20%는 **가정**이다. 즉시 건이 빠지면 실사 줄 유입은 {F('fast_pct')}% 줄지만 기사 {F('n_field_workers')}명을 두 줄이 공유해 줄 분리의 순수 효과는 로그로 식별되지 않는다. 20%는 유입 감소율의 약 절반만 반영한 보수 가정이며 파일럿으로 검증한다.", 12, INK2, accent=ACC)], name="asm")],
-               pad=0.18, gap=0.05, name="assump")
-    bh = max(ban.natural_h(CW), BODY_BOTTOM - y)
-    ban.draw(sl, MX, y, CW, bh)
-    assert_body(sl, y + bh)
+    assert_body(sl, top + hh)
     sl.notes(f"효과는 하나의 가정으로만 계산했습니다. 즉시 수리 {F('n_fast')}건이 실사 줄에서 빠지면 실사 줄 유입이 일 {F('inflow_day')}건에서 {F('inflow_rest')}건으로 {F('fast_pct')}% 줄어듭니다. 이 유입 감소의 약 절반만 대기 단축으로 반영해 실사 대기를 20%, 즉 {F('wait1')}시간에서 {F('wait1_after')}시간으로 {F('eff_total')}시간 줄인다고 가정합니다. "
              f"실사 대기는 리드타임의 구성요소이므로 1대1로 반영해 {F('lead_total')}시간이 {F('tobe_total')}시간, ▼{F('eff_total_pct')}%입니다. 단축률이 10%면 ▼{F('sens10_pct')}%, 30%면 ▼{F('sens30_pct')}%입니다. "
-             f"이 숫자는 예측이 아니라 가정입니다. 기사 {F('n_field_workers')}명을 두 줄이 공유하고 관측 데이터에는 줄을 나눈 사례가 없어 순수 효과는 식별되지 않습니다. 그래서 즉시 건만 별도 줄로 운영하는 파일럿을 제안하고, 나머지 줄의 대기와 직행 적중률, 재방문 건수로 판정합니다. "
+             f"이 숫자는 예측이 아니라 가정입니다. 기사 {F('n_field_workers')}명을 두 줄이 공유하고 관측 데이터에는 줄을 나눈 사례가 없어 순수 효과는 식별되지 않습니다. 그래서 실험 설계를 구상했습니다. 대상은 현행 작업 경로 케이스와 통합 경로 케이스이고, 비교는 통합 경로로 빠진 이후 현행 작업 경로의 실사 대기 시간 증감 추이이며, 평가는 통합 경로 유도 적중률, 현행 경로 실사 대기 감소폭, 적체 WIP 부담 등입니다. "
              f"자재 사전 확보, 재방문 방지, 접수 인계 제거는 근거가 부족해 효과에서 제외했고 상방 요인으로 남깁니다. "
              f"[예상 질문] 20%의 근거는? → 유입 감소율 {F('fast_pct')}%의 약 절반이라는 보수 가정입니다. 참고로 일별 대기열 모델에서 실사 단계가 사라져 해방되는 기사 시간 {F('qm_freed_pct')}%만 반영해도 평균 대기가 약 {F('qm_cut_pct')}% 줄지만, 기준값이 구성상 항등식이고 부하가 큰 8일 구간이라 상한 참고로만 씁니다. "
              f"[예상 질문] 줄별 평균(즉시 줄, 나머지 줄)으로 계산하지 않은 이유는? → 두 줄은 지금 하나의 대기열을 공유한 상태의 평균이라 줄을 나눈 뒤의 대기를 대표하지 않고, B형 {F('n_B')}건(대기 {F('b_wait1')}시간)이 섞여 있어 실제 큐 대기와도 다릅니다.")
