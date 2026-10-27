@@ -93,7 +93,8 @@ def s12(doc, F):
           Card([label("비실시간 채널 · 웹·우편", ORG), big("+" + F("ols2_async_b"), "h", RED, 24, name="c"), body(f"웹·우편 접수, p = {F('ols2_async_p')}", 11, INK2)], pad=0.17, gap=0.06, name="k3")]
     stack(sl, rx, top, rw, cs, gutter=0.12, h_total=ch)
     ty = top + ch + 0.15
-    take = Card([Txt([rich(f"평균 기여(계수 × 평균값)로 환산하면 **실사 지연 {F('ols2_visit_contrib')}h**({F('ols2_visit_b')} × {F('ols2_visit_mean')}h)가 사내수리 {F('ols2_intern_contrib')}h({F('ols2_intern_b')} × {F('n_intern1_pct')}%)보다 훨씬 크다. 2차 에스컬레이션(+{F('ols2_esc_b')}h)은 p = {F('ols2_esc_p')}로 비유의.", 12.5, INK, accent=ACC)], name="take")],
+    take = Card([Txt([rich(f"평균 기여(계수 × 평균값)로 환산하면 **실사 지연 {F('ols2_visit_contrib')}h**({F('ols2_visit_b')} × {F('ols2_visit_mean')}h)가 사내수리 {F('ols2_intern_contrib')}h({F('ols2_intern_b')} × {F('n_intern1_pct')}%)보다 훨씬 크다.", 12.5, INK, accent=ACC),
+                      rich(f"2차 에스컬레이션(+{F('ols2_esc_b')}h)은 p = {F('ols2_esc_p')}로 비유의.", 12.5, INK, accent=ACC)], name="take")],
                 pad=0.17, name="take-card")
     th_ = take.natural_h(CW)
     take.draw(sl, MX, ty, CW, th_)
