@@ -231,7 +231,7 @@ def s06(doc, F):
     c2 = Card([label("02 · 조직 구조", ORG), heading("지역 전담제 X, 단일 공유 풀", 14, INK, name="h2"),
                big(f"{F('dian_share')} : {F('monica_share')}", "%", RED, 36, name="n2"),
                body("정상 접수 케이스 접수 비중 (Dian : Monica)", 11.5, INK2),
-               bullets([f"배정 현장 기사 고르게 분산 (기사별 Dian 접수 건 출동 비율이 평균 {F('dian_share')}%에 수렴)",
+               bullets([f"배정 현장 기사 고르게 분산 (접수원별 기사 출동 비율: 평균 {F('dian_share')}%)",
                         f"2회 이상 접수 주택 {F('recontact_houses')}채 중 {F('recontact_diff_pct')}%({F('recontact_diff')}채)는 초기 접수 담당자에게 비인계"], 11)],
               pad=0.2, gap=0.06, name="op2")
     stack(sl, rx, BODY_TOP + 0.08, rw, [c1, c2], gutter=0.14, h_total=5.18)
