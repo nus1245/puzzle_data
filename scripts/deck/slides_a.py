@@ -260,13 +260,13 @@ def s07(doc, F):
                                                            rich(f"즉시→사내 {F('esc_imm_intern')} · 즉시→외주 {F('esc_imm_extern')} · 사내→외주 {F('esc_intern_extern')}", 11.5, INK2, accent=RED),
                                                            rich(f"총 {F('esc_total')}회 · **역행 {F('backflow_all')}건**", 11.5, INK2, accent=RED, align="c")], name="esc")], pad=0.2, gap=0.06, name="c2"),
         Card([label("03 · 정산", GRN), bullets(["수리 완료 후 **고객 통보·재무 전송** 병렬 시행",
-                                                f"티켓 발행 = 병렬 종료 시각: **{F('ticket_match_n')}건({F('ticket_match_pct')}%)** 일치, {F('ticket_mismatch_n')}건은 {F('ticket_gap_min')}분 차이"], 11.5)], pad=0.2, gap=0.06, name="c3"),
+                                                f"티켓 발행 ≥ 병렬 종료 시각 **{F('n_valid')}건(100%)**, 역전 {F('ticket_before_n')}건 — 동시 {F('ticket_match_n')}건 · 결측 복원 {F('ticket_mismatch_n')}건(+{F('ticket_gap_min')}분)"], 11.5)], pad=0.2, gap=0.06, name="c3"),
     ]
     hh = row(sl, MX, y, CW, chips, weights=[0.8, 1.1, 1.1], gutter=0.2)
     assert_body(sl, y + hh)
     sl.notes(f"병목 분석 전에, 모든 분석의 기준선이 될 E2E 프로세스 모델입니다. 접수 단계에서 오접수 {F('n_wrongplace')}건이 조기 이탈하고 {F('n_valid')}건이 정상 접수가 됩니다. "
              f"현장은 단방향 에스컬레이션입니다. 즉시수리에서 사내수리로 {F('esc_imm_intern')}건, 즉시수리에서 외주로 {F('esc_imm_extern')}건, 사내수리에서 외주로 {F('esc_intern_extern')}건, 총 {F('esc_total')}회 인계되기만 하고 외주 이후 되돌아간 전이는 {F('backflow_all')}건입니다. 정산은 고객 통보 {F('settle_client_first')}건 : 재무 전송 {F('settle_fin_first')}건({F('settle_client_first_pct')}% : {F('settle_fin_first_pct')}%)으로 대칭 선행하는 병렬 구조이며, "
-             f"고객 통보와 재무 전송은 병렬이고, 티켓 발행 시각은 늦게 끝난 쪽과 {F('n_valid')}건 중 {F('ticket_match_n')}건({F('ticket_match_pct')}%) 일치하며 나머지 {F('ticket_mismatch_n')}건은 {F('ticket_gap_min')}분 차이입니다. [근거 보강] 시각이 원본인 정상 표본 335건에서도 168:167로 대등합니다(노트북 Cell 75).")
+             f"고객 통보와 재무 전송은 병렬이고, 티켓 발행이 병렬 종료보다 앞선 역전은 {F('n_valid')}건 중 {F('ticket_before_n')}건입니다. {F('ticket_match_n')}건({F('ticket_match_pct')}%)은 병렬 종료와 동시에 마감됐고, 나머지 {F('ticket_mismatch_n')}건(케이스 154·959)은 원본 티켓 시각이 결측·더미여서 정상 표본 중앙값 {F('ticket_gap_min')}분을 앞선 작업 시각에 더해 복원한 순차 마감입니다. [근거 보강] 시각이 원본인 정상 표본 335건에서도 168:167로 대등합니다(노트북 Cell 75).")
     return sl
 
 

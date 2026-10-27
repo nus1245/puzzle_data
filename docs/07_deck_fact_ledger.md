@@ -4,8 +4,8 @@
 
 **기준 우선순위**: ① `repair_cleaned.csv`·`case_pivot_table.csv`·`repair2.csv` 재계산 → ② `analysis.sql` → ③ `analysis.ipynb`·`hypothesis_testing_and_visualization.ipynb`. 원천끼리 다르면 재계산값을 채택하고 차이를 아래에 기록했다.
 
-- 재계산 vs 원천 표기 대조: **69건 중 69건 일치**, 불일치 0건
-- 슬라이드에 실린 모든 숫자는 `facts.json`(총 260개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
+- 재계산 vs 원천 표기 대조: **70건 중 70건 일치**, 불일치 0건
+- 슬라이드에 실린 모든 숫자는 `facts.json`(총 263개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
 
 ## 1. 재계산 vs 원천 표기 대조
 
@@ -66,6 +66,7 @@
 | `match_upper_pct` | 87.3 | 87.3 | SQL L1899 | 일치 |
 | `match_cons_pct` | 83.2 | 83.2 | SQL L1899 | 일치 |
 | `n_P4` | 38 | 38 | SQL L1894 | 일치 |
+| `ticket_mismatch_n` | 2 | 2 | case_pivot_table 재계산 (TicketReady ≠ max(고객통보, 재무전송)인 케이스 2건, 차이 1분) | 일치 |
 | `esc_total` | 96 | 96 | 프로세스 맵 '유형 간 인계 96회' | 일치 |
 | `settle_client_first` | 469 | 469 | 스토리보드 S07 (원천 미기재 → 재계산) | 일치 |
 | `houses` | 890 | 890 | SQL L419 | 일치 |
@@ -121,9 +122,7 @@
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
-| `n_cases_all` | 1,000 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_events` | 13,262 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
-| `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `wait_B_pct` | 90.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 
 ### S02
@@ -134,6 +133,7 @@
 | `match_upper_pct` | 87.3 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_events` | 13,262 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
+| `n_wrongplace` | 73 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `wait_B_pct` | 90.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 
 ### S03
@@ -151,10 +151,10 @@
 | `inflow_day` | 134.3 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `lead_total` | 105.9 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 | `n_events` | 13,262 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
-| `n_fast` | 365 | 재계산 |
 | `n_handover` | 123 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `n_null_rows` | 20 | repair2.csv 결측 재계산 · NB-A Cell 53·77·81 · EDA-01 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
+| `n_wrongplace` | 73 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `null_rows_pct` | 0.15 | repair2.csv 결측 재계산 · NB-A Cell 53·77·81 · EDA-01 |
 | `rework_gap_mean` | 32.9 | case_pivot_table.csv · SQL L1470~1546 |
 | `stl_total` | 5.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
@@ -222,8 +222,6 @@
 | `monica_share` | 53.1 | repair_cleaned.csv · SQL L419~828·L1138~1202 |
 | `n_cases_all` | 1,000 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_events` | 13,262 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
-| `n_houses` | 890 | repair_cleaned.csv · SQL L419~828·L1138~1202 |
-| `n_houses_once` | 855 | repair_cleaned.csv · SQL L419~828·L1138~1202 |
 | `n_null_rows` | 20 | repair2.csv 결측 재계산 · NB-A Cell 53·77·81 · EDA-01 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_wrongplace` | 73 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
@@ -250,8 +248,11 @@
 | `settle_client_first_pct` | 50.6 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
 | `settle_fin_first` | 456 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
 | `settle_fin_first_pct` | 49.2 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
+| `ticket_before_n` | 0 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
+| `ticket_gap_min` | 1 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
 | `ticket_match_n` | 925 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
 | `ticket_match_pct` | 99.8 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
+| `ticket_mismatch_n` | 2 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
 | `wrongplace_pct` | 7.3 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 
 ### S08
@@ -281,7 +282,7 @@
 | `async_fast_pct` | 49.6 | 재계산 |
 | `async_mid_n` | 0 | 재계산 |
 | `async_slow_pct` | 50.4 | 재계산 |
-| `fast_phone_min` | 8.2 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_rt_min` | 8.3 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `fast_web_min` | 6.8 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `handover_h` | 7.87 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `handover_letter` | 54 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
@@ -502,6 +503,7 @@
 | `n_null_rows` | 20 | repair2.csv 결측 재계산 · NB-A Cell 53·77·81 · EDA-01 |
 | `n_rework` | 26 | case_pivot_table.csv · SQL L1470~1546 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
+| `n_wrongplace` | 73 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `ols2_intern_b` | 31.75 | statsmodels OLS 재계산 · NB-H Cell 19 출력 |
 | `ols2_visit_b` | 1.12 | statsmodels OLS 재계산 · NB-H Cell 19 출력 |
 | `rework_gap_mean` | 32.9 | case_pivot_table.csv · SQL L1470~1546 |
