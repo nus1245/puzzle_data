@@ -8,6 +8,7 @@
   "match_upper_pct",
   "n_events",
   "n_valid",
+  "n_wrongplace",
   "wait_B_pct"
  ],
  "3": [
@@ -326,6 +327,7 @@
   "n_null_rows",
   "n_rework",
   "n_valid",
+  "n_wrongplace",
   "ols2_intern_b",
   "ols2_visit_b",
   "rework_gap_mean",
