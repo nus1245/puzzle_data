@@ -1,3 +1,16 @@
+-- =========================================================================================
+-- 🏛️ [과제 제출 3] 프로세스 마이닝 마스터 SQL 분석 스크립트 (repair_db.repair_logs)
+-- =========================================================================================
+-- [과제 대응 영역]: 과제 질문 1, 2, 3 전수 대응
+--   - 1. 데이터 적재 및 정합성 검증 (Complete < Start 음수 소요시간 역전 0건 검증)
+--   - 2. 케이스별 1행 원천 타임라인 마스터 뷰(case_master_view) 생성 (927건 유효 코호트)
+--   - 3. 거시 리드타임 3대 국면(접수 2.1h, 현장 98.3h, 정산 5.5h) 및 대기시간 분해
+--   - 4. 접수 병목(비실시간 채널 8.1h vs 실시간 14분, 인계 패널티 +5.11h) 실측
+--   - 5. 현장 4대 소요시간(실사대기 76.8h, 실사 40분, 수리대기 14.8h, 수리 6.4h) 및 일별 WIP 적체
+--   - 6. 수리 재작업(Loop) 공정(유형 간 인계 96회, 사내 하자 재방문 36건 등) 추적
+--   - 7. TO-BE 패스트트랙 시뮬레이션 (실사 대기열 우회로 리드타임 -65.1h 순단축)
+--   - 8. 접수 지연 226건 사전코드(P/E/B) vs 실사 세부코드(1~4) 및 Direct Booking 흡수 잠재력 실증
+-- =========================================================================================
 -- =====================================================================
 -- 수리 프로세스 데이터 분석 마스터 스크립트 (repair_db.repair_logs)
 -- =====================================================================
@@ -1984,3 +1997,64 @@ SELECT
     -- OLS 회귀계수(+1.12h/h) 적용 전체 리드타임 순단축 효과
     ROUND(76.81 * 0.20 * 1.12, 1) AS `OLS_리드타임_순단축(h)`
 FROM ScenarioMetrics;
+
+-- =========================================================================================
+-- 6. [접수 지연 심층 분석] 비실시간 장기 지연(60분 초과 226건) 사전 수리코드 vs 실사 세부코드 교차 진단
+-- =========================================================================================
+-- [목적]: 비실시간 채널(웹 127건, 우편 99건)의 접수 지연 226건(전체 24.4%)을 대상으로,
+--         접수원 사전 계획 코드(P/E/B)와 현장 실사 세부코드(1~4) 및 최종 1차 수리 방식을 매핑하여
+--         Direct Booking(기사 캘린더 연동 실시간 예약) 및 사전 부품 특정화의 흡수 잠재력을 실증.
+-- [핵심 정량 팩트]:
+--   1) 226건 중 88.1%(199건: P형 113건 + E형 86건)는 접수 단계에서 명확한 사전 분류 완료.
+--   2) P형(113건) 중 83.2%(94건)는 즉시수리(ImmediateRepair)로 종결되었으며, 69.9%(79건)가 단순 정비(Code 1).
+--   3) E형(86건)은 100%(86건) 사내수리(InternRepair)로 완결(Code 1: 51건, Code 2: 35건).
+--   4) 복합진단(B형)은 11.9%(27건)에 불과함.
+--   5) 인계(Handover) 123건(웹 69, 우편 54) 전수가 이 226건 지연군에 포함되며, 
+--      단독 처리 103건(웹 58, 우편 45) 또한 비동기 큐 대기로 지연 발생.
+--   ➔ 웹 캘린더 실시간 Direct Booking 및 부품 특정 도입 시 199건(88.1%)의 접수 병목 원천 제거 가능.
+
+-- 6-1. 접수원 사전코드(P/E/B)별 실사 세부코드(1~4) 및 실제 수리 완결 방식 집계
+SELECT 
+    planned_repair_type AS `접수원_사전코드`,
+    COUNT(*) AS `장기지연_총건수`,
+    ROUND(COUNT(*) * 100.0 / 226.0, 1) AS `비율(%)`,
+    -- [실사 판정 세부코드 1~4]
+    SUM(CASE WHEN repair_code = 1 THEN 1 ELSE 0 END) AS `실사_코드1`,
+    SUM(CASE WHEN repair_code = 2 THEN 1 ELSE 0 END) AS `실사_코드2`,
+    SUM(CASE WHEN repair_code = 3 THEN 1 ELSE 0 END) AS `실사_코드3`,
+    SUM(CASE WHEN repair_code = 4 THEN 1 ELSE 0 END) AS `실사_코드4`,
+    -- [실제 1차 수리 완결 방식]
+    SUM(CASE WHEN rep1_task = 'ImmediateRepair' THEN 1 ELSE 0 END) AS `즉시수리`,
+    SUM(CASE WHEN rep1_task = 'InternRepair' THEN 1 ELSE 0 END) AS `사내수리`,
+    SUM(CASE WHEN rep1_task = 'ExternRepair' THEN 1 ELSE 0 END) AS `외주수리`
+FROM case_master_view
+WHERE objectKey IS NOT NULL
+  AND TIMESTAMPDIFF(MINUTE, contact_time, inform_survey_time) > 60
+GROUP BY planned_repair_type
+ORDER BY `장기지연_총건수` DESC;
+
+-- 6-2. 채널(Web / Letter) x 접수원 사전코드(P/E/B) 교차 분포 및 인계(Handover) 세부 현황
+SELECT 
+    m.contact_channel AS `접수채널`,
+    m.planned_repair_type AS `접수원_사전코드`,
+    COUNT(*) AS `지연건수`,
+    ROUND(COUNT(*) * 100.0 / 226.0, 1) AS `전체지연비율(%)`,
+    -- 상담원 간 인계 발생 건수 (2명 이상 관여한 123건과 매핑)
+    SUM(CASE WHEN h.caseID IS NOT NULL THEN 1 ELSE 0 END) AS `인계발생_건수`,
+    -- 단독 처리 건수 (비동기 처리 지연)
+    SUM(CASE WHEN h.caseID IS NULL THEN 1 ELSE 0 END) AS `단독처리_지연건수`,
+    -- 평균 접수 소요시간 (시간)
+    ROUND(AVG(TIMESTAMPDIFF(MINUTE, m.contact_time, m.inform_survey_time)) / 60.0, 1) AS `평균접수시간(h)`
+FROM case_master_view m
+LEFT JOIN (
+    SELECT caseID
+    FROM repair_logs
+    WHERE task_group = '접수'
+      AND SUBJECT = '사람'
+    GROUP BY caseID
+    HAVING COUNT(DISTINCT originator) > 1
+) h ON m.caseID = h.caseID
+WHERE m.objectKey IS NOT NULL
+  AND TIMESTAMPDIFF(MINUTE, m.contact_time, m.inform_survey_time) > 60
+GROUP BY m.contact_channel, m.planned_repair_type
+ORDER BY m.contact_channel DESC, `지연건수` DESC;
