@@ -282,11 +282,11 @@ def s16(doc, F):
     left = Card([label("실사 대기 단축 20% 가정", ORG), Custom(1.78, bars), Rule(), label("SENSITIVITY · 단축률별 효과"), sens], pad=0.22, gap=0.16, name="bars-card")
 
     prow = [
-        [c("대상", INK, True), c("현행 작업 경로 케이스와 통합 경로 케이스", INK2, False, 13.5)],
-        [c("비교", INK, True), c("통합 경로로 빠진 이후, 현행 작업 경로의 실사 대기 시간 증감 추이", INK2, False, 13.5)],
-        [c("평가", INK, True), c("통합 경로 유도 적중률 · 현행 작업 경로의 실사 대기 시간 감소폭 · 적체(WIP) 부담률 등", INK2, False, 13.5)],
+        [c("대상", INK, True), c("Direct Booking 케이스와 실사 대기 케이스", INK2, False, 12.5)],
+        [c("비교", INK, True), c("Direct Booking으로 빠진 이후, 실사 대기 케이스의 실사 대기 시간 증감 추이", INK2, False, 12.5)],
+        [c("평가", INK, True), c("Direct Booking 유도 적중률 · 실사 대기 케이스의 실사 대기 시간 감소폭 · 적체(WIP) 부담률 등", INK2, False, 12.5)],
     ]
-    ptbl = Table([(1.0, "", "l"), (4.4, "", "l")], prow, pad_y=0.5, head=False, name="pilot")
+    ptbl = Table([(1.0, "", "l"), (4.4, "", "l")], prow, pad_y=0.46, head=False, name="pilot")
     right = Card([label("실험 설계 구상"), ptbl], pad=0.2, gap=0.12, name="eff-card")
     rw = CW - lw_ - 0.2
     hh = BODY_BOTTOM - top
@@ -295,7 +295,7 @@ def s16(doc, F):
     assert_body(sl, top + hh)
     sl.notes(f"효과는 하나의 가정으로만 계산했습니다. 즉시 수리 {F('n_fast')}건이 실사 줄에서 빠지면 실사 줄 유입이 일 {F('inflow_day')}건에서 {F('inflow_rest')}건으로 {F('fast_pct')}% 줄어듭니다. 이 유입 감소의 약 절반만 대기 단축으로 반영해 실사 대기를 20%, 즉 {F('wait1')}시간에서 {F('wait1_after')}시간으로 {F('eff_total')}시간 줄인다고 가정합니다. "
              f"실사 대기는 리드타임의 구성요소이므로 1대1로 반영해 {F('lead_total')}시간이 {F('tobe_total')}시간, ▼{F('eff_total_pct')}%입니다. 단축률이 10%면 ▼{F('sens10_pct')}%, 30%면 ▼{F('sens30_pct')}%입니다. "
-             f"이 숫자는 예측이 아니라 가정입니다. 기사 {F('n_field_workers')}명을 두 줄이 공유하고 관측 데이터에는 줄을 나눈 사례가 없어 순수 효과는 식별되지 않습니다. 그래서 실험 설계를 구상했습니다. 대상은 현행 작업 경로 케이스와 통합 경로 케이스이고, 비교는 통합 경로로 빠진 이후 현행 작업 경로의 실사 대기 시간 증감 추이이며, 평가는 통합 경로 유도 적중률, 현행 경로 실사 대기 감소폭, 적체 WIP 부담 등입니다. "
+             f"이 숫자는 예측이 아니라 가정입니다. 기사 {F('n_field_workers')}명을 두 줄이 공유하고 관측 데이터에는 줄을 나눈 사례가 없어 순수 효과는 식별되지 않습니다. 그래서 실험 설계를 구상했습니다. 대상은 Direct Booking 케이스와 실사 대기 케이스이고, 비교는 Direct Booking으로 빠진 이후 실사 대기 케이스의 실사 대기 시간 증감 추이이며, 평가는 Direct Booking 유도 적중률, 실사 대기 케이스의 실사 대기 시간 감소폭, 적체 WIP 부담 등입니다. "
              f"자재 사전 확보, 재방문 방지, 접수 인계 제거는 근거가 부족해 효과에서 제외했고 상방 요인으로 남깁니다. "
              f"[예상 질문] 20%의 근거는? → 유입 감소율 {F('fast_pct')}%의 약 절반이라는 보수 가정입니다. 참고로 일별 대기열 모델에서 실사 단계가 사라져 해방되는 기사 시간 {F('qm_freed_pct')}%만 반영해도 평균 대기가 약 {F('qm_cut_pct')}% 줄지만, 기준값이 구성상 항등식이고 부하가 큰 8일 구간이라 상한 참고로만 씁니다. "
              f"[예상 질문] 줄별 평균(즉시 줄, 나머지 줄)으로 계산하지 않은 이유는? → 두 줄은 지금 하나의 대기열을 공유한 상태의 평균이라 줄을 나눈 뒤의 대기를 대표하지 않고, B형 {F('n_B')}건(대기 {F('b_wait1')}시간)이 섞여 있어 실제 큐 대기와도 다릅니다.")
