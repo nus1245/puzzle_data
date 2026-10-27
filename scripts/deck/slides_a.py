@@ -29,11 +29,11 @@ def s01(doc, F):
     # 우하단: 지원 정보 (가로 배열)
     cw, ch, cx, cy = 6.6, 0.95, SLIDE_W - MX - 6.6, 5.8
     _, card_id = sl.rect(cx, cy, cw, ch, fill=CARD, line=BORDER, name="applicant")
-    colw = cw / 4
-    for i, (k, v, mono) in enumerate([("POSITION", "데이터 분석가", False), ("LEVEL", "신입", False), ("NAME", "조승훈", False), ("DATE", "2026.10.27", True)]):
-        x0 = cx + i * colw + 0.2
-        sl.text(x0, cy + 0.15, colw - 0.25, [T(k, 9.5, True, ACC, "m", balance=False)], structural=True, parent=card_id, name="k-" + k, role="label", max_lines=1)
-        sl.text(x0, cy + 0.45, colw - 0.25, [T(v, 15, True, INK, "m" if mono else "k", balance=False)], structural=True, parent=card_id, name="v-" + k, role="body", max_lines=1)
+    x0 = cx + 0.2
+    for k, v, w_, mono in [("POSITION", "데이터 분석가", 1.6, False), ("LEVEL", "신입", 0.9, False), ("NAME", "조승훈", 1.1, False), ("E.MAIL", "nextbus1245@gmail.com", 2.6, True)]:
+        sl.text(x0, cy + 0.15, w_ - 0.1, [T(k, 9.5, True, ACC, "m", balance=False)], structural=True, parent=card_id, name="k-" + k, role="label", max_lines=1)
+        sl.text(x0, cy + 0.45, w_ - 0.05, [T(v, 13 if mono else 15, True, INK, "m" if mono else "k", balance=False)], structural=True, parent=card_id, name="v-" + k, role="body", max_lines=1)
+        x0 += w_
     sl.hline(MX, 6.98, CW, name="foot-rule")
     sl.text(MX, 7.06, 10.6, [T("퍼즐데이터 수리 프로세스 데이터 분석 과제 · 공공임대주택 수리 이벤트 로그", 9, False, "94A3B8", "m", balance=False)],
             structural=True, name="source", role="foot", max_lines=1)
