@@ -149,7 +149,7 @@ def s04(doc, F):
 # ------------------------------------------------------------------ S05 CASE 1~5
 def s05(doc, F):
     sl = doc.new_slide(5, "Part 01")
-    chrome(sl, "[ 05 / Q1 · CASE 1–5 ]", "삭제 없이, 업무 순서로 결측과 오기입을 교정 복원했다",
+    chrome(sl, "[ 05 / Q1 · CASE 1–5 ]", "삭제 없이, 업무 순서로 결측과 오기입 교정 복원",
            sub=f"비정상 결측 {F('n_null_rows')}행에 더해 날짜 오기입 {F('date_miswritten')}행·더미 시각 {F('time_dummy')}행까지 5개 유형을 근거 기반으로 복원",
            source="출처: analysis.ipynb Cell 18·20·53·63·77·81")
     sl.text(SLIDE_W - MX - 7.0, BODY_TOP + 0.02, 7.0, [T("단위 · 행 = 이벤트 로그 1행 / 케이스 = 수리 요청 1건", 10, False, MUTED, "m", align="r", balance=False)],
