@@ -116,9 +116,9 @@ def s03(doc, F):
 # ------------------------------------------------------------------ S04 진단
 def s04(doc, F):
     sl = doc.new_slide(4, "Part 01")
-    chrome(sl, "[ 04 / Q1 · BEFORE PROFILING ]", f"정상 결측은 보존, 에러 {F('n_null_rows')}행만 복원 대상",
-           sub="결측치를 '정상 결측'과 '시스템 에러'로 2원화하고, 복원 대상을 최소로 특정했다",
-           source="출처: repair2.csv 프로파일링 (EDA-01) · 에러 20행 = 5개 속성 결측이 포함된 18개 케이스의 실제 행")
+    chrome(sl, "[ 04 / Q1 · BEFORE PROFILING ]", f"정상 결측은 보존, 비정상 결측 {F('n_null_rows')}행만 복원 대상",
+           sub="결측치를 '정상 결측'과 '비정상 결측'으로 2원화하고, 복원 대상을 최소로 특정했다",
+           source="출처: repair2.csv 프로파일링 (EDA-01) · 비정상 결측 20행 = 5개 속성 결측이 포함된 18개 케이스의 실제 행")
     top = 1.75
     img_w = 8.9
     chart = Card([cap("FIG.04", "원천 13개 속성 결측률 분포 (EDA-01)"),
@@ -133,16 +133,16 @@ def s04(doc, F):
     y2 = top + ch + 0.15
     chips = [
         Card([label("정상 결측 · 보존", GRN), body(f"**{F('normal_missing_attrs')}개 속성 · {F('normal_missing_min')}~{F('normal_missing_max')}%**", 12.5, INK, accent=GRN),
-              body("후속 공정이 없는 값, 대체 없이 보존", 11, INK2)], pad=0.2, gap=0.06, name="chip-n"),
-        Card([label("시스템 에러 · 복원 대상", RED), body(f"**5개 속성 · {F('n_null_rows')}행({F('null_rows_pct')}%) · {F('n_null_cases')}케이스**", 12.5, INK, accent=RED),
+              body("특정 이벤트에서만 기록되는 값, 대체 없이 보존", 11, INK2)], pad=0.2, gap=0.06, name="chip-n"),
+        Card([label("비정상 결측 · 복원 대상", RED), body(f"**5개 속성 · {F('n_null_rows')}행({F('null_rows_pct')}%) · {F('n_null_cases')}케이스**", 12.5, INK, accent=RED),
               body("필수 속성이 빈 행만 정밀 복원", 11, INK2)], pad=0.2, gap=0.06, name="chip-e"),
         Card([label("진공 구간 · 판별 객관성", MUTED), body(f"**0.1~86.0% 구간 속성 {F('void_cols')}개**", 12.5, INK, accent=INK),
               body("이봉 분포라 정상/비정상 판별이 명확", 11, INK2)], pad=0.2, gap=0.06, name="chip-v"),
     ]
     hh = row(sl, MX, y2, CW, chips, gutter=0.2)
     assert_body(sl, y2 + hh)
-    sl.notes(f"데이터를 열어 가장 먼저 확인한 것은 구조였습니다. 이 데이터는 공정마다 행이 쌓이는 이벤트 로그이고, 약 {F('normal_missing_min')}~{F('normal_missing_max')}%의 결측은 후속 수리가 없어 생긴 정상 결측입니다. "
-             f"반면 필수 속성이 비어 있는 행은 {F('n_events')}행 중 {F('n_null_rows')}행({F('n_null_cases')}개 케이스)뿐이어서 이 행만 복원 대상으로 특정했습니다. 0.1~86.0% 구간에는 속성이 하나도 없어 판별 기준이 명확합니다.")
+    sl.notes(f"데이터를 열어 가장 먼저 확인한 것은 구조였습니다. 이 데이터는 공정마다 행이 쌓이는 이벤트 로그이고, 약 {F('normal_missing_min')}~{F('normal_missing_max')}%의 결측은 접수·실사·수리 완료 등 특정 이벤트에서만 기록되는 속성이라 구조적으로 비는 정상 결측입니다. "
+             f"반면 필수 속성이 비어 있는 비정상 결측 행은 {F('n_events')}행 중 {F('n_null_rows')}행({F('n_null_cases')}개 케이스)뿐이어서 이 행만 복원 대상으로 특정했습니다. 0.1~86.0% 구간에는 속성이 하나도 없어 판별 기준이 명확합니다.")
     return sl
 
 
