@@ -201,7 +201,7 @@ def s15(doc, F):
         [c("일정 확정", INK, True), c(f"상담원 일정 회신(비동기), 교차 인계 {F('n_handover')}건 ({F('single_h')}h → {F('handover_h')}h)"),
          [rich("**기사 캘린더**에서 고객이 슬롯을 직접 선택 — 상담원 개입 0", 11.5, INK, accent=ACC)]],
         [c("방문", INK, True), c("실사 대기 후 방문, 사내수리는 부품 주문 → 재방문"),
-         [rich("즉시 건은 **기본 키트로 1회 방문 수리**, 그 외는 **정밀검사(실사) 유지**", 11.5, INK, accent=ACC)]],
+         [rich("즉시 건은 **기본 키트로 1회 방문 수리**, 그 외는 **기존 실사 유지**", 11.5, INK, accent=ACC)]],
     ]
     tbl = Table([(1.0, "구분", "l"), (3.1, "AS-IS (현행)", "l"), (3.9, "TO-BE (Direct Booking)", "l")], rows_, pad_y=0.06, name="db")
     lw_ = 8.3
@@ -211,7 +211,7 @@ def s15(doc, F):
                body(f"P-1·3, 전체의 {F('fast_pct')}%. 수리 {F('fast_rep_h')}h로 사내수리({F('intern_rep_h')}h)의 {F('fast_vs_intern_pct')}%", 11.5, INK2)],
               pad=0.2, gap=0.06, name="elig")
     c2 = Card([label("보조 개선안 · 반복 리워크 방지"),
-               bullets(["세부 코드로 **정밀검사 대상** 판별, 실사 유지",
+               bullets(["세부 코드로 **정밀검사 대상** 판별, **정밀 실사**로 변경",
                         f"**E-1·E-2** ({F('n_rework_e12')}/{F('n_rework')}건, {F('rework_e12_pct')}%): 연계 부품 점검, 재수리 +{F('rework_gap_mean')}h 방지",
                         f"**P-4·B-4 외주 위탁** ({F('n_extern_all')}건): 외주 사전 확정"], 11.5)],
               pad=0.2, gap=0.06, name="guard")
