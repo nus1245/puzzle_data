@@ -92,7 +92,7 @@ def s03(doc, F):
     y = BODY_TOP + 0.05 + bh + 0.2
     c1 = Card([label("STEP 01 · 데이터 진단", ACC), big(F("n_events"), "행", ACC, 44, name="n1"), body("전수 보존 · 임의 삭제 0건", 12, INK, name="s1"),
                Gap(0.04), bullets([f"결측 {F('n_null_rows')}행({F('null_rows_pct')}%)을 업무 순서로 복원",
-                                   f"정상 접수 표본 {F('baseline_n')}건({F('baseline_pct')}%)으로 대체 기준 확보",
+                                   f"정상 접수 표본 {F('baseline_n')}케이스({F('baseline_pct')}%)로 대체 기준 확보",
                                    f"시간 역전 0건, 정상 접수 {F('n_valid')}건, 오접수 {F('n_wrongplace')}건"], 12)], pad=0.22, name="step1",
               foot=Txt([T("DETAIL → p.04–06", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     c2 = Card([label("STEP 02 · 병목 규명", ORG), big(F("wait1"), "h", RED, 44, name="n2"), body(f"실사 방문 대기, 현장 시간의 {F('wait1_pct')}%", 12, INK, name="s2"),
@@ -149,9 +149,11 @@ def s04(doc, F):
 # ------------------------------------------------------------------ S05 CASE 1~5
 def s05(doc, F):
     sl = doc.new_slide(5, "Part 01")
-    chrome(sl, "[ 05 / Q1 · CASE 1–5 ]", "업무 순서로 결측과 오기입을 교정 복원했다",
-           sub=f"비정상 결측 {F('n_null_rows')}행에 더해 날짜 오기입 {F('date_miswritten')}건·더미 시각 {F('time_dummy')}건까지 5개 유형을 근거 기반으로 복원",
+    chrome(sl, "[ 05 / Q1 · CASE 1–5 ]", "삭제 없이, 업무 순서로 결측과 오기입을 교정 복원했다",
+           sub=f"비정상 결측 {F('n_null_rows')}행에 더해 날짜 오기입 {F('date_miswritten')}행·더미 시각 {F('time_dummy')}행까지 5개 유형을 근거 기반으로 복원",
            source="출처: analysis.ipynb Cell 18·20·53·63·77·81")
+    sl.text(SLIDE_W - MX - 7.0, BODY_TOP + 0.02, 7.0, [T("단위 · 행 = 이벤트 로그 1행 / 케이스 = 수리 요청 1건", 10, False, MUTED, "m", align="r", balance=False)],
+            structural=True, name="unit-legend", role="label", max_lines=1)
 
     def tg(t, c=INK):
         return Txt([T(t, 10, True, c, "m", balance=False)], structural=True, role="label")
@@ -160,36 +162,36 @@ def s05(doc, F):
         return [T(a, 12, True, INK, balance=False), T(b, 11, False, MUTED, balance=False)]
 
     rows_ = [
-        [tg("CASE 1"), two("taskID", f"결측 {F('null_taskID')}건"),
+        [tg("CASE 1"), two("taskID", f"결측 {F('null_taskID')}행"),
          [T("contact 속성은 FirstContact에만 기록되는 고유 속성", 11.5, False, INK2)],
          [T("→ FirstContact · InformClientSurvey 복원", 11.5, True, GRN)]],
-        [tg("CASE 2"), two("originator", f"결측 {F('null_originator')}건"),
+        [tg("CASE 2"), two("originator", f"결측 {F('null_originator')}행"),
          [T("같은 작업의 시작·완료 담당자 일치율 100%", 11.5, False, INK2)],
          [T("→ 짝 이벤트 담당자 승계 (Anne, Paul)", 11.5, True, GRN)]],
-        [tg("CASE 3"), two("eventtype", f"결측 {F('null_eventtype')}건"),
-         [T("기간 작업 1:1 페어 3건 + 마일스톤 단독 2건", 11.5, False, INK2)],
-         [T("→ 짝 추적으로 5건 전수 복원", 11.5, True, GRN)]],
-        [tg("CASE 4"), two("date", f"{F('date_total')}건 (결측 {F('date_missing')} + 오기입 {F('date_miswritten')})"),
+        [tg("CASE 3"), two("eventtype", f"결측 {F('null_eventtype')}행"),
+         [T("기간 작업 1:1 페어 3행 + 마일스톤 단독 2행", 11.5, False, INK2)],
+         [T("→ 짝 추적으로 5행 전수 복원", 11.5, True, GRN)]],
+        [tg("CASE 4"), two("date", f"{F('date_total')}행 (결측 {F('date_missing')} + 오기입 {F('date_miswritten')})"),
          [T(f"시각이 정상인 {F('date_selected')}행에 선·후행 업무 순서 구간 제약을 적용", 11.5, False, INK2)],
-         [T(f"→ 단일 후보 {F('date_single')} + 앵커 최근접 {F('date_nearest')} (1970년 통일)", 11.5, True, GRN)]],
-        [tg("CASE 5"), two("time", f"{F('time_total')}건 (결측 {F('time_missing')} + 더미 {F('time_dummy')})"),
-         [T(f"정상 접수 표본 {F('baseline_n')}건의 중앙값 {F('baseline_median_min')}분을 앵커로 역산", 11.5, False, INK2)],
-         [T(f"→ 정상 자정 {F('time_midnight_kept')}건 보존 + 역산 추정 {F('time_estimated')}건", 11.5, True, GRN)]],
+         [T(f"→ 단일 후보 {F('date_single')}행 + 앵커 최근접 {F('date_nearest')}행 (1970년 통일)", 11.5, True, GRN)]],
+        [tg("CASE 5"), two("time", f"{F('time_total')}행 (결측 {F('time_missing')} + 더미 {F('time_dummy')})"),
+         [T(f"정상 접수 표본 {F('baseline_n')}케이스의 중앙값 {F('baseline_median_min')}분을 앵커로 역산", 11.5, False, INK2)],
+         [T(f"→ 정상 자정 {F('time_midnight_kept')}행 보존 + 역산 추정 {F('time_estimated')}행", 11.5, True, GRN)]],
     ]
-    tbl = Table([(0.9, "CASE", "l"), (3.0, "속성 · 규모", "l"), (4.3, "근거", "l"), (4.8, "복원", "l")], rows_, pad_y=0.06, name="cases")
+    tbl = Table([(0.9, "CASE", "l"), (3.0, "속성 · 규모", "l"), (4.3, "근거", "l"), (4.8, "복원", "l")], rows_, pad_y=0.04, name="cases")
     card = Card([tbl], pad=0.18, name="cases-card")
     ch = card.natural_h(CW)
-    card.draw(sl, MX, BODY_TOP + 0.08, CW, ch)
-    y = BODY_TOP + 0.08 + ch + 0.18
+    card.draw(sl, MX, BODY_TOP + 0.34, CW, ch)
+    y = BODY_TOP + 0.34 + ch + 0.15
     badges = [
         Card([label("데이터 무손실", GRN), big(F("n_events"), "행", GRN, 36, name="b1"), body("임의 삭제 0건 · 전수 보존", 11, INK2)], pad=0.2, gap=0.06, name="bd1"),
         Card([label("시간 역전", GRN), big("0", "건", GRN, 36, name="b2"), body(f"작업 페어 {F('pairs_checked')}개 · 5개 검증 항목 위반 0", 11, INK2)], pad=0.2, gap=0.06, name="bd2"),
-        Card([label("기준 표본", ACC), big(F("baseline_n"), "건", ACC, 36, name="b3"), body(f"전체의 {F('baseline_pct')}% · 중앙값 {F('baseline_median_min')}분", 11, INK2)], pad=0.2, gap=0.06, name="bd3"),
+        Card([label("기준 표본", ACC), big(F("baseline_n"), "케이스", ACC, 36, name="b3"), body(f"전체의 {F('baseline_pct')}% · 중앙값 {F('baseline_median_min')}분", 11, INK2)], pad=0.2, gap=0.06, name="bd3"),
     ]
     hh = row(sl, MX, y, CW, badges, gutter=0.2)
     assert_body(sl, y + hh)
     sl.notes(f"복원 과정에서 단 한 행도 버리지 않았습니다. 시작·완료 담당자의 일치율 100%와 태스크 고유 속성을 근거로 CASE 1~3을 복원했고, 날짜는 시각이 정상인 {F('date_selected')}행에 순서 제약을 걸어 복원했습니다. "
-             f"시각은 정상 접수 표본 {F('baseline_n')}건의 중앙값 {F('baseline_median_min')}분을 앵커로 역산했습니다. 그 결과 시간 역전이 0건인 데이터셋을 확보했습니다. "
+             f"시각은 정상 접수 표본 {F('baseline_n')}케이스의 중앙값 {F('baseline_median_min')}분을 앵커로 역산했습니다. 그 결과 시간 역전이 0건인 데이터셋을 확보했습니다. "
              f"[예상 질문] 표본 수가 751건이 아닌가? → 현재 노트북(Cell 63) 재실행 기준 {F('baseline_n')}건(기준 케이스 {F('baseline_cases')}건)입니다.")
     return sl
 
@@ -206,7 +208,7 @@ def s06(doc, F):
     rows_ = [
         [c("총 이벤트 행"), c(f"{F('n_events')}행"), c(f"{F('n_events')}행 · 삭제 0건", GRN, True)],
         [c("필수 속성 결측 행"), c(f"{F('n_null_rows')}행 ({F('null_rows_pct')}%)"), c("0건 · 업무 순서 복원", GRN, True)],
-        [c("일자 연도 오기입"), c(f"{F('date_miswritten')}건"), c("0건 · 1970년 통일", GRN, True)],
+        [c("일자 연도 오기입"), c(f"{F('date_miswritten')}행"), c("0건 · 1970년 통일", GRN, True)],
         [c("리드타임 정상 산출"), c(f"{F('lead_ok_before_pct')}% ({F('lead_ok_before_n')}/{F('n_cases_all')})"), c(f"100% ({F('n_cases_all')}/{F('n_cases_all')})", GRN, True)],
         [c("시간 왜곡·역전"), c(f"{F('lead_distort_before')}건 왜곡"), c(f"0건 · {F('pairs_checked')}개 페어 검증", GRN, True)],
     ]
