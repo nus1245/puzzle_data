@@ -374,7 +374,7 @@ def s11r(doc, F):
     top = BODY_TOP + 0.08
     cw_ = 8.55
     chart = Card([cap("FIG.11", "접수 단독 OLS 회귀계수와 95% 신뢰구간"),
-                  Img(os.path.join(FIG, "reception_standalone_ols_coefficients.png"), max_h=3.95, name="ols")], pad=0.14, gap=0.06, name="rols-card")
+                  Img(os.path.join(DECK, "reception_standalone_ols_coefficients.png"), max_h=3.95, name="ols")], pad=0.14, gap=0.06, name="rols-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, top, cw_, ch)
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2

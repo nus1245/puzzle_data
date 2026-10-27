@@ -632,6 +632,67 @@ def render_p13_field_bottleneck_wip():
 
 
 # -----------------------------------------------------------------------------
+# 11. p.11: 접수 단독 OLS 회귀계수 + 95% CI (reception_standalone_ols_coefficients.png)
+#    - 노트북 Part 2-2 시각화와 같은 형태(가로 막대 + 신뢰구간). 값은 데이터로 재적합(facts 와 일치 확인).
+#    - 수정: 라벨이 축 우측 테두리를 가로지르던 문제(x축 범위 확대), 슬라이드 캡션과 중복되는 차트 제목 제거,
+#            교차 인계 막대색을 덱 병목색(빨강)으로 통일. deck/ 에만 저장.
+# -----------------------------------------------------------------------------
+def render_p11_reception_ols():
+    import statsmodels.api as sm
+    piv = pd.read_csv("case_pivot_table.csv")
+    for col in ["contact_time", "inform_survey_time"]:
+        piv[col] = pd.to_datetime(piv[col], errors="coerce")
+    v = piv[piv.objectKey.notna()].copy()
+    v["rec"] = (v.inform_survey_time - v.contact_time).dt.total_seconds() / 3600.0
+    ev = pd.read_csv("repair_cleaned.csv")
+    rl = ev[ev.taskID.isin(["FirstContact", "MakeTicket", "ArrangeSurvey", "InformClientSurvey"]) & ev.originator.isin(["Anne", "Dian", "Monica", "Paul"])]
+    ho = set(rl.groupby("caseID").originator.nunique()[lambda x: x > 1].index)
+    v["is_handover"] = v.caseID.isin(ho).astype(int)
+    v["is_async"] = v.contact_channel.isin(["Web", "Letter"]).astype(int)
+    v["daily"] = v.groupby(v.contact_time.dt.date).caseID.transform("count")
+    X = sm.add_constant(v[["daily", "is_async", "is_handover"]])
+    m = sm.OLS(v.rec, X).fit()
+    ci = m.conf_int()
+    assert abs(m.params["is_handover"] - fs("ols1_handover_b")) < 0.005, "facts 와 불일치"
+    order = ["daily", "is_async", "is_handover"]
+    names = ["일별 접수량 (+1건당)", "비실시간 채널 (Web·Letter)", "교차 인계 (Handover)"]
+    coef = [m.params[k] for k in order]
+    lo = [ci.loc[k, 0] for k in order]
+    hi = [ci.loc[k, 1] for k in order]
+    pv = [m.pvalues[k] for k in order]
+    colors = ["#94A3B8", "#2563EB", "#E11D48"]
+
+    fig, ax = plt.subplots(figsize=(9.2, 4.2), dpi=300)
+    fig.patch.set_facecolor("#FFFFFF")
+    ax.set_facecolor("#FAFAFA")
+    y = np.arange(3)
+    bars = ax.barh(y, coef, xerr=[np.array(coef) - np.array(lo), np.array(hi) - np.array(coef)], capsize=5, color=colors, height=0.42,
+                   edgecolor="none", alpha=0.95, error_kw={"elinewidth": 1.6, "ecolor": "#334155", "capthick": 1.6}, zorder=3)
+    ax.axvline(0, color="#64748B", linestyle="--", linewidth=1.2, zorder=2)
+    ax.set_yticks(y)
+    ax.set_yticklabels(names, fontsize=12, fontweight="bold", color="#1E293B")
+    ax.set_xlabel("소요시간 한계 영향력 (회귀계수 β, 단위: 시간)", fontsize=11.5, fontweight="bold", color="#1E293B", labelpad=10)
+    for bar, c, h, p, col in zip(bars, coef, hi, pv, colors):
+        yy = bar.get_y() + bar.get_height() / 2
+        if p < 0.001:
+            ax.text(h + 0.2, yy, f"+{c:.2f}시간  (p < 0.001)", va="center", ha="left", fontsize=11.5, fontweight="bold", color=col if col != "#94A3B8" else "#64748B", zorder=4)
+        else:
+            ax.text(max(h, c) + 0.2, yy, f"+{c:.4f}시간  (p = {p:.3f}, 기각)", va="center", ha="left", fontsize=11, fontweight="bold", color="#64748B", zorder=4)
+    ax.set_xlim(-0.6, 9.4)
+    ax.grid(axis="x", linestyle=":", alpha=0.6, color="#CBD5E1", zorder=0)
+    ax.tick_params(colors="#64748B", labelsize=10.5)
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+    for sp in ("left", "bottom"):
+        ax.spines[sp].set_color("#CBD5E1")
+    plt.tight_layout()
+    out = os.path.join(DECK_DIR, "reception_standalone_ols_coefficients.png")
+    fig.savefig(out, facecolor=fig.get_facecolor(), edgecolor="none", transparent=False, dpi=300, bbox_inches="tight")
+    print(f"✅ [저장 완료] {out} (deck 전용)")
+    plt.close(fig)
+
+
+# -----------------------------------------------------------------------------
 # 14. p.14: 수리 방식별 착수 대기 + 사내 재수리 루프 (hypothesis 노트북 Cell 17 의 형태 그대로)
 #    - 형태·색·배치 불변, 라벨의 '하자 재방문'만 '재수리'로 교체, 수치는 facts.json 주입
 #    - 사용자 PNG(outputs/figures/slide11_repair_delay_rework.png)는 덮어쓰지 않고 deck/ 에만 저장
