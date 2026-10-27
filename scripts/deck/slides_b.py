@@ -193,7 +193,9 @@ def s15(doc, F):
 
     rows_ = [
         [c("정보 입력", INK, True), c("B·P·E 알파벳 3분류만 수집, 텍스트 입력"),
-         [rich(f"**세부 코드(1~4)** 구조화 입력 — 웹 양식(빠른 건 평균 {F('fast_web_min')}분, 전 채널 최속) 포맷을 전 채널에 동일 적용", 11.5, INK, accent=ACC)]],
+         [rich("**세부 코드(1~4)** 구조화 입력", 11.5, INK, accent=ACC),
+         rich("웹 양식 포맷을 **전 채널에 동일 적용**", 11.5, INK, accent=ACC),
+         rich(f"(빠른 건 평균 {F('fast_web_min')}분, 전 채널 최속)", 11.5, INK2, accent=ACC)]],
         [c("줄 분리", INK, True), c(f"채널이 달라도 {F('n_valid')}건 전부 실사 큐 한 줄"),
          [rich("**즉시 수리 코드(P-1·3)** 건은 실사 줄에서 빼 **작업 줄**로 직행", 11.5, INK, accent=ACC)]],
         [c("일정 확정", INK, True), c(f"상담원 일정 회신(비동기), 교차 인계 {F('n_handover')}건 ({F('single_h')}h → {F('handover_h')}h)"),
