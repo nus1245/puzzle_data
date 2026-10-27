@@ -133,11 +133,11 @@ def s04(doc, F):
     y2 = top + ch + 0.15
     chips = [
         Card([label("정상 결측 · 보존", GRN), body(f"**{F('normal_missing_attrs')}개 속성 · {F('normal_missing_min')}~{F('normal_missing_max')}%**", 12.5, INK, accent=GRN),
-              body("특정 이벤트에서만 기록되는 값, 대체 없이 보존", 11, INK2)], pad=0.2, gap=0.06, name="chip-n"),
+              body("특정 이벤트에서만 기록되는 값", 11, INK2)], pad=0.2, gap=0.06, name="chip-n"),
         Card([label("비정상 결측 · 복원 대상", RED), body(f"**5개 속성 · {F('n_null_rows')}행({F('null_rows_pct')}%) · {F('n_null_cases')}케이스**", 12.5, INK, accent=RED),
               body("필수 속성이 빈 행만 정밀 복원", 11, INK2)], pad=0.2, gap=0.06, name="chip-e"),
-        Card([label("진공 구간 · 판별 객관성", MUTED), body(f"**0.1~86.0% 구간 속성 {F('void_cols')}개**", 12.5, INK, accent=INK),
-              body("이봉 분포라 정상/비정상 판별이 명확", 11, INK2)], pad=0.2, gap=0.06, name="chip-v"),
+        Card([label("결측률 분포 · 판별 기준", MUTED), body(f"**0.1~86.0% 사이 속성 {F('void_cols')}개**", 12.5, INK, accent=INK),
+              body("결측률이 양극단이라 판별이 명확", 11, INK2)], pad=0.2, gap=0.06, name="chip-v"),
     ]
     hh = row(sl, MX, y2, CW, chips, gutter=0.2)
     assert_body(sl, y2 + hh)
