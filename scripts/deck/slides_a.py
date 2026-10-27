@@ -20,14 +20,14 @@ def s01(doc, F):
             structural=True, name="brand", role="brand", max_lines=1)
     # 좌: 제목 블록
     lx, lw_ = MX, 7.3
-    y = 2.05
+    y = 2.5
     sl.text(lx, y, lw_, [T("PROCESS MINING × OPERATIONS OPTIMIZATION", 10.5, True, MUTED, "m", balance=False)],
             structural=True, name="kicker", role="label", max_lines=1)
     y += 0.42
     _, th, _ = sl.text(lx, y, lw_, [T("공공임대주택 수리 프로세스", 36, True, INK, balance=False),
                                     T("진단 및 운영 최적화 방안", 36, True, ACC, balance=False)], name="title", role="title", max_lines=2)
     # 우하단: 지원 정보 (가로 배열)
-    cw, ch, cx, cy = 6.6, 0.95, SLIDE_W - MX - 6.6, 5.75
+    cw, ch, cx, cy = 6.6, 0.95, SLIDE_W - MX - 6.6, 5.8
     _, card_id = sl.rect(cx, cy, cw, ch, fill=CARD, line=BORDER, name="applicant")
     colw = cw / 4
     for i, (k, v, mono) in enumerate([("POSITION", "데이터 분석가", False), ("LEVEL", "신입", False), ("NAME", "조승훈", False), ("DATE", "2026.10.27", True)]):
