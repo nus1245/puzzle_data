@@ -57,7 +57,7 @@ def s02(doc, F):
          ["AS-IS 표준 프로세스 모델", "2개 병목 구간: 접수 · 실사", "1개 반복 작업: 반복 수리", "상관·OLS로 소요시간 영향 요인 실증"],
          f"{F('wait_B_pct')}%", "리드타임 중 대기"),
         ("03", GRN, "질문 3", GRN, GRN_BG, "TO-BE 개선 방안", 16,
-         [f"사전 분류 적중률 {F('match_upper_pct')}%와 정보 해상도 한계", "접수 사전 필터 고도화(Direct Booking)", "단축률 가정과 파일럿 검증 설계"],
+         [f"사전 분류 적중률 {F('match_upper_pct')}%와 정보 해상도 한계", "Direct Booking: 병목 줄을 2갈래로", "단축률 가정과 파일럿 검증 설계"],
          f"▼{F('eff_total_pct')}%", "전체 평균 감축(가정)"),
         ("04", MUTED, "마무리", MUTED, SLATE_BG, "핵심 요약", 19,
          ["파트별 핵심 결과 정리"],
@@ -101,7 +101,7 @@ def s03(doc, F):
                                    f"사내수리만 자재 대기 {F('wait2_intern')}h, 하자 재방문 +{F('rework_gap_mean')}h"], 12)], pad=0.22, name="step2",
               foot=Txt([T("DETAIL → p.07–15", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     c3 = Card([label("STEP 03 · 개선 시나리오", GRN), big("▼" + F("eff_total_pct"), "%", GRN, 44, name="n3"), body(f"{F('lead_total')}h → {F('tobe_total')}h (실사 대기 20% 단축 가정)", 12, INK, name="s3"),
-               Gap(0.04), bullets([f"줄을 2갈래로 세우는 전략 — 즉시 수리 {F('n_fast')}건을 별도 줄로",
+               Gap(0.04), bullets([f"Direct Booking 전략 — 병목 줄을 2갈래로, 즉시 수리 {F('n_fast')}건 분리",
                                    f"실사 줄 유입 −{F('fast_pct')}%, 실사 대기 20% 단축 −{F('eff_total')}h",
                                    "단축률은 가정, 파일럿으로 검증"], 12)], pad=0.22, name="step3",
               foot=Txt([T("DETAIL → p.16–18", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))

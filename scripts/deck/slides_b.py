@@ -174,7 +174,7 @@ def s14(doc, F):
 # ------------------------------------------------------------------ S15 전략 (하나의 구체적 전략)
 def s15(doc, F):
     sl = doc.new_slide(17, "Part 03")
-    chrome(sl, "[ 17 / Q3 · TO-BE STRATEGY ]", "접수 사전 필터를 높이는 Direct Booking",
+    chrome(sl, "[ 17 / Q3 · TO-BE STRATEGY ]", "Direct Booking 전략: 병목 줄을 2갈래로 만든다",
            sub="접수 코드를 세분화해 즉시 수리 건을 실사 줄에서 빼고, 기사 캘린더로 바로 예약해 작업 줄로 보낸다",
            source="출처: analysis.sql L1888~1928(사전 분류) · case_pivot_table.csv 재계산 · UI는 제안이며 효과는 다음 장에서 가정과 파일럿으로 다룸")
     top = BODY_TOP + 0.08
@@ -312,7 +312,7 @@ def s17(doc, F):
 
     steps = [step("PART 01 · 데이터 무결성", ACC, f"{F('n_events')}행 전수 보존, 결측 {F('n_null_rows')}행 복원", f"삭제 0건 · 시간 역전 0건 · 정상 접수 {F('n_valid')}건, 오접수 {F('n_wrongplace')}건"),
              step("PART 02 · 병목 규명", ORG, f"실사 대기 {F('wait1')}h, 적체 {F('wip_peak')}건, 인계 {F('handover_ratio')}배", f"일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건 · 소요시간은 실사 지연이 좌우"),
-             step("PART 03 · TO-BE 시나리오", GRN, f"전체 평균 ▼{F('eff_total_pct')}% ({F('lead_total')}h → {F('tobe_total')}h)", "줄을 2갈래로 세우는 전략 · 단축률 가정 + 파일럿 검증")]
+             step("PART 03 · TO-BE 시나리오", GRN, f"전체 평균 ▼{F('eff_total_pct')}% ({F('lead_total')}h → {F('tobe_total')}h)", "Direct Booking 전략 · 병목 줄을 2갈래로 · 단축률 가정 + 파일럿")]
     stack(sl, MX, top, lw_, steps, gutter=0.14, h_total=H)
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
     hero = Card([label("QUESTION & ANSWER", ACC), Gap(0.3),
