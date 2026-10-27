@@ -593,9 +593,9 @@ def render_p16_match_donut():
     vals = [n_P, n_E, n_B]
     colors = ["#059669", "#2563EB", "#94A3B8"]
     names = [
-        f"P형 → 즉시수리 {fs_('fast_p_prec')}%\n({n_P}건, {n_P / n_all * 100:.1f}%)",
-        f"E형 → 사내수리 {fs_('E_intern_pct')}%\n({n_E}건, {n_E / n_all * 100:.1f}%)",
-        f"B형 복합진단\n({n_B}건, {n_B / n_all * 100:.1f}%)",
+        f"P형\n({n_P}건)",
+        f"E형\n({n_E}건)",
+        f"B형\n({n_B}건)",
     ]
     fig, ax = plt.subplots(figsize=(7.72, 6.2), dpi=100)
     fig.patch.set_facecolor("#F8FAFC")
@@ -606,12 +606,12 @@ def render_p16_match_donut():
         ang = np.deg2rad((w.theta1 + w.theta2) / 2.0)
         x, y = np.cos(ang), np.sin(ang)
         ax.text(0.81 * x, 0.81 * y, f"{val / n_all * 100:.1f}%", ha="center", va="center", color="white", fontsize=12, fontweight="bold")
-        ax.text(1.12 * x, 1.12 * y, name, ha="left" if x > 0 else "right", va="center", fontsize=13, color="#0F172A")
+        ax.text(1.12 * x, 1.12 * y, name, ha="left" if x > 0 else "right", va="center", fontsize=16, color="#0F172A")
     ax.text(0, 0.10, f"{fs_('match_upper_pct')}%", ha="center", va="center", fontsize=34, fontweight="bold", color="#0F172A")
     ax.text(0, -0.13, "E·P 사전 분류", ha="center", va="center", fontsize=12, color="#64748B")
     ax.text(0, -0.27, f"({fs_('match_upper_n')} / {n_all}건)", ha="center", va="center", fontsize=12, color="#64748B")
     ax.set_title("접수 사전 분류와 실제 1차 수리 방식", fontsize=17, fontweight="bold", color="#0F172A", pad=18)
-    ax.set_xlim(-1.75, 1.75)
+    ax.set_xlim(-1.4, 1.4)
     ax.set_ylim(-1.2, 1.25)
     ax.set_aspect("equal")
     out = os.path.join(DECK_DIR, "slide12_intake_matching_donut.png")

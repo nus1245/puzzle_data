@@ -142,11 +142,9 @@ def s14(doc, F):
            source=f"출처: analysis.sql L1888~1928 · case_pivot_table.csv 재계산 · 큐 점유시간 = 실사 착수 후 기사가 그 건에 묶이는 시간(즉시 수리는 실사+수리)")
     top = BODY_TOP + 0.08
     c1 = Card([label("01 · 데이터 팩트", ACC), heading("사전 적중률은 높다", 15, INK, name="h"),
-               Img(os.path.join(DECK, "slide12_intake_matching_donut.png"), max_h=1.9, name="donut"),
+               Img(os.path.join(DECK, "slide12_intake_matching_donut.png"), max_h=2.5, name="donut"),
                Txt([rich(f"E → 사내수리 **{F('E_intern_pct')}%** ({F('n_E')}/{F('n_E')}건)", 15, INK, accent=ACC),
-                    rich(f"P → 즉시수리 **{F('fast_p_prec')}%** ({F('n_fast')}/{F('n_P')}건)", 15, INK, accent=ACC)], name="n"),
-               Txt([rich(f"즉시 수리 기저율 {F('imm_base_pct')}%의 약 {F('p_imm_lift')}배", 11, INK2, accent=ACC),
-                    rich("기준: 접수 알파벳 vs 실제 1차 수리 방식", 11, INK2, accent=ACC)], name="bs")], pad=0.2, gap=0.07, name="c1")
+                    rich(f"P → 즉시수리 **{F('fast_p_prec')}%** ({F('n_fast')}/{F('n_P')}건)", 15, INK, accent=ACC)], name="n")], pad=0.2, gap=0.07, name="c1")
     c2 = Card([label("02 · 원인 규명", ACC), heading("정보 해상도 단절 → 한 줄", 15, INK, name="h"),
                Card([label("접수 (현행)", MUTED), body("알파벳 3분류(B·P·E)만 수집 — 즉시 수리 여부를 가릴 수 없음", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxA"),
                Card([label("현장 (현행)", MUTED), body(f"{F('survey_work_min')}분 방문 실사 후 세부 코드(1~4) 판정", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxB"),
