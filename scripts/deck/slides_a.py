@@ -345,17 +345,15 @@ def s10r(doc, F):
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
     stats = [
         Card([label("교차 인계 ↔ 접수 시간", ORG), big(f"r = +{F('corr_rec_ho')}", "", RED, 24, name="a"),
-              body(f"양(+)의 상관 — 인계 시 접수가 길어진다 (인계 {F('n_handover')}건)", 11, INK2)], pad=0.17, gap=0.06, name="s1"),
+              body(f"양(+)의 상관 — 인계 시 접수가 길어진다 (인계 {F('n_handover')}건)", 11, INK2)], pad=0.14, gap=0.06, name="s1"),
         Card([label("실시간 채널 ↔ 접수 시간", ACC), big("r = −" + F("corr_rec_rt").lstrip("-"), "", ACC, 24, keep=True, name="b"),
-              body(f"전화·대면은 빠르고 웹·우편은 느리다", 11, INK2)], pad=0.17, gap=0.06, name="s2"),
+              body(f"전화·대면은 빠르고 웹·우편은 느리다", 11, INK2)], pad=0.14, gap=0.06, name="s2"),
         Card([label("일별 접수량 ↔ 접수 시간", MUTED), big(f"r = {F('corr_daily_rec')}", "", "94A3B8", 24, name="c"),
-              body(f"물량 무관 — 현장 실사 대기와는 r = {F('corr_daily_visit')}", 11, INK2)], pad=0.17, gap=0.06, name="s3"),
+              body(f"물량 무관 — 현장 실사 대기와는 r = {F('corr_daily_visit')}", 11, INK2)], pad=0.14, gap=0.06, name="s3"),
+        Card([label("교차 인계 ↔ 실시간 채널", ORG), big("r = −" + F("corr_ho_rt").lstrip("-"), "", ORG, 24, keep=True, name="d"),
+              body(f"인계 {F('n_handover')}건 전부 웹·우편 — 두 변수가 얽혀 OLS로 분리", 11, INK2)], pad=0.14, gap=0.06, name="s4"),
     ]
-    take = Card([label("READING", ACC), Txt([rich(f"교차 인계 ↔ 실시간 채널 **r = −{F('corr_ho_rt').lstrip('-')}** : 인계 {F('n_handover')}건 전부 웹·우편이라 두 변수가 얽힘 → 순수 효과는 다음 장 OLS로 분리", 12.5, INK, accent=ACC)], name="rd")],
-                pad=0.17, gap=0.06, name="read-card", line=ACC)
-    th = take.natural_h(rw)
-    stack(sl, rx, top, rw, stats, gutter=0.12, h_total=H - th - 0.14)
-    take.draw(sl, rx, top + H - th, rw, th)
+    stack(sl, rx, top, rw, stats, gutter=0.12, h_total=H)
     assert_body(sl, top + H)
     sl.notes(f"접수 구간에 영향을 줄 만한 9개 변수의 상관관계입니다. 접수 소요시간과 가장 강하게 같이 움직이는 것은 교차 인계(r={F('corr_rec_ho')})와 실시간 채널 여부(r=−{F('corr_rec_rt').lstrip('-')})입니다. "
              f"반면 일별 접수량은 r={F('corr_daily_rec')}로 접수 시간과 무관하고, 오히려 현장 실사 대기와 r={F('corr_daily_visit')}의 약한 양의 상관을 보입니다. 접수량은 접수창구가 아니라 뒤의 현장 대기열에 영향을 준다는 뜻입니다. "
