@@ -314,11 +314,12 @@ def s09(doc, F):
               Txt([P(rich(t, 11.5, INK2, accent=RED).runs, bullet=True, before=(3.0 if k else 0)) for k, t in enumerate([
                   f"웹·우편 **패스트 트랙(15분 이내) {F('async_fast_pct')}%**",
                   f"웹·우편 **장기 대기(60분 초과) {F('async_slow_pct')}%**",
-                  f"15~60분 구간 {F('async_mid_n')}건 — 단기 지연 아님",
+                  f"15~60분 구간 {F('async_mid_n')}건",
                   f"인계 {F('ho_slow_n')}건 전부 60분 초과 (최소 {F('ho_min_min')}분)"])], name="bi")],
              pad=0.2, gap=0.06, name="c2"),
         Card([label("반전 · 웹은 느리지 않다"), big(F("fast_web_min"), "분", INK, 36, name="c"),
-              body(f"빠른 건의 평균: 웹 {F('fast_web_min')}분 < 전화 {F('fast_phone_min')}분. 병목은 일정 조율 공백", 11.5, INK2)],
+              body(f"빠른 건 평균: 웹 {F('fast_web_min')}분 < 실시간 채널 {F('fast_rt_min')}분", 11.5, INK2),
+              body("병목 = 일정 조율 공백", 11.5, INK2)],
              pad=0.2, gap=0.06, name="c3"),
     ]
     hh = row(sl, MX, y, CW, chips, gutter=0.2)

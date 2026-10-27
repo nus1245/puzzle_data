@@ -135,7 +135,7 @@
   "async_fast_pct",
   "async_mid_n",
   "async_slow_pct",
-  "fast_phone_min",
+  "fast_rt_min",
   "fast_web_min",
   "handover_h",
   "handover_letter",

@@ -245,6 +245,8 @@ v["rec_min"] = v.rec * 60
 fast = v[v.rec_min < 15]
 for ch, key in [("Web", "web"), ("Phone", "phone"), ("Personal", "personal"), ("Letter", "letter")]:
     put(f"fast_{key}_min", fast[fast.contact_channel == ch].rec_min.mean(), fmt(fast[fast.contact_channel == ch].rec_min.mean()))
+_rt = fast[fast.contact_channel.isin(["Phone", "Personal"])].rec_min
+put("fast_rt_min", _rt.mean(), fmt(_rt.mean()))
 check("fast_web_min", rnd(fast[fast.contact_channel == "Web"].rec_min.mean()), 6.8, "차트 slide09 Panel 3", 0.0)
 asy = v[v.contact_channel.isin(["Web", "Letter"])]
 put("async_fast_pct", (asy.rec_min <= 15).mean() * 100, fmt((asy.rec_min <= 15).mean() * 100))
