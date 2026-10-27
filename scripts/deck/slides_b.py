@@ -306,7 +306,7 @@ def s16(doc, F):
 # ------------------------------------------------------------------ S17 Q&A
 def s17(doc, F):
     sl = doc.new_slide(19, "Part 04")
-    chrome(sl, "[ 19 / Q&A ]", "질의응답 (Q&A)", source="퍼즐데이터 수리 프로세스 데이터 분석 과제 · 조승훈 · 2026.10.27")
+    chrome(sl, "[ 19 / CLOSING & Q&A ]", "마무리 및 Q&A", source="퍼즐데이터 수리 프로세스 데이터 분석 과제 · 조승훈 · 2026.10.27")
     top, H = BODY_TOP + 0.08, 4.75
     lw_ = 6.3
 
@@ -314,7 +314,7 @@ def s17(doc, F):
         return Card([label(tag, col), heading(head, 15, INK, name="h"), body(desc, 12, INK2)], pad=0.22, gap=0.06, name="st-" + tag[:2])
 
     steps = [step("PART 01 · 데이터 무결성", ACC, f"{F('n_events')}행 전수 보존, 결측 {F('n_null_rows')}행 복원", f"삭제 0건 · 시간 역전 0건 · 정상 접수 {F('n_valid')}건, 오접수 {F('n_wrongplace')}건"),
-             step("PART 02 · 병목 규명", ORG, f"실사 대기 {F('wait1')}h, 적체 {F('wip_peak')}건, 인계 {F('handover_ratio')}배", f"일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건 · 소요시간은 실사 지연이 좌우"),
+             step("PART 02 · 병목 규명", ORG, f"실사 대기 {F('wait1')}h, 적체 {F('wip_peak')}건, 인계 {F('handover_ratio')}배", f"일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건 · 실사 대기 ≫ 사내수리"),
              step("PART 03 · TO-BE 시나리오", GRN, f"전체 평균 ▼{F('eff_total_pct')}% ({F('lead_total')}h → {F('tobe_total')}h)", "Direct Booking 전략 · 하나의 병목 줄을 두 갈래로 · 단축률 가정")]
     stack(sl, MX, top, lw_, steps, gutter=0.14, h_total=H)
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
@@ -327,7 +327,7 @@ def s17(doc, F):
                 pad=0.3, gap=0.16, name="hero", line=ACC)
     hero.draw(sl, rx, top, rw, H)
     assert_body(sl, top + H)
-    sl.notes(f"이상으로 발표를 마칩니다. {F('n_events')}행 전수 보존 전처리, {F('wait1')}시간의 실사 대기 병목과 원인 규명, 그리고 가정을 명시하고 파일럿으로 검증하는 TO-BE 시나리오까지 설명드렸습니다. 질문 주시면 답변드리겠습니다. 감사합니다.\n\n"
+    sl.notes(f"이상으로 발표를 마칩니다. {F('n_events')}행 전수 보존 전처리, {F('wait1')}시간의 실사 대기 병목과 원인 규명, 그리고 가정을 명시하고 실험 설계로 검증하는 TO-BE 시나리오까지 설명드렸습니다. 질문 주시면 답변드리겠습니다. 감사합니다.\n\n"
              f"[핵심 숫자 치트시트] 리드타임 {F('lead_total')}h · 대기 {F('wait_B')}h({F('wait_B_pct')}%) · 실사 대기 {F('wait1')}h · 유입 {F('inflow_day')} vs CAPA {F('capa_day')} · 적체 {F('wip_peak')}건 · 인계 {F('handover_ratio')}배 · "
-             f"OLS 실사 {F('ols2_visit_b')}h/h · 사내수리 +{F('ols2_intern_b')}h · 자재 {F('wait2_intern')}h · 재방문 {F('n_rework')}건 +{F('rework_gap_mean')}h · 적중률 {F('match_upper_pct')}/{F('match_cons_pct')}% · 감축 ▼{F('eff_total_pct')}%")
+             f"OLS 실사 {F('ols2_visit_b')}h/h · 사내수리 +{F('ols2_intern_b')}h · 자재 {F('wait2_intern')}h · 재수리 {F('n_rework')}건 +{F('rework_gap_mean')}h · 사전 적중 E→사내 {F('E_intern_pct')}%, P→즉시 {F('fast_p_prec')}% · 감축 ▼{F('eff_total_pct')}%")
     return sl

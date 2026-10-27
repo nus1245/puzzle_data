@@ -330,13 +330,13 @@
   "wait1_after"
  ],
  "19": [
+  "E_intern_pct",
   "capa_day",
   "eff_total_pct",
+  "fast_p_prec",
   "handover_ratio",
   "inflow_day",
   "lead_total",
-  "match_cons_pct",
-  "match_upper_pct",
   "n_events",
   "n_null_rows",
   "n_rework",
