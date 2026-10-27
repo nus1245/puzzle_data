@@ -246,7 +246,7 @@ def s06(doc, F):
 def s07(doc, F):
     sl = doc.new_slide(7, "Part 02")
     chrome(sl, sec_tag(7), "수리 프로세스(E2E) 라인",
-           source=f"※ 맵의 '+5.11h'는 채널 통제 OLS 계수, S09의 +{F('handover_penalty_h')}h는 단순 평균 차이 · 노드 수치는 수리 시작 이벤트 기준")
+           source=f"※ 맵의 '+5.11h'는 채널 통제 OLS 계수, S09의 +{F('handover_penalty_h')}h는 단순 평균 차이 · 노드 EV = 이벤트 수")
     cw_ = CW
     chart = Card([cap("FIG.07", "E2E 기준 프로세스 맵 (접수 → 현장 → 정산) · 케이스 기준 927건"),
                   Img(os.path.join(DECK, "process_map_deck.png"), max_h=3.2, name="map")], pad=0.14, gap=0.06, name="map-card")
