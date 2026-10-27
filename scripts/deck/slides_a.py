@@ -61,15 +61,15 @@ def s02(doc, F):
          f"▼{F('eff_total_pct')}%", "전체 평균 감축(가정)"),
         ("04", MUTED, "마무리", MUTED, SLATE_BG, "핵심 요약", 19,
          ["파트별 핵심 결과 정리"],
-         None, None),
+         "Q&A", None),
     ]
     cards = []
     for idx, col, pill, pc, pbg, title, target, bl, kn, kl in tiles:
         els = [Txt([T(idx, 40, True, ACC, "m", balance=False)], structural=True, role="body", name="idx"),
                Pill(pill.upper() if pill.isascii() else pill, pc, pbg),
                heading(title, 16, INK, name="ttl"), Gap(0.04), bullets(bl, 11.5)]
-        foot = None if kn is None else Txt([P([R(kn, 28, True, {"01": INK, "02": RED, "03": GRN, "04": MUTED}[idx], "m")], lh=LH_BIG, balance=False),
-                                            T(kl, 11, False, MUTED, balance=False)], name="key")
+        foot = Txt([P([R(kn, 28, True, {"01": INK, "02": RED, "03": GRN, "04": MUTED}[idx], "m")], lh=LH_BIG, balance=False)]
+                   + ([T(kl, 11, False, MUTED, balance=False)] if kl else []), name="key")
         cards.append(Card(els, pad=0.24, gap=0.12, min_h=4.7, name=f"tile-{idx}", link=target, foot=foot))
     hh = row(sl, MX, 1.75, CW, cards, gutter=0.2)
     assert_body(sl, 1.75 + hh)
