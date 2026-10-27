@@ -54,6 +54,7 @@ class Img:
 
 class Pill:
     def __init__(self, text, color=ACC, bg=ACC_BG, size=9, name="pill"):
+        color, bg = ACC, ACC_BG
         self.text, self.color, self.bg, self.size, self.name = text, color, bg, size, name
         self.tw = text_w(text, "m", True, size) * 1.12
 
@@ -92,7 +93,9 @@ class Rule:
         return None
 
 
-def big(num, unit="", color=INK, size=40, unit_size=None, **kw):
+def big(num, unit="", color=INK, size=40, unit_size=None, keep=False, **kw):
+    if color == ACC and not keep:                      # 일반 지표는 슬레이트-900, 의미색은 RED/GRN만
+        color = INK
     runs = tri_runs(num, size, True, color, "m")
     if unit:
         runs.append(R(unit, unit_size or max(size * 0.4, 12), True, color, "k"))
@@ -100,6 +103,8 @@ def big(num, unit="", color=INK, size=40, unit_size=None, **kw):
 
 
 def label(text, color=MUTED, size=9.5, **kw):
+    if color in (RED, GRN, ACC):          # 카드 라벨/인덱스는 단일 브랜드 블루
+        color = ACC
     return Txt([T(text, size, True, color, "m", balance=False)], structural=True, role="label", **kw)
 
 
@@ -183,6 +188,8 @@ class Table:
 # ------------------------------------------------------------------ 카드
 class Card:
     def __init__(self, els, pad=0.2, gap=0.09, fill=CARD, line=BORDER, lw=0.75, foot=None, name="card", min_h=0.0, link=None):
+        if line in (ACC, GRN):             # 보더는 #E2E8F0 통일, 병목 강조(RED)만 예외
+            line = BORDER
         self.els, self.pad, self.gap, self.fill, self.line, self.lw = els, pad, gap, fill, line, lw
         self.foot, self.name, self.min_h, self.link = foot, name, min_h, link
 
@@ -258,8 +265,8 @@ def chrome(sl: Slide, tag, title, sub=None, source=None, total=19):
         sl.text(MX, 1.20, CW, [rich(sub, 12, MUTED, accent=INK2, balance=False)], name="sub", role="sub", max_lines=1)
     sl.hline(MX, 6.98, CW, name="foot-rule")
     if source:
-        sl.text(MX, 7.06, 10.6, [T(source, 9, False, MUTED, "m", balance=False)], structural=True, name="source", role="foot", max_lines=1)
-    sl.text(SLIDE_W - MX - 1.4, 7.06, 1.4, [T(f"{sl.no:02d} / {total}", 9, True, MUTED, "m", align="r", balance=False)],
+        sl.text(MX, 7.06, 10.6, [T(source, 9, False, "94A3B8", "m", balance=False)], structural=True, name="source", role="foot", max_lines=1)
+    sl.text(SLIDE_W - MX - 1.4, 7.06, 1.4, [T(f"{sl.no:02d} / {total}", 9, True, "94A3B8", "m", align="r", balance=False)],
             structural=True, name="page", role="page", max_lines=1)
 
 

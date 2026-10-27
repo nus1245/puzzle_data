@@ -29,8 +29,10 @@ MX = 0.55                                  # 좌우 여백
 CW = SLIDE_W - 2 * MX                       # 콘텐츠 폭 12.233
 BG, CARD, BORDER = "F8FAFC", "FFFFFF", "E2E8F0"
 INK, INK2, MUTED = "0F172A", "334155", "64748B"
-ACC, RED, ORG, GRN = "0284C7", "DC2626", "EA580C", "059669"
-ACC_BG, RED_BG, ORG_BG, GRN_BG, SLATE_BG = "E0F2FE", "FEF2F2", "FFF7ED", "ECFDF5", "F1F5F9"
+ACC, RED, GRN = "2563EB", "E11D48", "059669"
+ORG = ACC                                  # 주황 폐기: 카테고리/강조는 단일 블루
+ACC_BG, RED_BG, GRN_BG, SLATE_BG = "EFF6FF", "FFF1F2", "ECFDF5", "F1F5F9"
+ORG_BG = ACC_BG
 K, M = "맑은 고딕", "Consolas"             # 본문/제목, 태그·숫자
 FIT = 0.965                                # 줄 폭 안전율
 LH_BODY, LH_MONO, LH_TITLE, LH_BIG = 1.40, 1.32, 1.28, 1.12
@@ -116,7 +118,7 @@ def rich(text, size=11.5, color=INK, accent=ACC, font="k", bold=False, **kw):
         if not s:
             continue
         if s.startswith("**"):
-            runs.append(R(s[2:-2], size, True, accent, font))
+            runs.append(R(s[2:-2], size, True, ACC if accent in (GRN,) else accent, font))
         else:
             runs.append(R(s, size, bold, color, font))
     return P(runs, **kw)

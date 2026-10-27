@@ -4,8 +4,8 @@
 
 **기준 우선순위**: ① `repair_cleaned.csv`·`case_pivot_table.csv`·`repair2.csv` 재계산 → ② `analysis.sql` → ③ `analysis.ipynb`·`hypothesis_testing_and_visualization.ipynb`. 원천끼리 다르면 재계산값을 채택하고 차이를 아래에 기록했다.
 
-- 재계산 vs 원천 표기 대조: **62건 중 62건 일치**, 불일치 0건
-- 슬라이드에 실린 모든 숫자는 `facts.json`(총 199개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
+- 재계산 vs 원천 표기 대조: **69건 중 69건 일치**, 불일치 0건
+- 슬라이드에 실린 모든 숫자는 `facts.json`(총 260개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
 
 ## 1. 재계산 vs 원천 표기 대조
 
@@ -36,6 +36,7 @@
 | `handover_h` | 7.87 | 7.87 | SQL L996 | 일치 |
 | `handover_ratio` | 6.6 | 6.6 | SQL L997 주석은 '약 6.5배'(절삭) / 차트 6.6배 | 일치 |
 | `fast_web_min` | 6.8 | 6.8 | 차트 slide09 Panel 3 | 일치 |
+| `ho_min_min` | 72 | 72 | SQL L996 (인계군 최소 72.0분) | 일치 |
 | `ols1_r2` | 0.3 | 0.3 | NB-H C9 출력 | 일치 |
 | `ols1_f` | 131.9 | 131.9 | NB-H C9 출력 | 일치 |
 | `ols1_p_daily` | 0.752 | 0.752 | NB-H C9 출력 | 일치 |
@@ -65,14 +66,20 @@
 | `match_upper_pct` | 87.3 | 87.3 | SQL L1899 | 일치 |
 | `match_cons_pct` | 83.2 | 83.2 | SQL L1899 | 일치 |
 | `n_P4` | 38 | 38 | SQL L1894 | 일치 |
+| `esc_total` | 96 | 96 | 프로세스 맵 '유형 간 인계 96회' | 일치 |
 | `settle_client_first` | 469 | 469 | 스토리보드 S07 (원천 미기재 → 재계산) | 일치 |
 | `houses` | 890 | 890 | SQL L419 | 일치 |
 | `houses_once` | 855 | 855 | SQL L509 | 일치 |
 | `dian_share` | 46.9 | 46.9 | SQL L824 | 일치 |
 | `recontact_diff` | 22 | 22 | SQL L773 (35채 중 22채 타 상담원) | 일치 |
 | `ols1_handover_b` | 5.11 | 5.11 | NB-H C9 출력 (맵의 +5.11h) | 일치 |
-| `eff_total` | 34.8 | 34.8 | 사용자 제공 정정안 ① | 일치 |
-| `eff_parts_sum` | 34.8 | 34.8 | 표기 구성요소 합 = 표기 총합 (최대잔여법: 자재 15.95→16.0) | 일치 |
+| `eff_total_old` | 34.8 | 34.8 | 구 4항목 가중평균(미채택) | 일치 |
+| `eff_parts_sum_old` | 34.8 | 34.8 | 구 4항목 표기합(미채택) | 일치 |
+| `n_fast` | 365 | 365 | SQL L1892~1893 (P-1 298 + P-3 67) | 일치 |
+| `fast_all_immediate` | 365 | 365 | 접수 코드 P-1·3 전원 ImmediateRepair | 일치 |
+| `n_p_miss` | 74 | 74 | P 439 − 365 (P-2 36 + P-4 38) | 일치 |
+| `b_wait1` | 0.1 | 0.1 | case_pivot_table 재계산 (B형 118건 실사 대기, 부분군 0.1~0.2h) | 일치 |
+| `n_extern_split` | 59 | 59 | 외주 59 = P-4 38 + B-4 21 (E형 0) | 일치 |
 
 ## 2. 원천 간 불일치와 처리 (정정 판정)
 
@@ -89,15 +96,21 @@
 | 9 | S09 채널별 '15분 이내' | CSV가 15.0분 정각 2건을 '15~60분'으로 분류해 막대 합 ≠ 100% | ≤15분으로 통일(대면·전화 100.0%, 우편 52.2%, 웹 47.3%) | 형태 유지 재렌더(§5) |
 | 10 | 496.1h(구 S13) | 735건(E 370 + P-1·3 365)×40.5분의 산술 파생, 원천 미기재 | 슬라이드에서 삭제 | 근거 문서 없음 |
 | 11 | 자재 대기 38.7h | SQL L1922(E형 맥락) ↔ 30.5h(사내수리 전체) | 30.5h 사용 | NB-H Cell 16 · 재계산 일치 |
-| 12 | TO-BE 감축률 | 스토리보드 65%·38.0h, 노트북 Appendix 6 36.0h·65.1% | **전체 평균 ▼32.9%(105.9→71.1h), 사내수리군 ▼39.8%** | §3 참조 — 36.0h는 산식 오류(66.0%≠65.1%, 가중 오류, −22.2h 재현 불가) |
+| 12 | TO-BE 감축률 | 스토리보드 65%·38.0h, 노트북 Appendix 6 36.0h·65.1%, 사용자 제공 ①(−34.8h: 자재 100%·재방문 100%·인계 80% 가정 포함), 이전 덱 188건·771건 구조(−17.6h) | **전체 평균 ▼14.5%(105.9→90.5h)**: 실사 대기 20% **가정** 단축 −15.4h(1:1 반영) | 줄 분리 후 대기는 로그로 식별 불가(기사 11명 공유, 줄을 나눈 사례 없음) → 단일 가정 + 민감도 10·30% + 파일럿 검증 설계. 줄별 평균(즉시 줄·나머지 줄)은 공유 큐 상태의 평균이라 기준값으로 부적합. |
+| 13 | 즉시 줄 정의 | 이전 덱·논의: 즉시 383건(P-1·3 365 + B-1 18) | **P-1·3 365건(39.4%)** | B형은 실사 대기 평균 0.1h로 이미 큐를 우회하고 B-1은 접수 시점 분류 불가 → 제외. 즉시 수리 작업 1.99h(383건 기준 1.95h는 B-1 포함 값) |
+| 14 | 실사 큐 점유시간 비중 | 사용 초안 75.2%(383건 기준) | **73.3%** (365건: 건당 2.75h vs 나머지 0.65h, 4.2배) | 점유시간 = 실사 착수 후 기사가 묶이는 시간(즉시 수리는 실사+수리 연속, 그 외는 실사만) |
+| 15 | '외주 위탁이 많은 E형' | 논의 중 진술 | E형 외주 **0건**. 외주 59건 = P-4 38 + B-4 21 | E형은 외주가 아니라 재작업 집중군(재작업 26건 중 22건) |
+| 16 | 채널별 실사 대기 | 가설: 채널이 달라도 실사 줄은 하나 | 웹 70.1 · 우편 78.1 · 전화 80.4 · 대면 78.8h (Kruskal p=0.64) | 채널 간 차이 유의하지 않음 → 줄 하나 입증 |
 
 ## 3. 정의·산식
 
 - **대기 비중 90.5% (정의 B)**: 작업 = 현장 실작업 4.6h + 정산 시스템 처리 5.5h = 10.1h, 대기 = 105.9 − 10.1 = **95.8h**. 접수 구간(2.1h)은 일정 조율 구간이 대부분(MakeTicket 작업 0.07h)이라 전부 대기로 산정. 현장 실작업만 작업으로 보면 95.7%.
 - **현장 실작업 4.6h**: 실사 + 1·2·3차 수리 작업(SQL L1257~1271 산식, rep3 포함). 비율 4.7% / 대기 95.3%.
-- **TO-BE 가중평균(상한 시나리오)**: 실사 대기 20% 단축×OLS 1.12 = **−17.2h** · 사내수리 485건 자재 대기 100% 사전화 → 전체 평균 **−16.0h**(원값 15.95) · 리워크 26건 100% 차단 **−0.9h** · 접수 인계 123건 80% 제거 **−0.7h** → 합계 **−34.8h**, 105.9h → 71.1h(▼32.9%). 표기 반올림은 최대잔여법으로 합계에 맞췄다(자재 15.95→16.0).
-- **사내수리군**: 같은 가정을 485건에 적용 → 130.9h → 78.8h (−52.1h, ▼39.8%).
-- **노트북 Appendix 6의 36.0h(▼65.1%)를 쓰지 않은 이유**: ① (105.87−36.0)/105.87 = 66.0%이지 65.1%가 아님 ② 자재 −30.5h는 사내수리 485건에만 해당(전체 평균 환산 −16.0h) ③ 리워크 −22.2h는 재현되지 않음(22건×32.9h/927 ≈ −0.8h) ④ 기준 105.9h는 전체 평균이지 타겟군(130.9h) 평균이 아님.
+- **TO-BE (가정 시나리오)**: 즉시 수리 코드 P-1·3 **365건(39.4%)**을 실사 줄에서 분리해 작업 줄로 직행(Direct Booking). 정밀검사(실사) 유지 = 나머지 562건(B형 118, 외주 전환 59, 재작업 집중 E형). 효과 = 실사 대기 76.8h의 20% **가정** 단축 −15.4h를 리드타임에 1:1 반영(구성요소) → 105.9h → 90.5h(▼14.5%). 민감도: 10% ▼7.3%, 30% ▼21.8%. 20%는 실사 줄 유입 감소율(39.4%)의 약 절반.
+- **식별 한계**: 기사 풀 11명이 실사·사내수리·즉시 수리를 모두 공유(즉시 수리 7명, 외주만 외부 2곳)하므로 줄 분리는 용량 증설이 아닌 슬롯 배분 정책이다. 관측 데이터에는 줄을 나눈 사례가 없어 분리 후 대기는 추정할 수 없다 → 파일럿으로 검증. 줄별 평균(즉시 68.0h·나머지 83.0h)은 공유 큐 안의 값이고 B형(0.1h)이 섞여 있어 기준값으로 쓰지 않는다.
+- **분류 신뢰도 한계**: 세부 코드(1~4)는 수리 방식과 100% 일치해 사후 확정 라벨일 수 있고, 접수 시점 취득 가능 여부는 로그로 검증할 수 없다. 알파벳 P만으로 즉시 수리 적중 83.1%(오분류 74건)가 하한 근거이며 파일럿 KPI.
+- **제외한 효과**: 자재 사전 확보, 재방문 차단, 접수 인계 제거는 근거 부족으로 효과에서 제외(상방 요인).
+- **참고(미채택) 일별 대기열 모델**: 즉시 줄 분리로 해방되는 실사 단계 기사 시간 7.2%만 용량에 반영하면 평균 대기 약 18% 감소. 기준값이 구성상 항등식이고 부하가 큰 8일 구간이라 상한 참고로만 사용.
 - **인계 효과의 두 정의**: 단순 평균 차이 +6.7h(S09) / 채널 통제 OLS +5.11h(프로세스 맵 라벨).
 - **S09 '15분 이내'**: ≤15분(15.0분 정각 포함). 빠른 건 평균은 웹 6.8·전화 8.2·대면 8.5·우편 8.4분.
 - **정산 순서(S07)**: 927건 전수 기준 고객 통보 선행 469 / 재무 선행 456 / 동시 2, 마감 일치 925(99.8%). 노트북 Cell 75는 정상 표본 335건에서 168:167(50.15%:49.85%).
@@ -117,7 +130,7 @@
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
-| `eff_total_pct` | 32.9 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `eff_total_pct` | 14.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
 | `match_upper_pct` | 87.3 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_events` | 13,262 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
@@ -130,26 +143,22 @@
 | `baseline_n` | 754 | NB-A Cell 63 코드 재실행(Cell 2~63) — mt_dur_valid |
 | `baseline_pct` | 75.4 | NB-A Cell 63 코드 재실행(Cell 2~63) — mt_dur_valid |
 | `capa_day` | 68.0 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
-| `eff_handover` | 0.7 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_material` | 16.0 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_rework` | 0.9 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_survey` | 17.2 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_total_pct` | 32.9 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `eff_total` | 15.4 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `eff_total_pct` | 14.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `fast_pct` | 39.4 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `field_work` | 4.6 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 | `handover_ratio` | 6.6 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `inflow_day` | 134.3 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
-| `intern_asis` | 130.9 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `intern_eff_pct` | 39.8 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `intern_tobe` | 78.8 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
 | `lead_total` | 105.9 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 | `n_events` | 13,262 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
+| `n_fast` | 365 | 재계산 |
 | `n_handover` | 123 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `n_null_rows` | 20 | repair2.csv 결측 재계산 · NB-A Cell 53·77·81 · EDA-01 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `null_rows_pct` | 0.15 | repair2.csv 결측 재계산 · NB-A Cell 53·77·81 · EDA-01 |
 | `rework_gap_mean` | 32.9 | case_pivot_table.csv · SQL L1470~1546 |
 | `stl_total` | 5.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
-| `tobe_total` | 71.1 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `tobe_total` | 90.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
 | `wait1` | 76.8 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 | `wait1_pct` | 78.2 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 | `wait2_intern` | 30.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
@@ -229,7 +238,11 @@
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
-| `backflow` | 0 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
+| `backflow_all` | 0 | case_pivot_table.csv 재계산 (원천 미기재 — NB-A Cell 75는 정상 표본 335건) |
+| `esc_imm_extern` | 38 | 재계산 |
+| `esc_imm_intern` | 23 | 재계산 |
+| `esc_intern_extern` | 35 | 재계산 |
+| `esc_total` | 96 | 재계산 |
 | `handover_penalty_h` | 6.7 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `n_wrongplace` | 73 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
@@ -265,7 +278,9 @@
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
-| `corr_daily_rec` | 0.01 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `async_fast_pct` | 49.6 | 재계산 |
+| `async_mid_n` | 0 | 재계산 |
+| `async_slow_pct` | 50.4 | 재계산 |
 | `fast_phone_min` | 8.2 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `fast_web_min` | 6.8 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `handover_h` | 7.87 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
@@ -273,11 +288,12 @@
 | `handover_penalty_h` | 6.7 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `handover_ratio` | 6.6 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `handover_web` | 69 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `ho_min_min` | 72 | 재계산 |
+| `ho_slow_n` | 123 | 재계산 |
 | `n_handover` | 123 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `n_single` | 804 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `ols1_f` | 131.9 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `ols1_handover_b` | 5.11 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
-| `ols1_p_daily` | 0.752 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `ols1_r2` | 0.3000 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `ols1_vif_max` | 1.20 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `single_h` | 1.20 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
@@ -289,9 +305,7 @@
 | `corr_daily_rec` | 0.01 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `corr_daily_visit` | 0.17 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `corr_rec_ho` | 0.48 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
-| `corr_rec_letter` | 0.18 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `corr_rec_rt` | -0.43 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
-| `corr_rec_web` | 0.32 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `n_handover` | 123 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 
@@ -354,6 +368,24 @@
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
+| `n_intern1` | 485 | case_pivot_table.csv · NB-H Cell 16 |
+| `n_rework` | 26 | case_pivot_table.csv · SQL L1470~1546 |
+| `n_rework_e1` | 16 | case_pivot_table.csv · SQL L1470~1546 |
+| `n_rework_e12` | 22 | case_pivot_table.csv · SQL L1470~1546 |
+| `n_rework_e2` | 6 | case_pivot_table.csv · SQL L1470~1546 |
+| `rework_e12_pct` | 84.6 | case_pivot_table.csv · SQL L1470~1546 |
+| `rework_gap_max_d` | 10.1 | case_pivot_table.csv · SQL L1470~1546 |
+| `rework_gap_max_h` | 241.6 | case_pivot_table.csv · SQL L1470~1546 |
+| `rework_gap_mean` | 32.9 | case_pivot_table.csv · SQL L1470~1546 |
+| `rework_lead_mean` | 171.6 | case_pivot_table.csv · SQL L1470~1546 |
+| `rework_lead_x` | 1.6 | case_pivot_table.csv · SQL L1470~1546 |
+| `wait2_imm` | 0.0 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
+| `wait2_intern` | 30.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
+
+### S15
+
+| 키 | 표기값 | 원천·정의 |
+|:--|--:|:--|
 | `n_intern1_pct` | 52.3 | case_pivot_table.csv · NB-H Cell 16 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `ols2_async_b` | 4.89 | statsmodels OLS 재계산 · NB-H Cell 19 출력 |
@@ -369,88 +401,98 @@
 | `ols2_visit_contrib` | 86.3 | statsmodels OLS 재계산 · NB-H Cell 19 출력 |
 | `ols2_visit_mean` | 76.8 | statsmodels OLS 재계산 · NB-H Cell 19 출력 |
 
-### S15
-
-| 키 | 표기값 | 원천·정의 |
-|:--|--:|:--|
-| `n_intern1` | 485 | case_pivot_table.csv · NB-H Cell 16 |
-| `n_rework` | 26 | case_pivot_table.csv · SQL L1470~1546 |
-| `n_rework_e1` | 16 | case_pivot_table.csv · SQL L1470~1546 |
-| `n_rework_e12` | 22 | case_pivot_table.csv · SQL L1470~1546 |
-| `n_rework_e2` | 6 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_e12_pct` | 84.6 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_gap_max_d` | 10.1 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_gap_max_h` | 241.6 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_gap_mean` | 32.9 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_lead_mean` | 171.6 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_lead_x` | 1.6 | case_pivot_table.csv · SQL L1470~1546 |
-| `wait2_imm` | 0.0 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
-| `wait2_intern` | 30.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
-
 ### S16
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
-| `E_intern_pct` | 100.0 | case_pivot_table.csv · SQL L1888~1910 |
-| `P_self_pct` | 91.3 | case_pivot_table.csv · SQL L1888~1910 |
+| `b_wait1` | 0.1 | 재계산 |
+| `ch_kw_p` | 0.64 | 재계산 |
+| `ch_wait_max` | 80.4 | 재계산 |
+| `ch_wait_min` | 70.1 | 재계산 |
+| `fast_gap_h` | 0.00 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_pct` | 39.4 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_same_worker_pct` | 100.0 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `match_cons_n` | 771 | case_pivot_table.csv · SQL L1888~1910 |
 | `match_cons_pct` | 83.2 | case_pivot_table.csv · SQL L1888~1910 |
 | `match_upper_n` | 809 | case_pivot_table.csv · SQL L1888~1910 |
 | `match_upper_pct` | 87.3 | case_pivot_table.csv · SQL L1888~1910 |
-| `n_E` | 370 | case_pivot_table.csv · SQL L1888~1910 |
-| `n_P` | 439 | case_pivot_table.csv · SQL L1888~1910 |
+| `n_B` | 118 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_P4_extern` | 38 | case_pivot_table.csv · SQL L1888~1910 |
-| `n_P_self` | 401 | case_pivot_table.csv · SQL L1888~1910 |
+| `n_fast` | 365 | 재계산 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
+| `occ_fast_h` | 2.75 | 재계산 |
+| `occ_fast_share` | 73.3 | 재계산 |
+| `occ_ratio` | 4.2 | 재계산 |
+| `occ_rest_h` | 0.65 | 재계산 |
 | `survey_work_min` | 40.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
-| `wait2_intern` | 30.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 
 ### S17
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
-| `eff_survey` | 17.2 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `n_E` | 370 | case_pivot_table.csv · SQL L1888~1910 |
+| `capa_day` | 68.0 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
+| `fast_p_prec` | 83.1 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_pct` | 39.4 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_rep_h` | 1.99 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_svy_h` | 0.76 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_vs_intern_pct` | 47 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_web_min` | 6.8 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `handover_h` | 7.87 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `inflow_day` | 134.3 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
+| `inflow_rest` | 81.4 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
+| `intern_rep_h` | 4.25 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `n_B` | 118 | case_pivot_table.csv · SQL L1888~1910 |
+| `n_B4_extern` | 21 | 재계산 |
+| `n_E_extern` | 0 | 재계산 |
+| `n_P` | 439 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_P4_extern` | 38 | case_pivot_table.csv · SQL L1888~1910 |
+| `n_extern_all` | 59 | 재계산 |
+| `n_fast` | 365 | 재계산 |
+| `n_field_workers` | 11 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `n_handover` | 123 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `n_letter` | 207 | 재계산 |
+| `n_p_miss` | 74 | 재계산 |
+| `n_rest` | 562 | 재계산 |
 | `n_rework` | 26 | case_pivot_table.csv · SQL L1470~1546 |
-| `n_rework_e1` | 16 | case_pivot_table.csv · SQL L1470~1546 |
 | `n_rework_e12` | 22 | case_pivot_table.csv · SQL L1470~1546 |
-| `n_rework_e2` | 6 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_e12_pct` | 84.6 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_gap_max_d` | 10.1 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_gap_max_h` | 241.6 | case_pivot_table.csv · SQL L1470~1546 |
-| `rework_gap_mean` | 32.9 | case_pivot_table.csv · SQL L1470~1546 |
-| `wait2_intern` | 30.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
+| `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
+| `p_miss_pct` | 16.9 | 재계산 |
+| `single_h` | 1.20 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 
 ### S18
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
-| `eff_handover` | 0.7 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_material` | 16.0 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_rework` | 0.9 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_survey` | 17.2 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_total` | 34.8 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `eff_total_pct` | 32.9 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `intern_asis` | 130.9 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `intern_eff` | 52.1 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `intern_eff_pct` | 39.8 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `intern_tobe` | 78.8 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `b_wait1` | 0.1 | 재계산 |
+| `eff_total` | 15.4 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `eff_total_pct` | 14.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `fast_p_prec` | 83.1 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_pct` | 39.4 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `inflow_day` | 134.3 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
+| `inflow_rest` | 81.4 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `lead_total` | 105.9 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
-| `n_handover` | 123 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
-| `n_intern1` | 485 | case_pivot_table.csv · NB-H Cell 16 |
+| `n_B` | 118 | case_pivot_table.csv · SQL L1888~1910 |
+| `n_fast` | 365 | 재계산 |
+| `n_field_workers` | 11 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `n_rework` | 26 | case_pivot_table.csv · SQL L1470~1546 |
-| `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
-| `tobe_total` | 71.1 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
-| `wait2_intern` | 30.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
+| `qm_cut_pct` | 18 | 재계산 |
+| `qm_freed_pct` | 7.2 | 재계산 |
+| `sens10_after` | 98.2 | 재계산 |
+| `sens10_pct` | 7.3 | 재계산 |
+| `sens10_total` | 7.7 | 재계산 |
+| `sens30_after` | 82.8 | 재계산 |
+| `sens30_pct` | 21.8 | 재계산 |
+| `sens30_total` | 23.0 | 재계산 |
+| `tobe_total` | 90.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `wait1` | 76.8 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
+| `wait1_after` | 61.4 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 
 ### S19
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
 | `capa_day` | 68.0 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
-| `eff_total_pct` | 32.9 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `eff_total_pct` | 14.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
 | `handover_ratio` | 6.6 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `inflow_day` | 134.3 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `lead_total` | 105.9 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
@@ -463,7 +505,7 @@
 | `ols2_intern_b` | 31.75 | statsmodels OLS 재계산 · NB-H Cell 19 출력 |
 | `ols2_visit_b` | 1.12 | statsmodels OLS 재계산 · NB-H Cell 19 출력 |
 | `rework_gap_mean` | 32.9 | case_pivot_table.csv · SQL L1470~1546 |
-| `tobe_total` | 71.1 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
+| `tobe_total` | 90.5 | TO-BE 가중평균 산식 (SQL L1978~1985 + 효과율 가정, §3) |
 | `wait1` | 76.8 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 | `wait2_intern` | 30.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 | `wait_B` | 95.8 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |

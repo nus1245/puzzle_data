@@ -246,6 +246,13 @@ fast = v[v.rec_min < 15]
 for ch, key in [("Web", "web"), ("Phone", "phone"), ("Personal", "personal"), ("Letter", "letter")]:
     put(f"fast_{key}_min", fast[fast.contact_channel == ch].rec_min.mean(), fmt(fast[fast.contact_channel == ch].rec_min.mean()))
 check("fast_web_min", rnd(fast[fast.contact_channel == "Web"].rec_min.mean()), 6.8, "차트 slide09 Panel 3", 0.0)
+asy = v[v.contact_channel.isin(["Web", "Letter"])]
+put("async_fast_pct", (asy.rec_min <= 15).mean() * 100, fmt((asy.rec_min <= 15).mean() * 100))
+put("async_slow_pct", (asy.rec_min > 60).mean() * 100, fmt((asy.rec_min > 60).mean() * 100))
+put("async_mid_n", int(((asy.rec_min > 15) & (asy.rec_min <= 60)).sum()), str(int(((asy.rec_min > 15) & (asy.rec_min <= 60)).sum())))
+put("ho_min_min", v[v.ho].rec_min.min(), fmt(v[v.ho].rec_min.min(), 0))
+put("ho_slow_n", int((v[v.ho].rec_min > 60).sum()), str(int((v[v.ho].rec_min > 60).sum())))
+check("ho_min_min", rnd(v[v.ho].rec_min.min(), 0), 72, "SQL L996 (인계군 최소 72.0분)", 0.5)
 put("n_phone_personal", int(v.contact_channel.isin(["Phone", "Personal"]).sum()), str(int(v.contact_channel.isin(["Phone", "Personal"]).sum())))
 put("n_web_letter", int(v.contact_channel.isin(["Web", "Letter"]).sum()), str(int(v.contact_channel.isin(["Web", "Letter"]).sum())))
 
@@ -412,6 +419,19 @@ put("ticket_before_n", int((t < np.maximum(c, f)).sum()), str(int((t < np.maximu
 flows = v.groupby(["rep1_task", "rep2_task"], dropna=False).size()
 reverse = int(flows.get(("ExternRepair", "InternRepair"), 0) + flows.get(("ExternRepair", "ImmediateRepair"), 0) + flows.get(("InternRepair", "ImmediateRepair"), 0))
 put("backflow", reverse, str(reverse))
+trans = {}
+for a_, b_ in [("rep1_task", "rep2_task"), ("rep2_task", "rep3_task")]:
+    for (x_, y_), n_ in v.groupby([a_, b_], dropna=True).size().items():
+        trans[(x_, y_)] = trans.get((x_, y_), 0) + int(n_)
+put("esc_imm_intern", trans.get(("ImmediateRepair", "InternRepair"), 0), str(trans.get(("ImmediateRepair", "InternRepair"), 0)))
+put("esc_imm_extern", trans.get(("ImmediateRepair", "ExternRepair"), 0), str(trans.get(("ImmediateRepair", "ExternRepair"), 0)))
+put("esc_intern_extern", trans.get(("InternRepair", "ExternRepair"), 0), str(trans.get(("InternRepair", "ExternRepair"), 0)))
+esc_total = sum(n_ for (x_, y_), n_ in trans.items() if x_ != y_)
+put("esc_total", esc_total, str(esc_total))
+back = sum(n_ for (x_, y_), n_ in trans.items() if (x_, y_) in [("ExternRepair", "InternRepair"), ("ExternRepair", "ImmediateRepair"), ("InternRepair", "ImmediateRepair")])
+put("backflow_all", back, str(back))
+check("esc_total", esc_total, 96, "프로세스 맵 '유형 간 인계 96회'", 0)
+
 check("settle_client_first", int((c < f).sum()), 469, "스토리보드 S07 (원천 미기재 → 재계산)")
 
 # ------------------------------------------------------------------ 운영 특성 (S06)
@@ -489,6 +509,9 @@ put("eff_total_pct", total_eff / tot * 100, fmt(total_eff / tot * 100))
 put("tobe_total", tot - total_eff, fmt(tot - total_eff))
 put("tobe_total_days", (tot - total_eff) / 24, fmt((tot - total_eff) / 24))
 put("survey_cut_h", w1 * 0.20, fmt(w1 * 0.20))
+put("wait1_after", w1 * 0.80, fmt(w1 * 0.80))
+put("n_letter", int((v.contact_channel == "Letter").sum()), str(int((v.contact_channel == "Letter").sum())))
+put("n_web", int((v.contact_channel == "Web").sum()), str(int((v.contact_channel == "Web").sum())))
 put("ols_coef_visit", m2.params["visit_lag_hours"], fmt(m2.params["visit_lag_hours"], 2))
 # 사내수리 485건 군에 같은 가정 적용
 ig = intern
@@ -501,9 +524,98 @@ put("intern_asis", ig.total.mean(), fmt(ig.total.mean()))
 put("intern_eff", ig_tot, fmt(ig_tot))
 put("intern_tobe", ig.total.mean() - ig_tot, fmt(ig.total.mean() - ig_tot))
 put("intern_eff_pct", ig_tot / ig.total.mean() * 100, fmt(ig_tot / ig.total.mean() * 100))
-check("eff_total", rnd(total_eff), 34.8, "사용자 제공 정정안 ①", 0.05)
+check("eff_total_old", rnd(total_eff), 34.8, "구 4항목 가중평균(미채택)", 0.05)
 put("eff_parts_sum", sum(parts_disp), f"{sum(parts_disp):.1f}")
-check("eff_parts_sum", round(sum(parts_disp), 1), rnd(total_eff), "표기 구성요소 합 = 표기 총합 (최대잔여법: 자재 15.95→16.0)", 0.001)
+check("eff_parts_sum_old", round(sum(parts_disp), 1), rnd(total_eff), "구 4항목 표기합(미채택)", 0.001)
+
+# ------------------------------------------------------------------ 즉시 줄 TO-BE (S16·S17·S18)
+# 줄 정의: 접수 코드 P-1·3 = 즉시수리 코드. 실사 대기 큐는 하나이며 B형은 이미 대기 0.2h로 큐를 우회한다.
+from scipy import stats as _st
+
+fast_mask = (v.planned_repair_type == "P") & v.repair_code.isin([1, 3])
+n_fast = int(fast_mask.sum())
+fastv, restv = v[fast_mask], v[~fast_mask]
+put("n_fast", n_fast, str(n_fast))
+put("n_rest", len(restv), str(len(restv)))
+put("fast_pct", n_fast / N * 100, fmt(n_fast / N * 100))
+put("fast_p_prec", n_fast / int(tp["P"]) * 100, fmt(n_fast / int(tp["P"]) * 100))
+put("n_p_miss", int(tp["P"]) - n_fast, str(int(tp["P"]) - n_fast))
+put("p_miss_pct", (int(tp["P"]) - n_fast) / int(tp["P"]) * 100, fmt((int(tp["P"]) - n_fast) / int(tp["P"]) * 100))
+put("n_P_intern", int(((P.rep1_task == "InternRepair")).sum()), str(int(((P.rep1_task == "InternRepair")).sum())))
+check("n_fast", n_fast, 365, "SQL L1892~1893 (P-1 298 + P-3 67)")
+check("fast_all_immediate", int((fastv.rep1_task == "ImmediateRepair").sum()), 365, "접수 코드 P-1·3 전원 ImmediateRepair")
+check("n_p_miss", int(tp["P"]) - n_fast, 74, "P 439 − 365 (P-2 36 + P-4 38)")
+put("fast_gap_h", hrs(fastv.rep1_start, fastv.survey_complete).mean(), fmt(hrs(fastv.rep1_start, fastv.survey_complete).mean(), 2))
+put("fast_same_worker_pct", (fastv.survey_worker == fastv.rep1_worker).mean() * 100, fmt((fastv.survey_worker == fastv.rep1_worker).mean() * 100))
+put("n_rework_in_fast", int((rw_mask := (v.rep1_task == "InternRepair") & (v.rep2_task == "InternRepair"))[fast_mask].sum()), str(int(rw_mask[fast_mask].sum())))
+put("fast_rep_h", fastv.r1work.mean(), fmt(fastv.r1work.mean(), 2))
+put("fast_svy_h", fastv.swork.mean(), fmt(fastv.swork.mean(), 2))
+put("intern_rep_h", intern.r1work.mean(), fmt(intern.r1work.mean(), 2))
+put("extern_rep_h", ext.r1work.mean(), fmt(ext.r1work.mean(), 2))
+put("fast_vs_intern_pct", fastv.r1work.mean() / intern.r1work.mean() * 100, fmt(fastv.r1work.mean() / intern.r1work.mean() * 100, 0))
+# 실사 큐 점유시간: 착수한 기사가 그 건에 묶이는 시간 (즉시 수리는 실사와 수리가 연속)
+v["occ"] = v.swork + np.where(v.rep1_task == "ImmediateRepair", v.r1work, 0.0)
+occ_f, occ_r = v[fast_mask].occ, v[~fast_mask].occ
+put("occ_fast_h", occ_f.mean(), fmt(occ_f.mean(), 2))
+put("occ_rest_h", occ_r.mean(), fmt(occ_r.mean(), 2))
+put("occ_ratio", occ_f.mean() / occ_r.mean(), fmt(occ_f.mean() / occ_r.mean()))
+put("occ_fast_share", occ_f.sum() / v.occ.sum() * 100, fmt(occ_f.sum() / v.occ.sum() * 100))
+# 채널별 실사 대기: 줄은 하나
+for ch_, key_ in [("Web", "web"), ("Letter", "letter"), ("Phone", "phone"), ("Personal", "personal")]:
+    put(f"ch_wait_{key_}", v[v.contact_channel == ch_].w1.mean(), fmt(v[v.contact_channel == ch_].w1.mean()))
+chw = v.groupby("contact_channel").w1.mean()
+put("ch_wait_min", chw.min(), fmt(chw.min()))
+put("ch_wait_max", chw.max(), fmt(chw.max()))
+kw_p = _st.kruskal(*[g.w1.values for _, g in v.groupby("contact_channel")]).pvalue
+put("ch_kw_p", kw_p, fmt(kw_p, 2))
+# B형은 이미 큐를 우회 / 외주 전환 / 기사 풀
+put("b_wait1", v[v.planned_repair_type == "B"].w1.mean(), fmt(v[v.planned_repair_type == "B"].w1.mean()))
+put("n_extern_all", len(ext), str(len(ext)))
+put("n_B4_extern", int(((v.planned_repair_type == "B") & (v.rep1_task == "ExternRepair")).sum()), str(int(((v.planned_repair_type == "B") & (v.rep1_task == "ExternRepair")).sum())))
+put("n_E_extern", int(((v.planned_repair_type == "E") & (v.rep1_task == "ExternRepair")).sum()), str(int(((v.planned_repair_type == "E") & (v.rep1_task == "ExternRepair")).sum())))
+put("n_imm_workers", int(imm.rep1_worker.nunique()), str(int(imm.rep1_worker.nunique())))
+put("n_intern_workers_overlap", int(len(set(intern.rep1_worker.dropna()) & set(v.survey_worker.dropna()))), str(int(len(set(intern.rep1_worker.dropna()) & set(v.survey_worker.dropna())))))
+check("b_wait1", rnd(v[v.planned_repair_type == "B"].w1.mean()), 0.1, "case_pivot_table 재계산 (B형 118건 실사 대기, 부분군 0.1~0.2h)", 0.05)
+check("n_extern_split", int(tp["P"] - n_fast - int(((P.rep1_task == "InternRepair")).sum())) + int(((v.planned_repair_type == "B") & (v.rep1_task == "ExternRepair")).sum()), len(ext), "외주 59 = P-4 38 + B-4 21 (E형 0)")
+# 실사 줄 유입 (큐 내 건수 기준 산술)
+in_rest = infl * (N - n_fast) / N
+put("inflow_rest", in_rest, fmt(in_rest))
+# 효과: 실사 대기는 리드타임의 구성요소이므로 1:1 반영 (OLS 1.12 미적용)
+for sp_, key_ in [(0.10, "10"), (0.20, "20"), (0.30, "30")]:
+    e_ = w1 * sp_
+    put(f"sens{key_}_total", e_, fmt(e_))
+    put(f"sens{key_}_pct", e_ / tot * 100, fmt(e_ / tot * 100))
+    put(f"sens{key_}_after", tot - e_, fmt(tot - e_))
+    put(f"sens{key_}_wait1", w1 - e_, fmt(w1 - e_))
+put("survey_cut_h", w1 * 0.20, fmt(w1 * 0.20))
+put("wait1_after", w1 * 0.80, fmt(w1 * 0.80))
+put("eff_total", w1 * 0.20, fmt(w1 * 0.20))
+put("eff_total_pct", w1 * 0.20 / tot * 100, fmt(w1 * 0.20 / tot * 100))
+put("tobe_total", tot - w1 * 0.20, fmt(tot - w1 * 0.20))
+put("cut_vs_inflow_ratio", 0.20 / (n_fast / N), fmt(0.20 / (n_fast / N), 2))
+# 참고(상한): 일별 대기열 모델. 용량을 도착 비중대로 두 줄에 나누고, 즉시 건의 실사 단계가 사라져 해방되는 기사 시간만큼 용량을 늘린다.
+# 기준값이 구성상 항등식이므로 근거가 아니라 민감도 참고로만 쓴다.
+v["ad"] = v.inform_survey_time.dt.normalize()
+v["sd"] = v.survey_start.dt.normalize()
+_days = pd.date_range(v.ad.min(), v.sd.max())
+_cap = v.groupby("sd").size().reindex(_days, fill_value=0).astype(float)
+
+
+def _lane_wait(mask, share, gain):
+    arr = v[mask].groupby("ad").size().reindex(_days, fill_value=0)
+    wip = area = 0.0
+    for d_ in _days:
+        wip = max(0.0, wip + arr[d_] - _cap[d_] * share * gain)
+        area += wip
+    return area / arr.sum() * 24
+
+
+_freed = fastv.swork.sum() / (v.swork.sum() + v.r1work.sum())
+_sh = fast_mask.mean()
+_base = _sh * _lane_wait(fast_mask, _sh, 1.0) + (1 - _sh) * _lane_wait(~fast_mask, 1 - _sh, 1.0)
+_aft = _sh * _lane_wait(fast_mask, _sh, 1 / (1 - _freed)) + (1 - _sh) * _lane_wait(~fast_mask, 1 - _sh, 1 / (1 - _freed))
+put("qm_freed_pct", _freed * 100, fmt(_freed * 100))
+put("qm_cut_pct", (1 - _aft / _base) * 100, fmt((1 - _aft / _base) * 100, 0))
 
 # 슬라이드 문구에서 쓰는 보조 문자열
 put("lead_total_h_int", rnd(tot), fmt(tot))

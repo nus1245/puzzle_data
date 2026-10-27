@@ -43,7 +43,7 @@ def s01(doc, F):
     cw = 4.3
     Card(els, pad=0.3, gap=0.09, name="applicant").draw(sl, SLIDE_W - MX - cw, 1.95, cw)
     sl.hline(MX, 6.98, CW, name="foot-rule")
-    sl.text(MX, 7.06, 10.6, [T("퍼즐데이터 수리 프로세스 데이터 분석 과제 · 공공임대주택 수리 이벤트 로그", 9, False, MUTED, "m", balance=False)],
+    sl.text(MX, 7.06, 10.6, [T("퍼즐데이터 수리 프로세스 데이터 분석 과제 · 공공임대주택 수리 이벤트 로그", 9, False, "94A3B8", "m", balance=False)],
             structural=True, name="source", role="foot", max_lines=1)
     sl.notes(
         "안녕하십니까, 퍼즐데이터 데이터 분석가 신입 직무에 지원한 조승훈입니다. 이 보고서는 공공임대주택 수리 이벤트 로그 "
@@ -65,20 +65,20 @@ def s02(doc, F):
          ["AS-IS 표준 프로세스 모델", "3대 병목: 접수 · 실사 · 수리 착수", "상관·OLS로 소요시간 영향 요인 실증"],
          f"{F('wait_B_pct')}%", "리드타임 중 대기"),
         ("03", GRN, "질문 3", GRN, GRN_BG, "최적화 방안", 16,
-         [f"사전 적합도 {F('match_upper_pct')}%와 정보 해상도 한계", "자재 대기 · 리워크 · 접수 인계 3대 전략", "가중평균 감축 효과를 상한으로 제시"],
-         f"▼{F('eff_total_pct')}%", "전체 평균 감축(상한)"),
+         [f"사전 적합도 {F('match_upper_pct')}%와 정보 해상도 한계", "접수 사전 필터 고도화(Direct Booking)", "단축률 가정과 파일럿 검증 설계"],
+         f"▼{F('eff_total_pct')}%", "전체 평균 감축(가정)"),
         ("04", MUTED, "마무리", MUTED, SLATE_BG, "질의응답", 19,
          ["프로젝트 핵심 요약", "질의응답"],
          "Q&A", "자유 질의"),
     ]
     cards = []
     for idx, col, pill, pc, pbg, title, target, bl, kn, kl in tiles:
-        els = [Txt([T(idx, 40, True, col, "m", balance=False)], structural=True, role="body", name="idx"),
+        els = [Txt([T(idx, 40, True, ACC, "m", balance=False)], structural=True, role="body", name="idx"),
                Pill(pill.upper() if pill.isascii() else pill, pc, pbg),
                heading(title, 16, INK, name="ttl"), Gap(0.04), bullets(bl, 11.5)]
         foot = Card([], pad=0, gap=0)  # placeholder (미사용)
         cards.append(Card(els, pad=0.24, gap=0.12, min_h=4.7, name=f"tile-{idx}", link=target,
-                          foot=Txt([P([R(kn, 28, True, col, "m")], lh=LH_BIG, balance=False),
+                          foot=Txt([P([R(kn, 28, True, {"01": INK, "02": RED, "03": GRN, "04": MUTED}[idx], "m")], lh=LH_BIG, balance=False),
                                     T(kl, 11, False, MUTED, balance=False)], name="key")))
     hh = row(sl, MX, 1.75, CW, cards, gutter=0.2)
     assert_body(sl, 1.75 + hh)
@@ -109,10 +109,10 @@ def s03(doc, F):
                                    f"교차 인계 {F('n_handover')}건에서 접수 {F('handover_ratio')}배 지연",
                                    f"사내수리만 자재 대기 {F('wait2_intern')}h, 하자 재방문 +{F('rework_gap_mean')}h"], 12)], pad=0.22, name="step2",
               foot=Txt([T("DETAIL → p.07–15", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
-    c3 = Card([label("STEP 03 · 개선 시나리오", GRN), big("▼" + F("eff_total_pct"), "%", GRN, 44, name="n3"), body(f"{F('lead_total')}h → {F('tobe_total')}h (상한 시나리오)", 12, INK, name="s3"),
-               Gap(0.04), bullets([f"실사 대기 −{F('eff_survey')}h · 자재 −{F('eff_material')}h · 리워크 −{F('eff_rework')}h · 인계 −{F('eff_handover')}h",
-                                   f"사내수리군 {F('intern_asis')}h → {F('intern_tobe')}h (▼{F('intern_eff_pct')}%)",
-                                   "효과율은 가정값 · 구성요소 합산"], 12)], pad=0.22, name="step3",
+    c3 = Card([label("STEP 03 · 개선 시나리오", GRN), big("▼" + F("eff_total_pct"), "%", GRN, 44, name="n3"), body(f"{F('lead_total')}h → {F('tobe_total')}h (실사 대기 20% 단축 가정)", 12, INK, name="s3"),
+               Gap(0.04), bullets([f"Direct Booking 한 전략 — 즉시 수리 {F('n_fast')}건을 별도 줄로",
+                                   f"실사 줄 유입 −{F('fast_pct')}%, 실사 대기 20% 단축 −{F('eff_total')}h",
+                                   "단축률은 가정, 파일럿으로 검증"], 12)], pad=0.22, name="step3",
               foot=Txt([T("DETAIL → p.16–18", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     hh = row(sl, MX, y, CW, [c1, c2, c3], gutter=0.2, h=BODY_BOTTOM - 0.12 - y)
     assert_body(sl, y + hh)
@@ -135,18 +135,18 @@ def s04(doc, F):
     ch = chart.natural_h(img_w)
     chart.draw(sl, MX, top, img_w, ch)
     rx, rw = MX + img_w + 0.2, CW - img_w - 0.2
-    stats = [Card([label("RAW EVENTS"), big(F("n_events"), "행", INK, 30, name="a")], pad=0.16, gap=0.02, name="st1"),
-             Card([label("CASES"), big(F("n_cases_all"), "건", INK, 30, name="b")], pad=0.16, gap=0.02, name="st2"),
-             Card([label("ATTRIBUTES"), big(F("n_attrs"), "개", INK, 30, name="c")], pad=0.16, gap=0.02, name="st3")]
+    stats = [Card([label("RAW EVENTS"), big(F("n_events"), "행", INK, 28, name="a")], pad=0.2, gap=0.06, name="st1"),
+             Card([label("CASES"), big(F("n_cases_all"), "건", INK, 28, name="b")], pad=0.2, gap=0.06, name="st2"),
+             Card([label("ATTRIBUTES"), big(F("n_attrs"), "개", INK, 28, name="c")], pad=0.2, gap=0.06, name="st3")]
     stack(sl, rx, top, rw, stats, gutter=0.12, h_total=ch)
     y2 = top + ch + 0.15
     chips = [
         Card([label("정상 결측 · 보존", GRN), body(f"**{F('normal_missing_attrs')}개 속성 · {F('normal_missing_min')}~{F('normal_missing_max')}%**", 12.5, INK, accent=GRN),
-              body("후속 공정이 없는 값, 대체 없이 보존", 11, INK2)], pad=0.15, gap=0.04, name="chip-n"),
+              body("후속 공정이 없는 값, 대체 없이 보존", 11, INK2)], pad=0.2, gap=0.06, name="chip-n"),
         Card([label("시스템 에러 · 복원 대상", RED), body(f"**5개 속성 · {F('n_null_rows')}행({F('null_rows_pct')}%) · {F('n_null_cases')}케이스**", 12.5, INK, accent=RED),
-              body("필수 속성이 빈 행만 정밀 복원", 11, INK2)], pad=0.15, gap=0.04, name="chip-e"),
+              body("필수 속성이 빈 행만 정밀 복원", 11, INK2)], pad=0.2, gap=0.06, name="chip-e"),
         Card([label("진공 구간 · 판별 객관성", MUTED), body(f"**0.1~86.0% 구간 속성 {F('void_cols')}개**", 12.5, INK, accent=INK),
-              body("이봉 분포라 정상/비정상 판별이 명확", 11, INK2)], pad=0.15, gap=0.04, name="chip-v"),
+              body("이봉 분포라 정상/비정상 판별이 명확", 11, INK2)], pad=0.2, gap=0.06, name="chip-v"),
     ]
     hh = row(sl, MX, y2, CW, chips, gutter=0.2)
     assert_body(sl, y2 + hh)
@@ -178,22 +178,22 @@ def s05(doc, F):
         [tg("CASE 3"), two("eventtype", f"결측 {F('null_eventtype')}건"),
          [T("기간 작업 1:1 페어 3건 + 마일스톤 단독 2건", 11.5, False, INK2)],
          [T("→ 짝 추적으로 5건 전수 복원", 11.5, True, GRN)]],
-        [tg("CASE 4", ORG), two("date", f"{F('date_total')}건 (결측 {F('date_missing')} + 오기입 {F('date_miswritten')})"),
+        [tg("CASE 4"), two("date", f"{F('date_total')}건 (결측 {F('date_missing')} + 오기입 {F('date_miswritten')})"),
          [T(f"시각이 정상인 {F('date_selected')}행에 선·후행 업무 순서 구간 제약을 적용", 11.5, False, INK2)],
          [T(f"→ 단일 후보 {F('date_single')} + 앵커 최근접 {F('date_nearest')} (1970년 통일)", 11.5, True, GRN)]],
-        [tg("CASE 5", ORG), two("time", f"{F('time_total')}건 (결측 {F('time_missing')} + 더미 {F('time_dummy')})"),
+        [tg("CASE 5"), two("time", f"{F('time_total')}건 (결측 {F('time_missing')} + 더미 {F('time_dummy')})"),
          [T(f"정상 접수 표본 {F('baseline_n')}건의 중앙값 {F('baseline_median_min')}분을 앵커로 역산", 11.5, False, INK2)],
          [T(f"→ 정상 자정 {F('time_midnight_kept')}건 보존 + 역산 추정 {F('time_estimated')}건", 11.5, True, GRN)]],
     ]
-    tbl = Table([(0.9, "CASE", "l"), (3.0, "속성 · 규모", "l"), (4.3, "근거", "l"), (4.8, "복원", "l")], rows_, pad_y=0.07, name="cases")
+    tbl = Table([(0.9, "CASE", "l"), (3.0, "속성 · 규모", "l"), (4.3, "근거", "l"), (4.8, "복원", "l")], rows_, pad_y=0.06, name="cases")
     card = Card([tbl], pad=0.18, name="cases-card")
     ch = card.natural_h(CW)
     card.draw(sl, MX, BODY_TOP + 0.08, CW, ch)
     y = BODY_TOP + 0.08 + ch + 0.18
     badges = [
-        Card([label("데이터 무손실", GRN), big(F("n_events"), "행", GRN, 28, name="b1"), body("임의 삭제 0건 · 전수 보존", 11, INK2)], pad=0.16, gap=0.03, name="bd1"),
-        Card([label("시간 역전", GRN), big("0", "건", GRN, 28, name="b2"), body(f"작업 페어 {F('pairs_checked')}개 · 5개 검증 항목 위반 0", 11, INK2)], pad=0.16, gap=0.03, name="bd2"),
-        Card([label("기준 표본", ACC), big(F("baseline_n"), "건", ACC, 28, name="b3"), body(f"전체의 {F('baseline_pct')}% · 중앙값 {F('baseline_median_min')}분", 11, INK2)], pad=0.16, gap=0.03, name="bd3"),
+        Card([label("데이터 무손실", GRN), big(F("n_events"), "행", GRN, 36, name="b1"), body("임의 삭제 0건 · 전수 보존", 11, INK2)], pad=0.2, gap=0.06, name="bd1"),
+        Card([label("시간 역전", GRN), big("0", "건", GRN, 36, name="b2"), body(f"작업 페어 {F('pairs_checked')}개 · 5개 검증 항목 위반 0", 11, INK2)], pad=0.2, gap=0.06, name="bd2"),
+        Card([label("기준 표본", ACC), big(F("baseline_n"), "건", ACC, 36, name="b3"), body(f"전체의 {F('baseline_pct')}% · 중앙값 {F('baseline_median_min')}분", 11, INK2)], pad=0.2, gap=0.06, name="bd3"),
     ]
     hh = row(sl, MX, y, CW, badges, gutter=0.2)
     assert_body(sl, y + hh)
@@ -231,11 +231,11 @@ def s06(doc, F):
     left.draw(sl, MX, BODY_TOP + 0.08, lw_, max(lh, 5.18))
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
     c1 = Card([label("01 · 근무 형태", ACC), heading("24시간 상시 접수, 야간 방치 가설 기각", 14, INK, name="h1"),
-               big(f"{F('intake_hours')}", "개 시간대", ACC, 34, name="n1"),
+               big(f"{F('intake_hours')}", "개 시간대", ACC, 36, name="n1"),
                body("접수 이벤트가 0~23시 전 시간대에서 발생 — 지연 원인은 영업 외 방치가 아니라 일정 조율 마찰", 11.5, INK2)],
               pad=0.2, gap=0.06, name="op1")
     c2 = Card([label("02 · 조직 구조", ORG), heading("지역 전담제 착시, 실제로는 단일 공유 풀", 14, INK, name="h2"),
-               big(f"{F('dian_share')} : {F('monica_share')}", "%", ORG, 34, name="n2"),
+               big(f"{F('dian_share')} : {F('monica_share')}", "%", RED, 36, name="n2"),
                body("접수 담당(Dian : Monica)별 현장 출동 비중 — 1회 접수 주택 기준 평균에 수렴", 11.5, INK2),
                bullets([f"1회 접수 주택 {F('houses_once_pct')}%({F('n_houses_once')}/{F('n_houses')}채)라 지역 분담처럼 보임",
                         f"재접수 {F('recontact_houses')}채 중 {F('recontact_diff_pct')}%({F('recontact_diff')}채)는 다른 상담원이 접수"], 11)],
@@ -251,23 +251,24 @@ def s06(doc, F):
 # ------------------------------------------------------------------ S07 AS-IS 프로세스
 def s07(doc, F):
     sl = doc.new_slide(7, "Part 02")
-    chrome(sl, "[ 07 / Q2-1 · AS-IS PROCESS ]", "단방향 에스컬레이션과 병렬 정산 모델 확립",
+    chrome(sl, "[ 07 / Q2-1 · AS-IS PROCESS ]", "수리 프로세스(E2E) 라인 도출",
            source=f"※ 맵의 '+5.11h'는 채널 통제 OLS 계수, S09의 +{F('handover_penalty_h')}h는 단순 평균 차이 · 노드 EV = 이벤트 수")
     cw_ = CW
     chart = Card([cap("FIG.07", "E2E 기준 프로세스 맵 (접수 → 현장 → 정산) · 케이스 기준 927건 코호트"),
-                  Img(os.path.join(FIG, "repair_process_map.png"), max_h=3.55, name="map")], pad=0.14, gap=0.06, name="map-card")
+                  Img(os.path.join(FIG, "repair_process_map.png"), max_h=3.2, name="map")], pad=0.14, gap=0.06, name="map-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, BODY_TOP + 0.05, cw_, ch)
     y = BODY_TOP + 0.05 + ch + 0.15
     chips = [
-        Card([label("01 · 접수 국면", ACC), body(f"**{F('n_wrongplace')}건({F('wrongplace_pct')}%)** 오접수 조기 격리 → 분석 코호트 **{F('n_valid')}건**", 11.5, INK2, accent=ACC)], pad=0.15, gap=0.04, name="c1"),
-        Card([label("02 · 현장 국면", ORG), body(f"**역류 {F('backflow')}건** — 즉시 → 사내 → 외주로만 전이, 외주 이후 사내 복귀 없음", 11.5, INK2, accent=ORG)], pad=0.15, gap=0.04, name="c2"),
-        Card([label("03 · 정산 국면", GRN), body(f"고객 통보 **{F('settle_client_first')}** : 재무 전송 **{F('settle_fin_first')}건** 병렬(AND), 마감 일치 **{F('ticket_match_n')}건({F('ticket_match_pct')}%)**", 11.5, INK2, accent=GRN)], pad=0.15, gap=0.04, name="c3"),
+        Card([label("01 · 접수 국면", ACC), body(f"**{F('n_wrongplace')}건({F('wrongplace_pct')}%)** 오접수 조기 격리 → 분석 코호트 **{F('n_valid')}건**", 11.5, INK2, accent=ACC)], pad=0.2, gap=0.06, name="c1"),
+        Card([label("02 · 현장 국면 · 단방향 에스컬레이션"), Txt([rich("**즉시 → 사내 → 외주**로만 올라가는 단방향", 11.5, INK2, accent=ACC),
+                                                           rich(f"즉시→사내 {F('esc_imm_intern')} · 즉시→외주 {F('esc_imm_extern')} · 사내→외주 {F('esc_intern_extern')} (총 {F('esc_total')}회), **역류 {F('backflow_all')}건**", 11.5, INK2, accent=RED)], name="esc")], pad=0.2, gap=0.06, name="c2"),
+        Card([label("03 · 정산 국면", GRN), body(f"고객 통보 **{F('settle_client_first')}** : 재무 전송 **{F('settle_fin_first')}건** 병렬(AND), 마감 일치 **{F('ticket_match_n')}건({F('ticket_match_pct')}%)**", 11.5, INK2, accent=GRN)], pad=0.2, gap=0.06, name="c3"),
     ]
     hh = row(sl, MX, y, CW, chips, gutter=0.2)
     assert_body(sl, y + hh)
     sl.notes(f"병목 분석 전에, 모든 분석의 기준선이 될 E2E 프로세스 모델입니다. 접수 단계에서 오접수 {F('n_wrongplace')}건이 조기 이탈하고 {F('n_valid')}건이 코호트가 됩니다. "
-             f"현장은 즉시수리 → 사내수리 → 외주수리로만 넘어가는 단방향 구조이고 역류는 {F('backflow')}건입니다. 정산은 고객 통보 {F('settle_client_first')}건 : 재무 전송 {F('settle_fin_first')}건({F('settle_client_first_pct')}% : {F('settle_fin_first_pct')}%)으로 대칭 선행하는 병렬 구조이며, "
+             f"현장은 단방향 에스컬레이션입니다. 즉시수리에서 사내수리로 {F('esc_imm_intern')}건, 즉시수리에서 외주로 {F('esc_imm_extern')}건, 사내수리에서 외주로 {F('esc_intern_extern')}건, 총 {F('esc_total')}회 올라가기만 하고 외주 이후 되돌아간 전이는 {F('backflow_all')}건입니다. 정산은 고객 통보 {F('settle_client_first')}건 : 재무 전송 {F('settle_fin_first')}건({F('settle_client_first_pct')}% : {F('settle_fin_first_pct')}%)으로 대칭 선행하는 병렬 구조이며, "
              f"티켓 마감은 늦게 끝난 작업과 {F('ticket_match_pct')}%({F('ticket_match_n')}건) 일치합니다. [근거 보강] 시각이 원본인 정상 표본 335건에서도 168:167로 대등합니다(노트북 Cell 75).")
     return sl
 
@@ -279,15 +280,15 @@ def s08(doc, F):
            sub=f"대기 = {F('lead_total')}h − 작업({F('field_work')}h 현장 실작업 + {F('stl_total')}h 정산 처리) = {F('wait_B')}h · 현장 국면이 대기의 {F('field_wait_of_all_wait_pct')}%",
            source=f"출처: analysis.sql L1206~1395 · 접수 {F('rec_total')}h는 일정 조율 구간이 대부분이라 전부 대기로 산정(현장 실작업만 작업이면 {F('wait_fieldwork_only_pct')}%)")
     chart = Card([cap("FIG.08", "3대 국면별 실작업 vs 단순 대기 (정정본)"),
-                  Img(os.path.join(DECK, "slide08_macro_leadtime_breakdown.png"), max_h=3.1, name="macro")], pad=0.14, gap=0.06, name="macro-card")
+                  Img(os.path.join(DECK, "slide08_macro_leadtime_breakdown.png"), max_h=2.9, name="macro")], pad=0.14, gap=0.06, name="macro-card")
     cw_ = CW
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, BODY_TOP + 0.15, cw_, ch)
     y = BODY_TOP + 0.15 + ch + 0.15
     chips = [
-        Card([label("01 · 접수 국면", ACC), big(F("rec_total"), "h", ACC, 30, name="a"), body(f"일정 조율 구간. 교차 인계 시 {F('handover_ratio')}배 지연 (p.9)", 11, INK2)], pad=0.16, gap=0.03, name="c1"),
-        Card([label("02 · 현장 국면 · 1위 병목", RED), big(F("wait1"), "h", RED, 30, name="b"), body(f"실사 방문 대기. 현장 시간의 {F('wait1_pct')}%를 독점", 11, INK2)], pad=0.16, gap=0.03, name="c2", line=RED),
-        Card([label("03 · 수리 착수 대기", ORG), big(F("wait2_intern"), "h", ORG, 30, name="c"), body(f"사내수리 {F('n_intern1')}건만 자재 대기, 즉시·외주는 {F('wait2_imm')}h", 11, INK2)], pad=0.16, gap=0.03, name="c3"),
+        Card([label("01 · 접수 국면", ACC), big(F("rec_total"), "h", ACC, 36, name="a"), body(f"일정 조율 구간. 교차 인계 시 {F('handover_ratio')}배 지연 (p.9)", 11, INK2)], pad=0.2, gap=0.06, name="c1"),
+        Card([label("02 · 현장 국면 · 1위 병목", RED), big(F("wait1"), "h", RED, 36, name="b"), body(f"실사 방문 대기. 현장 시간의 {F('wait1_pct')}%를 독점", 11, INK2)], pad=0.2, gap=0.06, name="c2", line=RED),
+        Card([label("03 · 수리 착수 대기", ORG), big(F("wait2_intern"), "h", RED, 36, name="c"), body(f"사내수리 {F('n_intern1')}건만 자재 대기, 즉시·외주는 {F('wait2_imm')}h", 11, INK2)], pad=0.2, gap=0.06, name="c3"),
     ]
     hh = row(sl, MX, y, CW, chips, gutter=0.2)
     assert_body(sl, y + hh)
@@ -301,21 +302,28 @@ def s08(doc, F):
 def s09(doc, F):
     sl = doc.new_slide(9, "Part 02")
     chrome(sl, "[ 09 / Q2-2 · BOTTLENECK 1 · RECEPTION ]", "접수 지연은 물량이 아닌 교차 인계 탓",
-           sub=f"'15분 이내'는 15.0분 정각 포함(≤15분) · 인계 효과: 단순 평균차 +{F('handover_penalty_h')}h, 채널 통제 OLS +{F('ols1_handover_b')}h",
+           sub=f"접수 소요시간 = 최초 접수 → 방문 일정 확정 · 15분 이내는 ≤15분 · 인계 효과 +{F('handover_penalty_h')}h(단순 차이), +{F('ols1_handover_b')}h(OLS)",
            source=f"출처: analysis.sql L863~1135 · hypothesis 노트북 Cell 9 (접수 OLS R²={F('ols1_r2')}, F={F('ols1_f')}, VIF 최대 {F('ols1_vif_max')})")
     chart = Card([cap("FIG.09", "접수 구간 3-Panel (인계 · 채널 · 15분 이내 평균)"),
-                  Img(os.path.join(DECK, "slide09_reception_bottleneck_3panel.png"), max_h=2.95, name="rec")], pad=0.14, gap=0.06, name="rec-card")
+                  Img(os.path.join(DECK, "slide09_reception_bottleneck_3panel.png"), max_h=2.75, name="rec")], pad=0.14, gap=0.06, name="rec-card")
     ch = chart.natural_h(CW)
     chart.draw(sl, MX, BODY_TOP + 0.15, CW, ch)
     y = BODY_TOP + 0.15 + ch + 0.15
     chips = [
-        Card([label("가설 기각 · 물량 무관", MUTED), big(f"r = {F('corr_daily_rec')}", "", INK, 30, name="a"), body(f"일별 인입량과 접수 소요시간은 무상관 (회귀 p = {F('ols1_p_daily')})", 11, INK2)], pad=0.16, gap=0.03, name="c1"),
-        Card([label("핵심 원인 · 교차 인계", ORG), big(F("handover_ratio"), "배", ORG, 30, name="b"), body(f"단독 {F('n_single')}건 {F('single_h')}h → 인계 {F('n_handover')}건 {F('handover_h')}h. 인계는 전부 웹 {F('handover_web')} · 우편 {F('handover_letter')}", 11, INK2)], pad=0.16, gap=0.03, name="c2"),
-        Card([label("반전 · 웹은 느리지 않다", GRN), big(F("fast_web_min"), "분", GRN, 30, name="c"), body(f"빠른 건의 평균: 웹 {F('fast_web_min')}분 < 전화 {F('fast_phone_min')}분. 병목은 일정 조율 공백", 11, INK2)], pad=0.16, gap=0.03, name="c3"),
+        Card([label("핵심 원인 · 교차 인계"), big(F("handover_ratio"), "배", RED, 36, name="a"),
+              body(f"단독 {F('n_single')}건 {F('single_h')}h → 인계 {F('n_handover')}건 {F('handover_h')}h. 인계는 전부 웹 {F('handover_web')} · 우편 {F('handover_letter')}", 11.5, INK2)],
+             pad=0.2, gap=0.06, name="c1"),
+        Card([label("이봉 분포 · 단기 지연이 아니다"),
+              Txt([rich(f"웹·우편은 **15분 이내 단기 접수({F('async_fast_pct')}%)** 아니면 **60분 초과 장기 대기({F('async_slow_pct')}%)**로 일정이 확정된다. 15~60분 구간은 {F('async_mid_n')}건", 12, INK, accent=RED)], name="b1"),
+              body(f"인계 {F('ho_slow_n')}건은 모두 60분 초과 (최소 {F('ho_min_min')}분)", 11.5, INK2)],
+             pad=0.2, gap=0.06, name="c2"),
+        Card([label("반전 · 웹은 느리지 않다"), big(F("fast_web_min"), "분", INK, 36, name="c"),
+              body(f"빠른 건의 평균: 웹 {F('fast_web_min')}분 < 전화 {F('fast_phone_min')}분. 병목은 일정 조율 공백", 11.5, INK2)],
+             pad=0.2, gap=0.06, name="c3"),
     ]
     hh = row(sl, MX, y, CW, chips, gutter=0.2)
     assert_body(sl, y + hh)
-    sl.notes(f"접수 지연은 물량 때문이 아닙니다. 일별 인입량과 접수 시간의 상관은 r={F('corr_daily_rec')}, 회귀 p={F('ols1_p_daily')}로 무관합니다. 진짜 원인은 상담원이 교체되는 교차 인계입니다. "
+    sl.notes(f"접수 구간의 핵심은 이봉 분포입니다. 가운데 패널을 보면 전화·대면은 항상 15분 이내에 끝나지만, 웹·우편은 15분 이내 단기 접수({F('async_fast_pct')}%) 아니면 60분 초과 장기 대기({F('async_slow_pct')}%)로 갈리고(접수 소요시간은 최초 접수에서 방문 일정이 확정되기까지의 시간) 그 사이 15~60분 구간은 {F('async_mid_n')}건입니다. 즉 조금씩 늦어지는 것이 아니라 일정 조율이 막히는 순간 장기 지연으로 넘어갑니다. 교차 인계 {F('n_handover')}건은 전부 이 장기 대기 쪽에서, 웹·우편에서만 발생했습니다(물량과의 무관성은 다음 장에서 확인). "
              f"단독 처리 {F('n_single')}건은 평균 {F('single_h')}시간이지만 인계 {F('n_handover')}건은 {F('handover_h')}시간으로 {F('handover_ratio')}배입니다. 인계 {F('n_handover')}건은 전부 웹·우편에서만 발생했습니다. "
              f"그렇다고 웹이 느린 것은 아닙니다. 빠르게 끝난 건만 보면 웹이 {F('fast_web_min')}분으로 가장 빠르며, 문제는 일정 확정을 위한 비동기 조율 공백입니다. "
              "[예상 질문] 15분 이내 비율이 100%가 아닌 이유? → 15.0분 정각 건을 포함해 ≤15분으로 통일했습니다.")
@@ -327,7 +335,7 @@ def s10r(doc, F):
     sl = doc.new_slide(10, "Part 02")
     chrome(sl, "[ 10 / Q2-3 · RECEPTION DRIVERS ]", "접수 시간은 인계·채널과 연동, 물량과는 무관",
            sub="접수 국면 9개 변수의 피어슨 상관 — 방향을 보여주고, 다음 장의 OLS가 순수 효과를 분리한다",
-           source=f"출처: hypothesis 노트북 Cell 7 (피어슨 r, N={F('n_valid')}) · 전 칸 재계산 일치 · 소요시간 = 최초 접수 → 실사 통보")
+           source=f"출처: hypothesis 노트북 Cell 7 (피어슨 r, N={F('n_valid')}) · 전 칸 재계산 일치 · 소요시간 = 최초 접수 → 방문 일정 확정(조율 완료)")
     top, H = BODY_TOP + 0.08, 5.15
     lw_ = 5.75
     heat = Card([cap("FIG.10", "접수 국면 9대 변수 상관 매트릭스"),
@@ -335,15 +343,15 @@ def s10r(doc, F):
     heat.draw(sl, MX, top, lw_, H)
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
     stats = [
-        Card([label("교차 인계 ↔ 접수 시간", ORG), big(f"r = {F('corr_rec_ho')}", "", ORG, 28, name="a"),
-              body(f"가장 강한 양의 상관 — 인계 {F('n_handover')}건", 11, INK2)], pad=0.16, gap=0.03, name="s1"),
-        Card([label("실시간 채널 ↔ 접수 시간", ACC), big("r = −" + F("corr_rec_rt").lstrip("-"), "", ACC, 28, name="b"),
-              body(f"전화·대면은 빠르고 웹(r = {F('corr_rec_web')})·우편(r = {F('corr_rec_letter')})은 느리다", 11, INK2)], pad=0.16, gap=0.03, name="s2"),
-        Card([label("일별 접수량 ↔ 접수 시간", MUTED), big(f"r = {F('corr_daily_rec')}", "", INK, 28, name="c"),
-              body(f"물량은 접수 시간과 무관 — 현장 실사 대기와는 r = {F('corr_daily_visit')}", 11, INK2)], pad=0.16, gap=0.03, name="s3"),
+        Card([label("교차 인계 ↔ 접수 시간", ORG), big(f"r = +{F('corr_rec_ho')}", "", RED, 24, name="a"),
+              body(f"양(+)의 상관 — 인계 시 접수가 길어진다 (인계 {F('n_handover')}건)", 11, INK2)], pad=0.17, gap=0.06, name="s1"),
+        Card([label("실시간 채널 ↔ 접수 시간", ACC), big("r = −" + F("corr_rec_rt").lstrip("-"), "", ACC, 24, keep=True, name="b"),
+              body(f"전화·대면은 빠르고 웹·우편은 느리다", 11, INK2)], pad=0.17, gap=0.06, name="s2"),
+        Card([label("일별 접수량 ↔ 접수 시간", MUTED), big(f"r = {F('corr_daily_rec')}", "", "94A3B8", 24, name="c"),
+              body(f"물량 무관 — 현장 실사 대기와는 r = {F('corr_daily_visit')}", 11, INK2)], pad=0.17, gap=0.06, name="s3"),
     ]
     take = Card([label("READING", ACC), Txt([rich("상관은 방향만 보여준다. **채널과 인계가 서로 얽혀 있어** 순수 효과는 다음 장의 OLS로 분리한다.", 12.5, INK, accent=ACC)], name="rd")],
-                pad=0.16, gap=0.04, name="read-card", line=ACC)
+                pad=0.17, gap=0.06, name="read-card", line=ACC)
     th = take.natural_h(rw)
     stack(sl, rx, top, rw, stats, gutter=0.12, h_total=H - th - 0.14)
     take.draw(sl, rx, top + H - th, rw, th)
@@ -368,13 +376,13 @@ def s11r(doc, F):
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, top, cw_, ch)
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2
-    cs = [Card([label("교차 인계 · 95% CI", ORG), big("+" + F("ols1_handover_b"), "h", ORG, 26, name="a"), body(f"CI {F('ols1_ho_ci_lo')}~{F('ols1_ho_ci_hi')}h (p < 0.001)", 11, INK2)], pad=0.15, gap=0.02, name="k1"),
-          Card([label("비실시간 채널 · 웹·우편", ACC), big("+" + F("ols1_async_b"), "h", ACC, 26, name="b"), body(f"웹 +{F('ols1b_web')}h · 우편 +{F('ols1b_letter')}h", 11, INK2)], pad=0.15, gap=0.02, name="k2"),
-          Card([label("일별 접수량 · +1건당", MUTED), big("+" + F("ols1_daily_b"), "h", INK, 26, name="c"), body(f"p = {F('ols1_p_daily')} — 기각, 물량 무관", 11, INK2)], pad=0.15, gap=0.02, name="k3")]
+    cs = [Card([label("교차 인계 · 95% CI", ORG), big("+" + F("ols1_handover_b"), "h", RED, 24, name="a"), body(f"CI {F('ols1_ho_ci_lo')}~{F('ols1_ho_ci_hi')}h (p < 0.001)", 11, INK2)], pad=0.2, gap=0.06, name="k1"),
+          Card([label("비실시간 채널 · 웹·우편", ACC), big("+" + F("ols1_async_b"), "h", ACC, 24, name="b"), body(f"웹 +{F('ols1b_web')}h · 우편 +{F('ols1b_letter')}h", 11, INK2)], pad=0.2, gap=0.06, name="k2"),
+          Card([label("일별 접수량 · +1건당", MUTED), big("+" + F("ols1_daily_b"), "h", INK, 24, name="c"), body(f"p = {F('ols1_p_daily')} — 기각, 물량 무관", 11, INK2)], pad=0.2, gap=0.06, name="k3")]
     stack(sl, rx, top, rw, cs, gutter=0.12, h_total=ch)
     ty = top + ch + 0.15
     take = Card([Txt([rich(f"인계·채널이 접수 시간 변동의 **{F('ols1_r2_pct')}%**를 설명하고 물량은 기여하지 않는다 — 병목은 용량이 아니라 **소통 구조**다.", 12.5, INK, accent=ACC)], name="take")],
-                pad=0.16, name="take-card")
+                pad=0.2, name="take-card")
     th_ = take.natural_h(CW)
     take.draw(sl, MX, ty, CW, th_)
     assert_body(sl, ty + th_)
