@@ -219,7 +219,7 @@ def s15(doc, F):
 
     lanes = Table([(1, "", "l"), (1, "", "l"), (1, "", "l")], [[
         [hd("AS-IS · 줄 1개")] + ln(f"**{F('n_valid')}건 전부 실사 큐 한 줄**") + ln(f"일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건"),
-        [hd("TO-BE · 실사 줄 (정밀검사)")] + ln(f"**{F('n_rest')}건** — 일 유입 {F('inflow_day')}→{F('inflow_rest')}건(−{F('fast_pct')}%)") + ln(f"B형 {F('n_B')}건 · 외주 전환 {F('n_extern_all')}건 · 재작업 집중 E형"),
+        [hd("TO-BE · 실사 줄 (정밀검사)")] + ln(f"**{F('n_rest')}건** — 일 유입 {F('inflow_day')}→{F('inflow_rest')}건({F('fast_pct')}% 감소)") + ln(f"B형 {F('n_B')}건 · 외주 전환 {F('n_extern_all')}건 · 재작업 집중 E형"),
         [hd("TO-BE · 작업 줄 (즉시)")] + ln(f"**{F('n_fast')}건** — 기본 키트로 1회 방문") + ln(f"실사 {F('fast_svy_h')}h 생략, 수리 {F('fast_rep_h')}h")]],
         pad_y=0.02, head=False, name="lanes")
     ban = Card([label("TWO LANES · 줄을 하나에서 둘로", ACC), lanes], pad=0.18, gap=0.04, name="common")

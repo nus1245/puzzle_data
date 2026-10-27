@@ -102,7 +102,7 @@ def s03(doc, F):
               foot=Txt([T("DETAIL → p.07–15", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     c3 = Card([label("STEP 03 · 개선 시나리오", GRN), big("▼" + F("eff_total_pct"), "%", GRN, 44, name="n3"), body(f"{F('lead_total')}h → {F('tobe_total')}h (실사 대기 20% 단축 가정)", 12, INK, name="s3"),
                Gap(0.04), bullets([f"Direct Booking 전략: 하나의 병목 줄을 두 갈래로",
-                                   f"실사 줄 유입 −{F('fast_pct')}%, 실사 대기 20% 단축 −{F('eff_total')}h",
+                                   f"실사 줄 유입 {F('fast_pct')}% 감소, 실사 대기 20% 단축 (−{F('eff_total')}h)",
                                    "단축률은 가정, 파일럿으로 검증"], 12)], pad=0.22, name="step3",
               foot=Txt([T("DETAIL → p.16–18", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     hh = row(sl, MX, y, CW, [c1, c2, c3], gutter=0.2, h=BODY_BOTTOM - 0.12 - y)
