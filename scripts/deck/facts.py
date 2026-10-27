@@ -596,6 +596,8 @@ put("b_wait1", v[v.planned_repair_type == "B"].w1.mean(), fmt(v[v.planned_repair
 put("n_extern_all", len(ext), str(len(ext)))
 put("n_B4_extern", int(((v.planned_repair_type == "B") & (v.rep1_task == "ExternRepair")).sum()), str(int(((v.planned_repair_type == "B") & (v.rep1_task == "ExternRepair")).sum())))
 put("n_E_extern", int(((v.planned_repair_type == "E") & (v.rep1_task == "ExternRepair")).sum()), str(int(((v.planned_repair_type == "E") & (v.rep1_task == "ExternRepair")).sum())))
+put("n_extern_rework", int(((v.rep1_task == "ExternRepair") & v.rep2_task.notna()).sum()), str(int(((v.rep1_task == "ExternRepair") & v.rep2_task.notna()).sum())))
+check("n_extern_rework", int(((v.rep1_task == "ExternRepair") & v.rep2_task.notna()).sum()), 0, "case_pivot_table 재계산 (1차 외주 59건 중 2차 수리 발생 0건; SQL 주석 '외주 전담 코드 리워크 0건')")
 put("n_imm_workers", int(imm.rep1_worker.nunique()), str(int(imm.rep1_worker.nunique())))
 put("n_intern_workers_overlap", int(len(set(intern.rep1_worker.dropna()) & set(v.survey_worker.dropna()))), str(int(len(set(intern.rep1_worker.dropna()) & set(v.survey_worker.dropna())))))
 check("b_wait1", rnd(v[v.planned_repair_type == "B"].w1.mean()), 0.1, "case_pivot_table 재계산 (B형 118건 실사 대기, 부분군 0.1~0.2h)", 0.05)

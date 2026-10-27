@@ -4,8 +4,8 @@
 
 **기준 우선순위**: ① `repair_cleaned.csv`·`case_pivot_table.csv`·`repair2.csv` 재계산 → ② `analysis.sql` → ③ `analysis.ipynb`·`hypothesis_testing_and_visualization.ipynb`. 원천끼리 다르면 재계산값을 채택하고 차이를 아래에 기록했다.
 
-- 재계산 vs 원천 표기 대조: **75건 중 75건 일치**, 불일치 0건
-- 슬라이드에 실린 모든 숫자는 `facts.json`(총 272개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
+- 재계산 vs 원천 표기 대조: **76건 중 76건 일치**, 불일치 0건
+- 슬라이드에 실린 모든 숫자는 `facts.json`(총 273개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
 
 ## 1. 재계산 vs 원천 표기 대조
 
@@ -84,6 +84,7 @@
 | `imm_base_pct` | 41.3 | 41.3 | case_pivot_table 재계산 (즉시수리 383/927) | 일치 |
 | `self_base_pct` | 93.6 | 93.6 | case_pivot_table 재계산 (즉시+사내 868/927, 무정보 기저율) | 일치 |
 | `strict_n` | 735 | 735 | E→사내 370 + P→즉시 365 | 일치 |
+| `n_extern_rework` | 0 | 0 | case_pivot_table 재계산 (1차 외주 59건 중 2차 수리 발생 0건; SQL 주석 '외주 전담 코드 리워크 0건') | 일치 |
 | `b_wait1` | 0.1 | 0.1 | case_pivot_table 재계산 (B형 118건 실사 대기, 부분군 0.1~0.2h) | 일치 |
 | `n_extern_split` | 59 | 59 | 외주 59 = P-4 38 + B-4 21 (E형 0) | 일치 |
 
@@ -466,6 +467,7 @@
 | `n_P` | 439 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_P4_extern` | 38 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_extern_all` | 59 | 재계산 |
+| `n_extern_rework` | 0 | 재계산 |
 | `n_fast` | 365 | 재계산 |
 | `n_field_workers` | 11 | case_pivot_table.csv 일별 집계 · SQL L1556~1670·L1978~1981 · NB-H Cell 14·15 |
 | `n_handover` | 123 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
@@ -476,6 +478,8 @@
 | `n_rework_e12` | 22 | case_pivot_table.csv · SQL L1470~1546 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `p_miss_pct` | 16.9 | 재계산 |
+| `rework_e12_pct` | 84.6 | case_pivot_table.csv · SQL L1470~1546 |
+| `rework_gap_mean` | 32.9 | case_pivot_table.csv · SQL L1470~1546 |
 | `single_h` | 1.20 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 
 ### S18

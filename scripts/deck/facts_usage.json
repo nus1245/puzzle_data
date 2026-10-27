@@ -291,6 +291,7 @@
   "n_P",
   "n_P4_extern",
   "n_extern_all",
+  "n_extern_rework",
   "n_fast",
   "n_field_workers",
   "n_handover",
@@ -301,6 +302,8 @@
   "n_rework_e12",
   "n_valid",
   "p_miss_pct",
+  "rework_e12_pct",
+  "rework_gap_mean",
   "single_h"
  ],
  "18": [
