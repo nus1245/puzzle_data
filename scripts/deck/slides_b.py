@@ -49,7 +49,7 @@ def s10(doc, F):
 # ------------------------------------------------------------------ S11 현장② 적체
 def s11(doc, F):
     sl = doc.new_slide(13, "Part 02")
-    chrome(sl, "[ 13 / Q2-2 · BOTTLENECK 2 · QUEUE ]", f"일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건, 적체 {F('wip_peak')}건",
+    chrome(sl, "[ 13 / Q2-2 · BOTTLENECK 2 · QUEUE ]", f"Wait 1 원인: 일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건, 최대 적체 물량 {F('wip_peak')}건",
            sub=f"실사 대기의 원인 — {F('n_surveyed')}건 전수가 방문 실사를 거치는 구조 · 소화율 {F('digest_pct')}% (같은 구간 기준 {F('digest_pct_samewin')}%)",
            source="출처: analysis.sql L1556~1670·L1978~1981 · 유입 1/2~1/7 평균, CAPA 1/1~1/8 평균(기사 11인) · hypothesis 노트북 Cell 15")
     top = BODY_TOP + 0.08
@@ -64,7 +64,7 @@ def s11(doc, F):
           Card([label("적체 피크 (DAY 7)", RED), big(F("wip_peak"), "건", RED, 24, name="c"), body(f"Day 1의 {F('wip_day1')}건에서 {F('wip_multiple')}배", 11, INK2)], pad=0.2, gap=0.06, name="m3", line=RED)]
     stack(sl, rx, top, rw, ms, gutter=0.12, h_total=ch)
     ty = top + ch + 0.15
-    take = Card([Txt([rich(f"기사가 느린 것이 아니라 **실사 처리 용량(CAPA)을 넘는 유입**이 적체와 {F('wait1')}h 대기를 만든다 — 하루 약 {F('wip_accum_day')}건씩 누적.", 13, INK, accent=RED)], name="take")],
+    take = Card([Txt([rich(f"**유입이 실사 처리 용량(CAPA)을 넘는 구조**가 적체와 {F('wait1')}h 대기의 원인 — 초과분이 하루 약 {F('wip_accum_day')}건씩 누적", 13, INK, accent=RED)], name="take")],
                 pad=0.2, name="take-card")
     th_ = take.natural_h(CW)
     take.draw(sl, MX, ty, CW, th_)
