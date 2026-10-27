@@ -302,7 +302,7 @@ def s09(doc, F):
            sub=f"접수 소요시간 = 최초 접수 → 방문 일정 확정 · 15분 이내는 ≤15분 · 인계 효과 +{F('handover_penalty_h')}h(단순 차이), +{F('ols1_handover_b')}h(OLS)",
            source=f"출처: analysis.sql L863~1135 · hypothesis 노트북 Cell 9 (접수 OLS R²={F('ols1_r2')}, F={F('ols1_f')}, VIF 최대 {F('ols1_vif_max')})")
     chart = Card([cap("FIG.09", "접수 구간 3-Panel (인계 · 채널 · 패스트 트랙(15분 내) 평균)"),
-                  Img(os.path.join(DECK, "slide09_reception_bottleneck_3panel.png"), max_h=2.75, name="rec")], pad=0.14, gap=0.06, name="rec-card")
+                  Img(os.path.join(DECK, "slide09_reception_bottleneck_3panel.png"), max_h=2.6, name="rec")], pad=0.14, gap=0.06, name="rec-card")
     ch = chart.natural_h(CW)
     chart.draw(sl, MX, BODY_TOP + 0.15, CW, ch)
     y = BODY_TOP + 0.15 + ch + 0.15
