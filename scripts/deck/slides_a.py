@@ -47,7 +47,7 @@ def s01(doc, F):
 # ------------------------------------------------------------------ S02 목차
 def s02(doc, F):
     sl = doc.new_slide(2, "Part 00")
-    chrome(sl, "[ 02 / 프리뷰 ]", "목차 소개",
+    chrome(sl, "[ 02 / PREVIEW ]", "목차 소개",
            source="PART 01 p.04–06 · PART 02 p.07–15 · PART 03 p.16–18 · PART 04 p.19")
     tiles = [
         ("01", ACC, "질문 1", ACC, ACC_BG, "데이터 진단 및 전처리", 4,
