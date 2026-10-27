@@ -101,7 +101,7 @@ def s03(doc, F):
                                    f"사내수리만 자재 대기 {F('wait2_intern')}h, 하자 재방문 +{F('rework_gap_mean')}h"], 12)], pad=0.22, name="step2",
               foot=Txt([T("DETAIL → p.07–15", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     c3 = Card([label("STEP 03 · 개선 시나리오", GRN), big("▼" + F("eff_total_pct"), "%", GRN, 44, name="n3"), body(f"{F('lead_total')}h → {F('tobe_total')}h (실사 대기 20% 단축 가정)", 12, INK, name="s3"),
-               Gap(0.04), bullets([f"Direct Booking 전략 — 병목 줄을 2갈래로, 즉시 수리 {F('n_fast')}건 분리",
+               Gap(0.04), bullets([f"Direct Booking 전략: 병목 줄을 2갈래로",
                                    f"실사 줄 유입 −{F('fast_pct')}%, 실사 대기 20% 단축 −{F('eff_total')}h",
                                    "단축률은 가정, 파일럿으로 검증"], 12)], pad=0.22, name="step3",
               foot=Txt([T("DETAIL → p.16–18", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))

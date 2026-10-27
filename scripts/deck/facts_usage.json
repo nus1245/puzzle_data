@@ -23,7 +23,6 @@
   "inflow_day",
   "lead_total",
   "n_events",
-  "n_fast",
   "n_handover",
   "n_null_rows",
   "n_valid",
