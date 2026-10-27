@@ -107,29 +107,29 @@ def s12(doc, F):
 # ------------------------------------------------------------------ S13 수리·리워크
 def s13(doc, F):
     sl = doc.new_slide(14, "Part 02")
-    chrome(sl, "[ 14 / Q2-2 · BOTTLENECK 3 · REPAIR ]", f"사내수리는 자재 {F('wait2_intern')}h, 하자는 +{F('rework_gap_mean')}h 지연",
-           sub=f"사내 하자 재방문 {F('n_rework')}건은 평균 총 리드타임 {F('rework_lead_mean')}h — 전체 평균의 {F('rework_lead_x')}배",
+    chrome(sl, "[ 14 / Q2-2 · BOTTLENECK 3 · REPAIR ]", f"Wait 2 요인: 사내수리는 자재 조달 {F('wait2_intern')}h, 재수리 시 +{F('rework_gap_mean')}h 지연",
+           sub=f"사내 재수리 {F('n_rework')}건은 평균 총 리드타임 {F('rework_lead_mean')}h — 전체 평균의 {F('rework_lead_x')}배",
            source="출처: analysis.sql L1403~1546 · hypothesis 노트북 Cell 16~17 (정정 차트: 최대 지연과 평균 리드타임 라벨 분리)")
     top = BODY_TOP + 0.08
     cw_ = 8.55
-    chart = Card([cap("FIG.13", "수리 방식별 착수 대기와 하자 재방문 루프"),
-                  Img(os.path.join(FIG, "slide11_repair_delay_rework.png"), max_h=3.7, name="rw")], pad=0.14, gap=0.06, name="rw-card")
+    chart = Card([cap("FIG.13", "수리 방식별 착수 대기와 사내 재수리 루프"),
+                  Img(os.path.join(DECK, "slide11_repair_delay_rework.png"), max_h=3.7, name="rw")], pad=0.14, gap=0.06, name="rw-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, top, cw_, ch)
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2
     cs = [Card([label("사내수리 자재 대기", ORG), big(F("wait2_intern"), "h", RED, 24, name="a"), body(f"사내수리 {F('n_intern1')}건만 대기. 즉시·외주는 {F('wait2_imm')}h", 11, INK2)], pad=0.17, gap=0.06, name="k1"),
-          Card([label("사내 하자 재방문", RED), big(F("n_rework"), "건", RED, 24, name="b"), body(f"추가 대기 평균 +{F('rework_gap_mean')}h, 최대 {F('rework_gap_max_h')}h({F('rework_gap_max_d')}일)", 11, INK2)], pad=0.17, gap=0.06, name="k2"),
+          Card([label("사내 재수리", RED), big(F("n_rework"), "건", RED, 24, name="b"), body(f"추가 대기 평균 +{F('rework_gap_mean')}h, 최대 {F('rework_gap_max_h')}h({F('rework_gap_max_d')}일)", 11, INK2)], pad=0.17, gap=0.06, name="k2"),
           Card([label("E-1 · E-2 코드 집중", RED), big(F("n_rework_e12"), f"건 · {F('rework_e12_pct')}%", RED, 24, name="c"), body(f"E-1 {F('n_rework_e1')}건 + E-2 {F('n_rework_e2')}건 — 정밀검사 대상", 11, INK2)], pad=0.17, gap=0.06, name="k3")]
     stack(sl, rx, top, rw, cs, gutter=0.12, h_total=ch)
     ty = top + ch + 0.15
-    take = Card([Txt([rich(f"1차 수리 실패 뒤 부품을 다시 조달하는 동안 **평균 +{F('rework_gap_mean')}h**, 가장 길게는 **{F('rework_gap_max_d')}일**을 더 기다린다.", 12.5, INK, accent=RED)], name="take")],
+    take = Card([Txt([rich(f"1차 수리 완료 뒤 재수리 착수까지 **평균 +{F('rework_gap_mean')}h**, 가장 길게는 **{F('rework_gap_max_d')}일**을 더 기다린다.", 12.5, INK, accent=RED)], name="take")],
                 pad=0.17, name="take-card")
     th_ = take.natural_h(CW)
     take.draw(sl, MX, ty, CW, th_)
     assert_body(sl, ty + th_)
     sl.notes(f"다음 병목은 수리 착수 단계입니다. 즉시수리와 외주수리는 착수 대기가 {F('wait2_imm')}시간인데, 사내수리 {F('n_intern1')}건만 부품 조달과 일정 조율로 평균 {F('wait2_intern')}시간을 기다립니다. "
-             f"또 사내수리 후 하자로 재방문한 {F('n_rework')}건은 부품을 다시 조달하느라 평균 {F('rework_gap_mean')}시간, 최대 {F('rework_gap_max_h')}시간({F('rework_gap_max_d')}일)을 더 기다렸고, 이 케이스들의 평균 총 리드타임은 {F('rework_lead_mean')}시간입니다. "
-             f"재방문 {F('n_rework')}건 중 {F('n_rework_e12')}건({F('rework_e12_pct')}%)이 E-1·E-2 코드에 집중되어 있습니다.")
+             f"또 사내수리 후 재수리가 이어진 {F('n_rework')}건은 1차 수리 완료 뒤 재수리 착수까지 평균 {F('rework_gap_mean')}시간, 최대 {F('rework_gap_max_h')}시간({F('rework_gap_max_d')}일)을 더 기다렸고, 이 케이스들의 평균 총 리드타임은 {F('rework_lead_mean')}시간입니다. "
+             f"재수리 {F('n_rework')}건 중 {F('n_rework_e12')}건({F('rework_e12_pct')}%)이 E-1·E-2 코드에 집중되어 있습니다.")
     return sl
 
 

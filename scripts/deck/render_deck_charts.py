@@ -542,6 +542,45 @@ def render_p13_field_bottleneck_wip():
     save_fig(fig, "slide10_field_bottleneck_wip.png")
 
 
+# -----------------------------------------------------------------------------
+# 14. p.14: 수리 방식별 착수 대기 + 사내 재수리 루프 (hypothesis 노트북 Cell 17 의 형태 그대로)
+#    - 형태·색·배치 불변, 라벨의 '하자 재방문'만 '재수리'로 교체, 수치는 facts.json 주입
+#    - 사용자 PNG(outputs/figures/slide11_repair_delay_rework.png)는 덮어쓰지 않고 deck/ 에만 저장
+# -----------------------------------------------------------------------------
+def render_p14_rework():
+    fs_ = lambda k: F[k]["s"]
+    n_all = float(fs_("n_surveyed"))
+    n_ie = int(fs_("n_imm1")) + int(fs_("n_ext1"))
+    n_in = int(fs_("n_intern1"))
+    n_rw = int(fs_("n_rework"))
+    cats = [
+        f"즉시 완결 / 외주 위탁\n(Immediate & Extern)\n[{n_ie}건, {n_ie / n_all * 100:.1f}%]",
+        f"사내 수리 1차 착수\n(InternRepair 1차)\n[{n_in}건, {n_in / n_all * 100:.1f}%]",
+        f"사내 재수리 루프\n(Intern Rework Loop)\n[{n_rw}건, {n_rw / n_all * 100:.1f}%]",
+    ]
+    delays = [fs("wait2_imm"), fs("wait2_intern"), fs("rework_gap_mean")]
+    colors = ["#10B981", "#DC2626", "#991B1B"]
+
+    fig, ax = plt.subplots(figsize=(10.5, 5.0), dpi=300)
+    fig.patch.set_facecolor("#FFFFFF")
+    ax.set_facecolor("#FAFAFA")
+    bars = ax.bar(cats, delays, color=colors, width=0.45, edgecolor="none", alpha=0.92)
+    ax.set_title("수리 방식별 대기시간 및 사내 재수리 루프 지연 충격 (단일 통합 분석)", fontsize=13, fontweight="bold", pad=16, color="#0F172A", loc="left")
+    ax.set_ylabel("착수 대기시간 (시간, h)", fontsize=11, fontweight="bold", color="#1E293B")
+    ax.set_ylim(0, 42)
+    ax.grid(axis="y", linestyle=":", alpha=0.5, color="#CBD5E1")
+
+    ax.text(bars[0].get_x() + bars[0].get_width() / 2.0, 1.2, f"대기 {fs_('wait2_imm')}h\n(현장 완결 / 전산 즉시 이관)", ha="center", va="bottom", fontsize=10.5, fontweight="bold", color="#059669")
+    ax.text(bars[1].get_x() + bars[1].get_width() / 2.0, delays[1] + 1.2, f"평균 {fs_('wait2_intern')}시간 ({delays[1] / 24:.1f}일)\n(자재 조달 및 일정 조율 대기)", ha="center", va="bottom", fontsize=10.5, fontweight="bold", color="#DC2626")
+    ax.text(bars[2].get_x() + bars[2].get_width() / 2.0, delays[2] + 1.2, f"추가 대기 +{fs_('rework_gap_mean')}h (최대 {fs_('rework_gap_max_d')}일)\n[재수리군 평균 총 리드타임 {fs_('rework_lead_mean')}h]", ha="center", va="bottom", fontsize=10.5, fontweight="bold", color="#991B1B")
+
+    plt.tight_layout()
+    out = os.path.join(DECK_DIR, "slide11_repair_delay_rework.png")
+    fig.savefig(out, facecolor=fig.get_facecolor(), edgecolor="none", transparent=False, dpi=300, bbox_inches="tight")
+    print(f"✅ [저장 완료] {out} (300 DPI)")
+    plt.close(fig)
+
+
 def main():
     print("🎨 [시작] 카드 컨테이너 명시적 배경(#FFFFFF, transparent=False) 차트 재생성...")
     render_p04_eda_missing()
@@ -550,6 +589,7 @@ def main():
     render_p10_correlation_heatmap()
     render_p12_field_donut()
     render_p13_field_bottleneck_wip()
+    render_p14_rework()
     print("🎉 [완료] 전 차트 명시적 배경(#FFFFFF) 및 고대비 파라미터 적용 완료!")
 
 

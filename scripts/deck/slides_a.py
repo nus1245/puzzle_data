@@ -98,7 +98,7 @@ def s03(doc, F):
     c2 = Card([label("STEP 02 · 병목 규명", ORG), big(F("wait1"), "h", RED, 44, name="n2"), body(f"실사 방문 대기, 현장 시간의 {F('wait1_pct')}%", 12, INK, name="s2"),
                Gap(0.04), bullets([f"일 유입 {F('inflow_day')}건 vs 기사 CAPA {F('capa_day')}건 → 적체 피크 {F('wip_peak')}건",
                                    f"교차 인계 {F('n_handover')}건에서 접수 {F('handover_ratio')}배 지연",
-                                   f"사내수리만 자재 대기 {F('wait2_intern')}h, 하자 재방문 +{F('rework_gap_mean')}h"], 12)], pad=0.22, name="step2",
+                                   f"사내수리만 자재 대기 {F('wait2_intern')}h, 재수리 시 +{F('rework_gap_mean')}h"], 12)], pad=0.22, name="step2",
               foot=Txt([T("DETAIL → p.07–15", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     c3 = Card([label("STEP 03 · 개선 시나리오", GRN), big("▼" + F("eff_total_pct"), "%", GRN, 44, name="n3"), body(f"{F('lead_total')}h → {F('tobe_total')}h (실사 대기 20% 단축 가정)", 12, INK, name="s3"),
                Gap(0.04), bullets([f"Direct Booking 전략: 하나의 병목 줄을 두 갈래로",
