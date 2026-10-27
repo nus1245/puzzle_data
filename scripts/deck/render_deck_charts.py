@@ -581,6 +581,45 @@ def render_p14_rework():
     plt.close(fig)
 
 
+# -----------------------------------------------------------------------------
+# 16. p.16: 접수 사전 분류(B·P·E) 도넛 — 원본 slide12_intake_matching_donut.png 와 같은 형태
+#    - 도넛 구성·색·배치 불변. 라벨만 '정합도/적합도(87.3%)' → 실제 1차 수리 방식 일치율로 교체
+#    - 사용자 PNG(outputs/figures/slide12_intake_matching_donut.png)는 덮어쓰지 않고 deck/ 에만 저장
+# -----------------------------------------------------------------------------
+def render_p16_match_donut():
+    fs_ = lambda k: F[k]["s"]
+    n_E, n_P, n_B = int(fs_("n_E")), int(fs_("n_P")), int(fs_("n_B"))
+    n_all = n_E + n_P + n_B
+    vals = [n_P, n_E, n_B]
+    colors = ["#059669", "#2563EB", "#94A3B8"]
+    names = [
+        f"P형 → 즉시수리 {fs_('fast_p_prec')}%\n({n_P}건, {n_P / n_all * 100:.1f}%)",
+        f"E형 → 사내수리 {fs_('E_intern_pct')}%\n({n_E}건, {n_E / n_all * 100:.1f}%)",
+        f"B형 복합진단\n({n_B}건, {n_B / n_all * 100:.1f}%)",
+    ]
+    fig, ax = plt.subplots(figsize=(7.72, 6.2), dpi=100)
+    fig.patch.set_facecolor("#F8FAFC")
+    ax.set_facecolor("#F8FAFC")
+    wedges, _ = ax.pie(vals, colors=colors, startangle=90, counterclock=False,
+                       wedgeprops=dict(width=0.38, edgecolor="white", linewidth=3), radius=1.0)
+    for w, val, name in zip(wedges, vals, names):
+        ang = np.deg2rad((w.theta1 + w.theta2) / 2.0)
+        x, y = np.cos(ang), np.sin(ang)
+        ax.text(0.81 * x, 0.81 * y, f"{val / n_all * 100:.1f}%", ha="center", va="center", color="white", fontsize=12, fontweight="bold")
+        ax.text(1.12 * x, 1.12 * y, name, ha="left" if x > 0 else "right", va="center", fontsize=13, color="#0F172A")
+    ax.text(0, 0.10, f"{fs_('match_upper_pct')}%", ha="center", va="center", fontsize=34, fontweight="bold", color="#0F172A")
+    ax.text(0, -0.13, "E·P 사전 분류", ha="center", va="center", fontsize=12, color="#64748B")
+    ax.text(0, -0.27, f"({fs_('match_upper_n')} / {n_all}건)", ha="center", va="center", fontsize=12, color="#64748B")
+    ax.set_title("접수 사전 분류와 실제 1차 수리 방식", fontsize=17, fontweight="bold", color="#0F172A", pad=18)
+    ax.set_xlim(-1.75, 1.75)
+    ax.set_ylim(-1.2, 1.25)
+    ax.set_aspect("equal")
+    out = os.path.join(DECK_DIR, "slide12_intake_matching_donut.png")
+    fig.savefig(out, facecolor=fig.get_facecolor(), edgecolor="none", transparent=False, dpi=300, bbox_inches="tight")
+    print(f"✅ [저장 완료] {out} (300 DPI)")
+    plt.close(fig)
+
+
 def main():
     print("🎨 [시작] 카드 컨테이너 명시적 배경(#FFFFFF, transparent=False) 차트 재생성...")
     render_p04_eda_missing()
@@ -590,6 +629,7 @@ def main():
     render_p12_field_donut()
     render_p13_field_bottleneck_wip()
     render_p14_rework()
+    render_p16_match_donut()
     print("🎉 [완료] 전 차트 명시적 배경(#FFFFFF) 및 고대비 파라미터 적용 완료!")
 
 

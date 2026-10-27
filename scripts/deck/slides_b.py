@@ -138,13 +138,15 @@ def s13(doc, F):
 def s14(doc, F):
     sl = doc.new_slide(16, "Part 03")
     chrome(sl, "[ 16 / Q2→Q3 · ROOT CAUSE ]", "적중률은 높은데 정보 해상도가 끊겨 있다",
-           sub=f"접수 사전 분류가 이미 현장과 {F('match_cons_pct')}~{F('match_upper_pct')}% 일치하는데도 모든 건이 실사 큐 한 줄에 선다",
+           sub=f"접수 알파벳 분류가 실제 수리 방식과 맞는데도(E→사내 {F('E_intern_pct')}%, P→즉시 {F('fast_p_prec')}%) 모든 건이 실사 큐 한 줄에 선다",
            source=f"출처: analysis.sql L1888~1928 · case_pivot_table.csv 재계산 · 큐 점유시간 = 실사 착수 후 기사가 그 건에 묶이는 시간(즉시 수리는 실사+수리)")
     top = BODY_TOP + 0.08
     c1 = Card([label("01 · 데이터 팩트", ACC), heading("사전 적중률은 높다", 15, INK, name="h"),
-               Img(os.path.join(FIG, "slide12_intake_matching_donut.png"), max_h=2.15, name="donut"),
-               big(F("match_upper_pct"), "% (상한)", ACC, 36, name="n"),
-               body(f"E+P {F('match_upper_n')}/{F('n_valid')}건 · 보수 기준 {F('match_cons_pct')}%({F('match_cons_n')}건)", 11.5, INK2)], pad=0.2, gap=0.07, name="c1")
+               Img(os.path.join(DECK, "slide12_intake_matching_donut.png"), max_h=1.9, name="donut"),
+               Txt([rich(f"E → 사내수리 **{F('E_intern_pct')}%** ({F('n_E')}/{F('n_E')}건)", 15, INK, accent=ACC),
+                    rich(f"P → 즉시수리 **{F('fast_p_prec')}%** ({F('n_fast')}/{F('n_P')}건)", 15, INK, accent=ACC)], name="n"),
+               Txt([rich(f"즉시 수리 기저율 {F('imm_base_pct')}%의 약 {F('p_imm_lift')}배", 11, INK2, accent=ACC),
+                    rich("기준: 접수 알파벳 vs 실제 1차 수리 방식", 11, INK2, accent=ACC)], name="bs")], pad=0.2, gap=0.07, name="c1")
     c2 = Card([label("02 · 원인 규명", ACC), heading("정보 해상도 단절 → 한 줄", 15, INK, name="h"),
                Card([label("접수 (현행)", MUTED), body("알파벳 3분류(B·P·E)만 수집 — 즉시 수리 여부를 가릴 수 없음", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxA"),
                Card([label("현장 (현행)", MUTED), body(f"{F('survey_work_min')}분 방문 실사 후 세부 코드(1~4) 판정", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxB"),
@@ -168,7 +170,11 @@ def s14(doc, F):
              f"그 결과 채널이 달라도 실사로 가는 줄은 하나입니다. 채널별 실사 대기는 {F('ch_wait_min')}~{F('ch_wait_max')}시간으로 통계적으로 차이가 없습니다(Kruskal p={F('ch_kw_p')}). "
              f"이 한 줄에서 즉시 수리 건(접수 코드 P-1·3, {F('n_fast')}건)을 따로 빼자는 것이 제안입니다. 즉시 수리는 건수로는 {F('fast_pct')}%이지만, 실사를 시작하면 기사가 수리까지 연속으로 맡아 큐 점유시간은 {F('occ_fast_share')}%입니다(건당 {F('occ_fast_h')}시간, 나머지 {F('occ_rest_h')}시간). "
              f"실사에서 수리 착수까지 간격은 {F('fast_gap_h')}시간이고 같은 기사가 {F('fast_same_worker_pct')}% 맡았습니다. 고속도로로 비유하면 큐를 오래 점유하는 화물차만 따로 빼자는 것입니다. "
-             f"[정정] {F('match_upper_pct')}%는 E+P 전체를 포함한 낙관 상한이고, 외주 전환 위험 P-4({F('n_P4_extern')}건)를 뺀 보수 기준은 {F('match_cons_pct')}%입니다. "
+             f"[적중 기준] 비교 대상은 세부코드가 아니라 접수 알파벳(B·P·E)과 실제 1차 수리 방식입니다. 세부코드 1~4는 현장 실사 후 판정되는 값이라 접수 시점에는 없습니다. "
+             f"E형 {F('n_E')}건은 전부 사내수리({F('E_intern_pct')}%), P형 {F('n_P')}건 중 즉시수리는 {F('n_fast')}건({F('fast_p_prec')}%)이며 즉시수리 기저율 {F('imm_base_pct')}%의 약 {F('p_imm_lift')}배입니다. 즉시수리 {F('n_imm1')}건 중 P가 잡아낸 비율은 {F('p_imm_recall_pct')}%입니다(놓친 건은 B-1). "
+             f"[정정] 도넛의 {F('match_upper_pct')}%는 E·P로 분류된 비율({F('match_upper_n')}/{F('n_valid')}건)이지 예측 정확도가 아닙니다. 사내 완결(즉시·사내) 기준으로 외주 P-4({F('n_P4_extern')}건)를 빼면 {F('match_cons_pct')}%({F('match_cons_n')}건)지만, 아무 건이나 사내 완결로 찍어도 {F('self_base_pct')}%라 변별력이 약해 근거로 쓰지 않습니다. "
+             f"엄격 기준(E→사내, P→즉시)의 일치는 E·P 기준 {F('strict_pct_ep')}%, 전체 기준 {F('strict_pct_all')}%({F('strict_n')}건)입니다. 주의: 사내 완결 {F('match_cons_pct')}%(전체 기준)와 P 즉시 {F('fast_p_prec')}%(P 기준)는 서로 다른 값입니다. "
+             f"[예상 질문] 알파벳 P·E·B의 의미는? → 원천에 정의서가 없어 실측 수리 방식 분포로 해석했습니다(E 전량 사내, P 대부분 즉시, B 혼합). 세부코드는 (알파벳, 코드) 조합마다 수리 방식이 하나로 정해져 사후 라벨일 수 있어 접수 시점 취득 가능성은 가정입니다. "
              f"[예상 질문] B형은? → B형 {F('n_B')}건은 이미 실사 대기가 평균 {F('b_wait1')}시간으로 큐를 사실상 우회하고 있어 분리 대상에서 뺐습니다.")
     return sl
 

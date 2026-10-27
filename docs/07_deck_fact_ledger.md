@@ -4,8 +4,8 @@
 
 **기준 우선순위**: ① `repair_cleaned.csv`·`case_pivot_table.csv`·`repair2.csv` 재계산 → ② `analysis.sql` → ③ `analysis.ipynb`·`hypothesis_testing_and_visualization.ipynb`. 원천끼리 다르면 재계산값을 채택하고 차이를 아래에 기록했다.
 
-- 재계산 vs 원천 표기 대조: **72건 중 72건 일치**, 불일치 0건
-- 슬라이드에 실린 모든 숫자는 `facts.json`(총 265개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
+- 재계산 vs 원천 표기 대조: **75건 중 75건 일치**, 불일치 0건
+- 슬라이드에 실린 모든 숫자는 `facts.json`(총 272개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
 
 ## 1. 재계산 vs 원천 표기 대조
 
@@ -81,6 +81,9 @@
 | `n_fast` | 365 | 365 | SQL L1892~1893 (P-1 298 + P-3 67) | 일치 |
 | `fast_all_immediate` | 365 | 365 | 접수 코드 P-1·3 전원 ImmediateRepair | 일치 |
 | `n_p_miss` | 74 | 74 | P 439 − 365 (P-2 36 + P-4 38) | 일치 |
+| `imm_base_pct` | 41.3 | 41.3 | case_pivot_table 재계산 (즉시수리 383/927) | 일치 |
+| `self_base_pct` | 93.6 | 93.6 | case_pivot_table 재계산 (즉시+사내 868/927, 무정보 기저율) | 일치 |
+| `strict_n` | 735 | 735 | E→사내 370 + P→즉시 365 | 일치 |
 | `b_wait1` | 0.1 | 0.1 | case_pivot_table 재계산 (B형 118건 실사 대기, 부분군 0.1~0.2h) | 일치 |
 | `n_extern_split` | 59 | 59 | 외주 59 = P-4 38 + B-4 21 (E형 0) | 일치 |
 
@@ -409,25 +412,37 @@
 
 | 키 | 표기값 | 원천·정의 |
 |:--|--:|:--|
+| `E_intern_pct` | 100.0 | case_pivot_table.csv · SQL L1888~1910 |
 | `b_wait1` | 0.1 | 재계산 |
 | `ch_kw_p` | 0.64 | 재계산 |
 | `ch_wait_max` | 80.4 | 재계산 |
 | `ch_wait_min` | 70.1 | 재계산 |
 | `fast_gap_h` | 0.00 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `fast_p_prec` | 83.1 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `fast_pct` | 39.4 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `fast_same_worker_pct` | 100.0 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `imm_base_pct` | 41.3 | 재계산 |
 | `match_cons_n` | 771 | case_pivot_table.csv · SQL L1888~1910 |
 | `match_cons_pct` | 83.2 | case_pivot_table.csv · SQL L1888~1910 |
 | `match_upper_n` | 809 | case_pivot_table.csv · SQL L1888~1910 |
 | `match_upper_pct` | 87.3 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_B` | 118 | case_pivot_table.csv · SQL L1888~1910 |
+| `n_E` | 370 | case_pivot_table.csv · SQL L1888~1910 |
+| `n_P` | 439 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_P4_extern` | 38 | case_pivot_table.csv · SQL L1888~1910 |
 | `n_fast` | 365 | 재계산 |
+| `n_imm1` | 383 | case_pivot_table.csv · NB-H Cell 16 |
 | `n_valid` | 927 | repair2.csv · case_pivot_table.csv 행/케이스 수 (NB-A Cell 4·83) |
 | `occ_fast_h` | 2.75 | 재계산 |
 | `occ_fast_share` | 73.3 | 재계산 |
 | `occ_ratio` | 4.2 | 재계산 |
 | `occ_rest_h` | 0.65 | 재계산 |
+| `p_imm_lift` | 2.0 | 재계산 |
+| `p_imm_recall_pct` | 95.3 | 재계산 |
+| `self_base_pct` | 93.6 | 재계산 |
+| `strict_n` | 735 | 재계산 |
+| `strict_pct_all` | 79.3 | 재계산 |
+| `strict_pct_ep` | 90.9 | 재계산 |
 | `survey_work_min` | 40.5 | case_pivot_table.csv 재계산 · SQL L1206~1395 (정의는 §3) |
 
 ### S17
