@@ -301,7 +301,7 @@ def s09(doc, F):
     chrome(sl, "[ 09 / Q2-2 · BOTTLENECK 1 · RECEPTION ]", "접수 지연은 물량이 아닌 교차 인계 탓",
            sub=f"접수 소요시간 = 최초 접수 → 방문 일정 확정 · 15분 이내는 ≤15분 · 인계 효과 +{F('handover_penalty_h')}h(단순 차이), +{F('ols1_handover_b')}h(OLS)",
            source=f"출처: analysis.sql L863~1135 · hypothesis 노트북 Cell 9 (접수 OLS R²={F('ols1_r2')}, F={F('ols1_f')}, VIF 최대 {F('ols1_vif_max')})")
-    chart = Card([cap("FIG.09", "접수 구간 3-Panel (인계 · 채널 · 15분 이내 평균)"),
+    chart = Card([cap("FIG.09", "접수 구간 3-Panel (인계 · 채널 · 패스트 트랙(15분 내) 평균)"),
                   Img(os.path.join(DECK, "slide09_reception_bottleneck_3panel.png"), max_h=2.75, name="rec")], pad=0.14, gap=0.06, name="rec-card")
     ch = chart.natural_h(CW)
     chart.draw(sl, MX, BODY_TOP + 0.15, CW, ch)
@@ -311,8 +311,11 @@ def s09(doc, F):
               body(f"단독 {F('n_single')}건 {F('single_h')}h → 인계 {F('n_handover')}건 {F('handover_h')}h. 인계는 전부 웹 {F('handover_web')} · 우편 {F('handover_letter')}", 11.5, INK2)],
              pad=0.2, gap=0.06, name="c1"),
         Card([label("이봉 분포 · 단기 지연이 아니다"),
-              Txt([rich(f"웹·우편은 **15분 이내 단기 접수({F('async_fast_pct')}%)** 아니면 **60분 초과 장기 대기({F('async_slow_pct')}%)**로 일정이 확정된다. 15~60분 구간은 {F('async_mid_n')}건", 12, INK, accent=RED)], name="b1"),
-              body(f"인계 {F('ho_slow_n')}건은 모두 60분 초과 (최소 {F('ho_min_min')}분)", 11.5, INK2)],
+              Txt([P(rich(t, 11.5, INK2, accent=RED).runs, bullet=True, before=(3.0 if k else 0)) for k, t in enumerate([
+                  f"웹·우편 **패스트 트랙(15분 이내) {F('async_fast_pct')}%**",
+                  f"웹·우편 **장기 대기(60분 초과) {F('async_slow_pct')}%**",
+                  f"15~60분 구간 {F('async_mid_n')}건 — 단기 지연 아님",
+                  f"인계 {F('ho_slow_n')}건 전부 60분 초과 (최소 {F('ho_min_min')}분)"])], name="bi")],
              pad=0.2, gap=0.06, name="c2"),
         Card([label("반전 · 웹은 느리지 않다"), big(F("fast_web_min"), "분", INK, 36, name="c"),
               body(f"빠른 건의 평균: 웹 {F('fast_web_min')}분 < 전화 {F('fast_phone_min')}분. 병목은 일정 조율 공백", 11.5, INK2)],
