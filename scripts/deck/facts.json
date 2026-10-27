@@ -700,6 +700,14 @@
    "v": 0,
    "s": "0"
   },
+  "ticket_mismatch_n": {
+   "v": 2,
+   "s": "2"
+  },
+  "ticket_gap_min": {
+   "v": 1.0,
+   "s": "1"
+  },
   "backflow": {
    "v": 0,
    "s": "0"
@@ -1425,6 +1433,13 @@
    38.0,
    38.0,
    "SQL L1894",
+   "일치"
+  ],
+  [
+   "ticket_mismatch_n",
+   2.0,
+   2.0,
+   "case_pivot_table 재계산 (TicketReady ≠ max(고객통보, 재무전송)인 케이스 2건, 차이 1분)",
    "일치"
   ],
   [

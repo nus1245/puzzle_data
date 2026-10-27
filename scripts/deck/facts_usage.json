@@ -108,8 +108,10 @@
   "settle_client_first_pct",
   "settle_fin_first",
   "settle_fin_first_pct",
+  "ticket_gap_min",
   "ticket_match_n",
   "ticket_match_pct",
+  "ticket_mismatch_n",
   "wrongplace_pct"
  ],
  "8": [
