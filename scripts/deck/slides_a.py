@@ -14,7 +14,7 @@ def cap(kicker, text):
 # ------------------------------------------------------------------ S01 표지
 def s01(doc, F):
     sl = doc.new_slide(1, "Part 00")
-    sl.text(MX, 0.55, 7.4, [T("[ 00 / 퍼즐데이터 채용 과제 최종 보고 ]", 12, True, ACC, "m", balance=False)],
+    sl.text(MX, 0.55, 7.4, [T("[ 00 / 퍼즐데이터 채용 과제 ]", 12, True, ACC, "m", balance=False)],
             structural=True, name="tag", role="tag", max_lines=1)
     sl.text(SLIDE_W - MX - 4.6, 0.57, 4.6, [T("PUZZLEDATA · REPAIR PROCESS ANALYSIS", 9, False, MUTED, "m", align="r", balance=False)],
             structural=True, name="brand", role="brand", max_lines=1)
@@ -26,22 +26,14 @@ def s01(doc, F):
     y += 0.42
     _, th, _ = sl.text(lx, y, lw_, [T("공공임대주택 수리 프로세스", 36, True, INK, balance=False),
                                     T("진단 및 운영 최적화 방안", 36, True, ACC, balance=False)], name="title", role="title", max_lines=2)
-    y += th + 0.3
-    sl.text(lx, y, lw_, [T("프로세스 마이닝 기반 · 무손실 전처리 · 대기 병목 규명 · TO-BE 전략", 13, False, INK2, balance=False)],
-            name="sub", role="sub", max_lines=1)
-    sl.text(lx, 6.15, lw_, [T(f"{F('n_events')} EVENTS · {F('n_cases_all')} CASES · {F('n_valid')} ANALYSIS COHORT", 10.5, True, MUTED, "m", balance=False)],
-            structural=True, name="meta", role="label", max_lines=1)
-    # 우: 지원 정보 카드
-    def kv(k, v):
-        return [label(k), heading(v, 22, INK, name="v-" + k), Gap(0.04)]
-
-    els = []
-    for i, (k, v) in enumerate([("POSITION", "데이터 분석가"), ("LEVEL", "신입"), ("NAME", "조승훈")]):
-        els += kv(k, v)
-        els += [Rule(), Gap(0.04)]
-    els += [label("DATE"), Txt([T("2026.10.27", 22, True, INK, "m", balance=False)], structural=True, name="v-date", role="body")]
-    cw = 4.3
-    Card(els, pad=0.3, gap=0.09, name="applicant").draw(sl, SLIDE_W - MX - cw, 1.95, cw)
+    # 우하단: 지원 정보 (가로 배열)
+    cw, ch, cx, cy = 6.6, 0.95, SLIDE_W - MX - 6.6, 5.75
+    _, card_id = sl.rect(cx, cy, cw, ch, fill=CARD, line=BORDER, name="applicant")
+    colw = cw / 4
+    for i, (k, v, mono) in enumerate([("POSITION", "데이터 분석가", False), ("LEVEL", "신입", False), ("NAME", "조승훈", False), ("DATE", "2026.10.27", True)]):
+        x0 = cx + i * colw + 0.2
+        sl.text(x0, cy + 0.15, colw - 0.25, [T(k, 9.5, True, ACC, "m", balance=False)], structural=True, parent=card_id, name="k-" + k, role="label", max_lines=1)
+        sl.text(x0, cy + 0.45, colw - 0.25, [T(v, 15, True, INK, "m" if mono else "k", balance=False)], structural=True, parent=card_id, name="v-" + k, role="body", max_lines=1)
     sl.hline(MX, 6.98, CW, name="foot-rule")
     sl.text(MX, 7.06, 10.6, [T("퍼즐데이터 수리 프로세스 데이터 분석 과제 · 공공임대주택 수리 이벤트 로그", 9, False, "94A3B8", "m", balance=False)],
             structural=True, name="source", role="foot", max_lines=1)
