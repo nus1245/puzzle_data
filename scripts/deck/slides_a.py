@@ -225,18 +225,19 @@ def s06(doc, F):
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
     c1 = Card([label("01 · 근무 형태", ACC), heading("24시간 상시 접수, 야간 방치 가설 기각", 14, INK, name="h1"),
                big(f"{F('intake_hours')}", "개 시간대", ACC, 36, name="n1"),
-               body("접수 이벤트가 0~23시 전 시간대에서 발생 — 지연 원인은 영업 외 방치가 아니라 일정 조율 마찰", 11.5, INK2)],
+               body("접수 이벤트 0~23시 전 시간대에서 발생", 11.5, INK2),
+               body("지연 원인은 영업 외 방치가 아닌 일정 조율 마찰", 11.5, INK2)],
               pad=0.2, gap=0.06, name="op1")
-    c2 = Card([label("02 · 조직 구조", ORG), heading("지역 전담제 착시, 실제로는 단일 공유 풀", 14, INK, name="h2"),
+    c2 = Card([label("02 · 조직 구조", ORG), heading("지역 전담제 X, 단일 공유 풀", 14, INK, name="h2"),
                big(f"{F('dian_share')} : {F('monica_share')}", "%", RED, 36, name="n2"),
-               body("접수 담당(Dian : Monica)별 현장 출동 비중 — 1회 접수 주택 기준 평균에 수렴", 11.5, INK2),
+               body("현장 출동 케이스의 접수 담당 비중(Dian : Monica) — 기사별로도 고르게 분산", 11.5, INK2),
                bullets([f"1회 접수 주택 {F('houses_once_pct')}%({F('n_houses_once')}/{F('n_houses')}채)라 지역 분담처럼 보임",
                         f"재접수 {F('recontact_houses')}채 중 {F('recontact_diff_pct')}%({F('recontact_diff')}채)는 다른 상담원이 접수"], 11)],
               pad=0.2, gap=0.06, name="op2")
     stack(sl, rx, BODY_TOP + 0.08, rw, [c1, c2], gutter=0.14, h_total=5.18)
     sl.notes(f"전처리를 마친 결과, 행 손실 없이 시간 역전 0건인 {F('n_events')}행 데이터셋을 확보했습니다. 이 과정에서 수리회사의 운영 특성 두 가지가 드러났습니다. "
              f"첫째, 접수 이벤트가 24개 시간대 모두에서 발생해 야간 방치 가설은 기각됩니다. "
-             f"둘째, 1회 접수 주택이 {F('houses_once_pct')}%라 지역 분담처럼 보이지만 재접수 {F('recontact_houses')}채 중 {F('recontact_diff')}채는 다른 상담원이 받았고, 현장 출동 비중도 {F('dian_share')}:{F('monica_share')}로 수렴해 접수와 현장 모두 구역 제한 없는 단일 풀입니다. "
+             f"둘째, 1회 접수 주택이 {F('houses_once_pct')}%라 지역 분담처럼 보이지만 재접수 {F('recontact_houses')}채 중 {F('recontact_diff')}채는 다른 상담원이 받았고, 현장 출동 케이스의 접수 담당 비중(Dian:Monica)도 {F('dian_share')}:{F('monica_share')}로 고르게 분산돼 접수와 현장 모두 구역 제한 없는 단일 풀입니다. "
              "이 환경을 바탕으로 질문 2의 기준 프로세스 모델로 넘어가겠습니다.")
     return sl
 
