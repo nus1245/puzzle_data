@@ -4,8 +4,8 @@
 
 **기준 우선순위**: ① `repair_cleaned.csv`·`case_pivot_table.csv`·`repair2.csv` 재계산 → ② `analysis.sql` → ③ `analysis.ipynb`·`hypothesis_testing_and_visualization.ipynb`. 원천끼리 다르면 재계산값을 채택하고 차이를 아래에 기록했다.
 
-- 재계산 vs 원천 표기 대조: **76건 중 76건 일치**, 불일치 0건
-- 슬라이드에 실린 모든 숫자는 `facts.json`(총 273개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
+- 재계산 vs 원천 표기 대조: **81건 중 81건 일치**, 불일치 0건
+- 슬라이드에 실린 모든 숫자는 `facts.json`(총 279개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
 
 ## 1. 재계산 vs 원천 표기 대조
 
@@ -85,6 +85,11 @@
 | `self_base_pct` | 93.6 | 93.6 | case_pivot_table 재계산 (즉시+사내 868/927, 무정보 기저율) | 일치 |
 | `strict_n` | 735 | 735 | E→사내 370 + P→즉시 365 | 일치 |
 | `n_extern_rework` | 0 | 0 | case_pivot_table 재계산 (1차 외주 59건 중 2차 수리 발생 0건; SQL 주석 '외주 전담 코드 리워크 0건') | 일치 |
+| `intern_ev` | 547 | 547 | 프로세스 맵 InternRepair 547 EV | 일치 |
+| `intern_cases` | 508 | 508 | 프로세스 맵 InternRepair 508 CASES | 일치 |
+| `extern_ev` | 132 | 132 | 프로세스 맵 ExternRepair 132 EV | 일치 |
+| `rep_ev_total` | 1062 | 1062 | 프로세스 맵 '수리 1,062 EV' | 일치 |
+| `wait1_median` | 48.8 | 48.8 | 프로세스 맵 MEDIAN 48.8H | 일치 |
 | `b_wait1` | 0.1 | 0.1 | case_pivot_table 재계산 (B형 118건 실사 대기, 부분군 0.1~0.2h) | 일치 |
 | `n_extern_split` | 59 | 59 | 외주 59 = P-4 38 + B-4 21 (E형 0) | 일치 |
 

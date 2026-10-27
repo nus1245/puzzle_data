@@ -55,7 +55,7 @@ def s11(doc, F):
     top = BODY_TOP + 0.08
     cw_ = 8.55
     chart = Card([cap("FIG.11", "일별 유입 vs 실사 CAPA 및 적체 대기열(WIP)"),
-                  Img(os.path.join(FIG, "slide10_field_bottleneck_wip.png"), max_h=3.9, name="wip")], pad=0.14, gap=0.06, name="wip-card")
+                  Img(os.path.join(FIG, "slide10_field_bottleneck_wip.png"), max_h=3.75, name="wip")], pad=0.14, gap=0.06, name="wip-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, top, cw_, ch)
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2
