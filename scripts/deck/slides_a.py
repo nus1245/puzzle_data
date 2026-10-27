@@ -351,7 +351,7 @@ def s10r(doc, F):
         Card([label("일별 접수량 ↔ 접수 시간", MUTED), big(f"r = {F('corr_daily_rec')}", "", "94A3B8", 24, name="c"),
               body(f"물량 무관 — 현장 실사 대기와는 r = {F('corr_daily_visit')}", 11, INK2)], pad=0.17, gap=0.06, name="s3"),
     ]
-    take = Card([label("READING", ACC), Txt([rich("상관은 방향만 보여준다. **채널과 인계가 서로 얽혀 있어** 순수 효과는 다음 장의 OLS로 분리한다.", 12.5, INK, accent=ACC)], name="rd")],
+    take = Card([label("READING", ACC), Txt([rich(f"교차 인계 ↔ 실시간 채널 **r = −{F('corr_ho_rt').lstrip('-')}** : 인계 {F('n_handover')}건 전부 웹·우편이라 두 변수가 얽힘 → 순수 효과는 다음 장 OLS로 분리", 12.5, INK, accent=ACC)], name="rd")],
                 pad=0.17, gap=0.06, name="read-card", line=ACC)
     th = take.natural_h(rw)
     stack(sl, rx, top, rw, stats, gutter=0.12, h_total=H - th - 0.14)
@@ -359,7 +359,8 @@ def s10r(doc, F):
     assert_body(sl, top + H)
     sl.notes(f"접수 구간에 영향을 줄 만한 9개 변수의 상관관계입니다. 접수 소요시간과 가장 강하게 같이 움직이는 것은 교차 인계(r={F('corr_rec_ho')})와 실시간 채널 여부(r=−{F('corr_rec_rt').lstrip('-')})입니다. "
              f"반면 일별 접수량은 r={F('corr_daily_rec')}로 접수 시간과 무관하고, 오히려 현장 실사 대기와 r={F('corr_daily_visit')}의 약한 양의 상관을 보입니다. 접수량은 접수창구가 아니라 뒤의 현장 대기열에 영향을 준다는 뜻입니다. "
-             "다만 상관은 변수 간 얽힘을 통제하지 못하므로, 다음 장에서 회귀분석으로 순수 효과를 분리합니다. "
+             f"그런데 교차 인계와 실시간 채널여부 사이에도 r=−{F('corr_ho_rt').lstrip('-')}의 상관이 있습니다. 인계 {F('n_handover')}건이 전부 웹·우편 접수라서 두 변수가 겹쳐 움직이기 때문입니다. "
+             "상관은 이런 얽힘을 통제하지 못하므로, 다음 장에서 회귀분석으로 순수 효과를 분리합니다. "
              "[예상 질문] 상관이 인과인가? → 아닙니다. 그래서 OLS로 채널·인계·물량을 동시에 통제해 확인합니다.")
     return sl
 

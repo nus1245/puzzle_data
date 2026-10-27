@@ -4,8 +4,8 @@
 
 **기준 우선순위**: ① `repair_cleaned.csv`·`case_pivot_table.csv`·`repair2.csv` 재계산 → ② `analysis.sql` → ③ `analysis.ipynb`·`hypothesis_testing_and_visualization.ipynb`. 원천끼리 다르면 재계산값을 채택하고 차이를 아래에 기록했다.
 
-- 재계산 vs 원천 표기 대조: **70건 중 70건 일치**, 불일치 0건
-- 슬라이드에 실린 모든 숫자는 `facts.json`(총 263개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
+- 재계산 vs 원천 표기 대조: **72건 중 72건 일치**, 불일치 0건
+- 슬라이드에 실린 모든 숫자는 `facts.json`(총 265개)에서 주입되며, 빌드 시 숫자 리터럴이 facts 에 없으면 실패한다.
 
 ## 1. 재계산 vs 원천 표기 대조
 
@@ -49,6 +49,8 @@
 | `corr_rec_ho` | 0.48 | 0.48 | 히트맵 reception_detailed_correlation_heatmap.png | 일치 |
 | `corr_rec_rt` | -0.43 | -0.43 | 히트맵 (실시간 채널여부) | 일치 |
 | `corr_daily_visit` | 0.17 | 0.17 | 히트맵 (일별 접수량 × 현장 실사 대기) | 일치 |
+| `corr_ho_rt` | -0.4 | -0.4 | 히트맵 (교차 인계 × 실시간 채널여부) | 일치 |
+| `ho_in_async_n == n_handover` | 123 | 123 | 인계 전 건이 웹·우편 (S09 노트 주장) | 일치 |
 | `inflow_day` | 134.3 | 134.3 | SQL L1978 / NB-H C14 | 일치 |
 | `capa_day` | 68 | 68 | SQL L1980 / NB-H C14 | 일치 |
 | `wip_peak` | 403 | 403 | SQL L1636 / 차트 | 일치 |
@@ -305,6 +307,7 @@
 |:--|--:|:--|
 | `corr_daily_rec` | 0.01 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `corr_daily_visit` | 0.17 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
+| `corr_ho_rt` | -0.40 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `corr_rec_ho` | 0.48 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `corr_rec_rt` | -0.43 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |
 | `n_handover` | 123 | case_pivot_table.csv · repair_cleaned.csv · NB-H Cell 9 · SQL L863~1135 |

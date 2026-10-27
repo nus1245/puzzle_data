@@ -302,6 +302,10 @@ put("corr_daily_visit", v.daily_intake_volume.corr(v.visit_lag_hours), fmt(v.dai
 check("corr_rec_ho", rnd(v.rec.corr(v.is_handover), 2), 0.48, "히트맵 reception_detailed_correlation_heatmap.png", 0.0)
 check("corr_rec_rt", rnd(v.rec.corr(v.rt_flag), 2), -0.43, "히트맵 (실시간 채널여부)", 0.0)
 check("corr_daily_visit", rnd(v.daily_intake_volume.corr(v.visit_lag_hours), 2), 0.17, "히트맵 (일별 접수량 × 현장 실사 대기)", 0.0)
+put("corr_ho_rt", v.is_handover.corr(v.rt_flag), fmt(v.is_handover.corr(v.rt_flag), 2))
+put("ho_in_async_n", int(v[v.ho].is_async_channel.sum()), str(int(v[v.ho].is_async_channel.sum())))
+check("corr_ho_rt", rnd(v.is_handover.corr(v.rt_flag), 2), -0.40, "히트맵 (교차 인계 × 실시간 채널여부)", 0.0)
+check("ho_in_async_n == n_handover", int(v[v.ho].is_async_channel.sum()), int(v.ho.sum()), "인계 전 건이 웹·우편 (S09 노트 주장)", 0.0)
 
 
 # ------------------------------------------------------------------ 현장 병목 (S11)
