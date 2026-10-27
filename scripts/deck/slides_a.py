@@ -59,22 +59,21 @@ def s02(doc, F):
         ("03", GRN, "질문 3", GRN, GRN_BG, "TO-BE 개선 방안", 16,
          [f"사전 분류 적중률 {F('match_upper_pct')}%와 정보 해상도 한계", "접수 사전 필터 고도화(Direct Booking)", "단축률 가정과 파일럿 검증 설계"],
          f"▼{F('eff_total_pct')}%", "전체 평균 감축(가정)"),
-        ("04", MUTED, "마무리", MUTED, SLATE_BG, "질의응답", 19,
-         ["프로젝트 핵심 요약", "질의응답"],
-         "Q&A", "자유 질의"),
+        ("04", MUTED, "마무리", MUTED, SLATE_BG, "핵심 요약", 19,
+         ["파트별 핵심 결과 정리"],
+         None, None),
     ]
     cards = []
     for idx, col, pill, pc, pbg, title, target, bl, kn, kl in tiles:
         els = [Txt([T(idx, 40, True, ACC, "m", balance=False)], structural=True, role="body", name="idx"),
                Pill(pill.upper() if pill.isascii() else pill, pc, pbg),
                heading(title, 16, INK, name="ttl"), Gap(0.04), bullets(bl, 11.5)]
-        foot = Card([], pad=0, gap=0)  # placeholder (미사용)
-        cards.append(Card(els, pad=0.24, gap=0.12, min_h=4.7, name=f"tile-{idx}", link=target,
-                          foot=Txt([P([R(kn, 28, True, {"01": INK, "02": RED, "03": GRN, "04": MUTED}[idx], "m")], lh=LH_BIG, balance=False),
-                                    T(kl, 11, False, MUTED, balance=False)], name="key")))
+        foot = None if kn is None else Txt([P([R(kn, 28, True, {"01": INK, "02": RED, "03": GRN, "04": MUTED}[idx], "m")], lh=LH_BIG, balance=False),
+                                            T(kl, 11, False, MUTED, balance=False)], name="key")
+        cards.append(Card(els, pad=0.24, gap=0.12, min_h=4.7, name=f"tile-{idx}", link=target, foot=foot))
     hh = row(sl, MX, 1.75, CW, cards, gutter=0.2)
     assert_body(sl, 1.75 + hh)
-    sl.notes("오늘 발표는 4개 파트입니다. 질문 1에서 데이터 진단과 전처리를, 질문 2에서 프로세스 병목과 원인을, 질문 3에서 개선안과 기대 효과를 보고드리고 질의응답으로 마치겠습니다. "
+    sl.notes("오늘 발표는 4개 파트입니다. 질문 1에서 데이터 진단과 전처리를, 질문 2에서 프로세스 병목과 원인을, 질문 3에서 개선안과 기대 효과를 보고드리고 핵심 요약으로 마치겠습니다. "
              "각 타일을 클릭하면 해당 파트로 이동합니다.")
     return sl
 
