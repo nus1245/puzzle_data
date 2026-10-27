@@ -199,7 +199,7 @@ def s05(doc, F):
 # ------------------------------------------------------------------ S06 무결성·운영 특성
 def s06(doc, F):
     sl = doc.new_slide(6, "Part 01")
-    chrome(sl, "[ 06 / Q1 · AFTER PROFILING ]", "역전 0건 입증, 접수·현장 모두 단일 풀",
+    chrome(sl, "[ 06 / Q1 · AFTER PROFILING ]", "시간 역전 0건, 접수·현장 모두 단일 풀",
            source="출처: analysis.ipynb Cell 81·83, analysis.sql L760~828(배정비)·L1138~1202(24시간 접수), repair_cleaned.csv")
 
     def c(t, color=INK2, bold=False, size=11.5):
