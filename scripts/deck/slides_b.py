@@ -148,7 +148,7 @@ def s14(doc, F):
     c2 = Card([label("02 · 원인 규명", ACC), heading("정보 해상도 단절 → 한 줄", 15, INK, name="h"),
                Card([label("접수 (현행)", MUTED), body("알파벳 3분류(B·P·E)만 수집 — 즉시 수리 여부를 가릴 수 없음", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxA"),
                Card([label("현장 (현행)", MUTED), body(f"{F('survey_work_min')}분 방문 실사 후 세부 코드(1~4) 판정", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxB"),
-               Txt([rich(f"→ 채널이 달라도 **실사 큐는 한 줄**: 채널별 실사 대기 {F('ch_wait_min')}~{F('ch_wait_max')}h, 차이 유의하지 않음(p={F('ch_kw_p')})", 12.5, INK, accent=ACC)], name="res")],
+               Txt([rich("**실사 대기 큐는 한 줄**", 15, INK, accent=ACC, align="c")], name="res")],
               pad=0.2, gap=0.1, name="c2")
     c3 = Card([label("03 · 분리 근거", GRN), heading("즉시 수리 건을 따로 뺀다", 15, INK, name="h"),
                big(F("n_fast"), "건 · " + F("fast_pct") + "%", INK, 36, name="n"),
