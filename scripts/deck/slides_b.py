@@ -320,7 +320,7 @@ def s17(doc, F):
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
     hero = Card([label("QUESTION & ANSWER", ACC), Gap(0.3),
                  Txt([T("Q & A", 64, True, INK, "m", align="c", balance=False)], structural=True, name="qa", role="body"),
-                 Txt([T("경청해 주셔서 감사합니다", 22, True, INK, align="c", balance=False)], name="thx"),
+                 Txt([T("검토해 주셔서 감사합니다", 22, True, INK, align="c", balance=False)], name="thx"),
                  Txt([T("데이터 진단부터 병목 규명, 실행 전략까지 자유롭게 질문해 주십시오.", 12.5, False, INK2, align="c")], name="msg"),
                  Rule(),
                  Txt([T("조승훈 · 데이터 분석가 (신입) · 2026.10.27", 11, False, MUTED, "m", align="c", balance=False)], structural=True, name="who", role="body")],
