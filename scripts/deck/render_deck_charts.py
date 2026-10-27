@@ -308,6 +308,92 @@ def render_p09_reception_3panel():
 
 
 # -----------------------------------------------------------------------------
+# 9b. p.09: 3-Panel 을 패널별 개별 PNG 로 분리 (카드 3열 폭에 맞춘 동일 크기·동일 플롯 영역)
+#    - 패널 구성·색·값은 render_p09_reception_3panel 과 동일, 크기만 카드 폭에 맞춤
+#    - 모든 패널이 같은 figsize·같은 subplots_adjust → 플롯 상단·하단이 가로로 정렬
+# -----------------------------------------------------------------------------
+def render_p09_split():
+    piv = pd.read_csv("case_pivot_table.csv")
+    for col in ["contact_time", "inform_survey_time"]:
+        piv[col] = pd.to_datetime(piv[col], errors="coerce")
+    v = piv[piv.objectKey.notna()].copy()
+    v["m"] = (v.inform_survey_time - v.contact_time).dt.total_seconds() / 60.0
+    ev = pd.read_csv("repair_cleaned.csv")
+    rl = ev[ev.taskID.isin(["FirstContact", "MakeTicket", "ArrangeSurvey", "InformClientSurvey"]) & ev.originator.isin(["Anne", "Dian", "Monica", "Paul"])]
+    ho = set(rl.groupby("caseID").originator.nunique()[lambda x: x > 1].index)
+    is_ho = v.caseID.isin(ho)
+    hours = v.m / 60.0
+    channel_order = ["Personal", "Phone", "Web", "Letter"]
+    ch_labels = ["대면", "전화", "웹 (Web)", "우편"]
+
+    def new_fig():
+        fig, ax = plt.subplots(figsize=(5.5, 3.3), dpi=300)
+        fig.patch.set_facecolor(BG_COLOR)
+        ax.set_facecolor(BG_COLOR)
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+        for sp in ("left", "bottom"):
+            ax.spines[sp].set_color("#CBD5E1")
+        ax.tick_params(colors="#64748B", labelsize=10.5)
+        fig.subplots_adjust(left=0.2, right=0.97, bottom=0.2, top=0.87)
+        return fig, ax
+
+    def save(fig, name):
+        out = os.path.join(DECK_DIR, name)
+        fig.savefig(out, facecolor=fig.get_facecolor(), edgecolor="none", transparent=False, dpi=300)
+        print(f"✅ [저장 완료] {out} (300 DPI)")
+        plt.close(fig)
+
+    # [A] 단독 vs 인계
+    fig, ax = new_fig()
+    means = [hours[~is_ho].mean(), hours[is_ho].mean()]
+    ax.bar([0, 1], means, color=["#2563EB", "#E11D48"], width=0.45, zorder=3)
+    ax.text(0, means[0] + 0.25, f"{means[0]:.1f} 시간", ha="center", va="bottom", fontsize=11.5, fontweight="bold", color="#2563EB", zorder=4)
+    ax.text(1, means[1] + 0.25, f"{means[1]:.1f} 시간 ({fs('handover_ratio')}배)", ha="center", va="bottom", fontsize=11.5, fontweight="bold", color="#E11D48", zorder=4)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels([f"단독 처리 ({int((~is_ho).sum())}건)", f"교차 인계 ({int(is_ho.sum())}건)"], fontsize=10.5, fontweight="bold", color="#1E293B")
+    ax.set_ylabel("평균 접수 소요시간 (h)", fontsize=10.5, fontweight="bold", color="#64748B")
+    ax.set_ylim(0, 10)
+    ax.grid(axis="y", linestyle=":", alpha=0.5, color="#CBD5E1", zorder=0)
+    save(fig, "slide09a_handover.png")
+
+    # [B] 채널별 15분 이내 / 60분 초과
+    fig, ax = new_fig()
+    grp = np.where(v.m <= 15.0, "fast", np.where(v.m > 60.0, "slow", "mid"))
+    tab = pd.crosstab(v.contact_channel, grp, normalize="index").reindex(channel_order) * 100.0
+    bottom = np.zeros(len(channel_order))
+    for col, name, color in [("fast", "15분 이내", "#059669"), ("slow", "60분 초과", "#E11D48")]:
+        vals = tab[col].values
+        ax.barh(range(len(channel_order)), vals, left=bottom, label=name, color=color, height=0.5, zorder=3)
+        for i, val in enumerate(vals):
+            if val > 10.0:
+                ax.text(bottom[i] + val / 2.0, i, f"{val:.1f}%", ha="center", va="center", color="#FFFFFF", fontweight="bold", fontsize=10.5, zorder=4)
+        bottom += vals
+    ax.set_xlim(0, 100)
+    ax.set_xlabel("비율 (%)", fontsize=10.5, fontweight="bold", color="#64748B")
+    ax.set_yticks(range(len(channel_order)))
+    ax.set_yticklabels(ch_labels, fontsize=10.5, fontweight="bold", color="#1E293B")
+    ax.grid(axis="x", linestyle=":", alpha=0.5, color="#CBD5E1", zorder=0)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=2, frameon=False, fontsize=10.5)
+    save(fig, "slide09b_channel_cohort.png")
+
+    # [C] 패스트 트랙(15분 이내) 채널별 평균
+    fig, ax = new_fig()
+    fast_avg = v[v.m <= 15.0].groupby("contact_channel").m.mean().reindex(channel_order)
+    bars = ax.bar(range(len(channel_order)), fast_avg, color=["#CBD5E1", "#CBD5E1", "#059669", "#CBD5E1"], width=0.45, zorder=3)
+    for i, bar in enumerate(bars):
+        yv = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2.0, yv + 0.25, f"{yv:.1f}분", ha="center", va="bottom", fontweight="bold", fontsize=10.5,
+                color="#059669" if channel_order[i] == "Web" else "#0F172A", zorder=4)
+    ax.set_ylabel("평균 소요시간 (분)", fontsize=10.5, fontweight="bold", color="#64748B")
+    ax.set_ylim(0, 10.5)
+    ax.set_xticks(range(len(channel_order)))
+    ax.set_xticklabels(ch_labels, fontsize=10.5, fontweight="bold", color="#1E293B")
+    ax.grid(axis="y", linestyle=":", alpha=0.5, color="#CBD5E1", zorder=0)
+    save(fig, "slide09c_fast_channel.png")
+
+
+# -----------------------------------------------------------------------------
 # 4. p.10: 상관관계 히트맵 (reception_detailed_correlation_heatmap.png)
 #    - 카드 컨테이너 배경색 #FFFFFF 명시적 채움
 #    - Coolwarm 발산 팔레트, 12.5pt 상관계수 확대
@@ -626,6 +712,7 @@ def main():
     render_p08_leadtime_breakdown()
     render_p09_reception_3panel()
     render_p10_correlation_heatmap()
+    render_p09_split()
     render_p12_field_donut()
     render_p13_field_bottleneck_wip()
     render_p14_rework()

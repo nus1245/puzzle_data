@@ -301,11 +301,13 @@ def s09(doc, F):
     chrome(sl, "[ 09 / Q2-2 · BOTTLENECK 1 · RECEPTION ]", "접수 지연은 물량이 아닌 교차 인계 탓",
            sub=f"접수 소요시간 = 최초 접수 → 방문 일정 확정 · 15분 이내는 ≤15분 · 인계 효과 +{F('handover_penalty_h')}h(단순 차이), +{F('ols1_handover_b')}h(OLS)",
            source=f"출처: analysis.sql L863~1135 · hypothesis 노트북 Cell 9 (접수 OLS R²={F('ols1_r2')}, F={F('ols1_f')}, VIF 최대 {F('ols1_vif_max')})")
-    chart = Card([cap("FIG.09", "접수 구간 3-Panel (인계 · 채널 · 패스트 트랙(15분 내) 평균)"),
-                  Img(os.path.join(DECK, "slide09_reception_bottleneck_3panel.png"), max_h=2.6, name="rec")], pad=0.14, gap=0.06, name="rec-card")
-    ch = chart.natural_h(CW)
-    chart.draw(sl, MX, BODY_TOP + 0.15, CW, ch)
-    y = BODY_TOP + 0.15 + ch + 0.15
+    charts = [Card([cap(tag, title), Img(os.path.join(DECK, fn), name=nm)], pad=0.14, gap=0.06, name="rec-" + nm)
+              for tag, title, fn, nm in [("FIG.09-A", "단독 vs 교차 인계 · 평균 접수시간", "slide09a_handover.png", "recA"),
+                                         ("FIG.09-B", "채널별 15분 이내 · 60분 초과 비율", "slide09b_channel_cohort.png", "recB"),
+                                         ("FIG.09-C", "패스트 트랙(15분 내) 채널별 평균", "slide09c_fast_channel.png", "recC")]]
+    top9 = BODY_TOP + 0.15
+    ch = row(sl, MX, top9, CW, charts, gutter=0.2)
+    y = top9 + ch + 0.15
     chips = [
         Card([label("핵심 원인 · 교차 인계"), big(F("handover_ratio"), "배", RED, 36, name="a"),
               body(f"단독 {F('n_single')}건 {F('single_h')}h → 인계 {F('n_handover')}건 {F('handover_h')}h. 인계는 전부 웹 {F('handover_web')} · 우편 {F('handover_letter')}", 11.5, INK2)],
