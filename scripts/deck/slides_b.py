@@ -184,8 +184,8 @@ def s14(doc, F):
 def s15(doc, F):
     sl = doc.new_slide(17, "Part 03")
     chrome(sl, sec_tag(17), "Direct Booking 전략: 하나의 병목 줄을 두 갈래로",
-           sub="접수 코드를 세분화해 즉시 수리 건을 실사 줄에서 빼고, 기사 캘린더로 바로 예약해 작업 줄로 보낸다",
-           source="출처: analysis.sql L1888~1928(사전 분류) · case_pivot_table.csv 재계산 · UI는 제안이며 효과는 다음 장에서 가정과 파일럿으로 다룸")
+           sub="접수 코드를 세분화해 즉시 수리 건을 실사 대기 줄에서 빼고, 기사 캘린더로 바로 예약해 Direct Booking 줄로 보낸다",
+           source="출처: analysis.sql L1888~1928(사전 분류) · case_pivot_table.csv 재계산 · UI는 제안이며 효과는 다음 장에서 가정과 실험 설계로 다룸")
     top = BODY_TOP + 0.08
 
     def c(t, col=INK2, bold=False, size=11.5):
@@ -197,7 +197,7 @@ def s15(doc, F):
          rich("웹 양식 포맷을 **전 채널에 동일 적용**", 11.5, INK, accent=ACC),
          rich(f"(빠른 건 평균 {F('fast_web_min')}분, 전 채널 최속)", 11.5, INK2, accent=ACC)]],
         [c("줄 분리", INK, True), c(f"채널이 달라도 {F('n_valid')}건 전부 실사 큐 한 줄"),
-         [rich("**즉시 수리 코드(P-1·3)** 건은 실사 줄에서 빼 **작업 줄**로 직행", 11.5, INK, accent=ACC)]],
+         [rich("**즉시 수리 코드(P-1·3)** 건은 실사 대기 줄에서 빼 **Direct Booking 줄**로 직행", 11.5, INK, accent=ACC)]],
         [c("일정 확정", INK, True), c(f"상담원 일정 회신(비동기), 교차 인계 {F('n_handover')}건 ({F('single_h')}h → {F('handover_h')}h)"),
          [rich("**기사 캘린더**에서 고객이 슬롯을 직접 선택 · 상담원 개입 0", 11.5, INK, accent=ACC)]],
         [c("방문", INK, True), c("실사 대기 후 방문, 사내수리는 부품 주문 → 재방문"),
@@ -230,8 +230,8 @@ def s15(doc, F):
 
     lanes = Table([(1, "", "l"), (1, "", "l"), (1, "", "l")], [[
         [hd("AS-IS · 줄 1개")] + ln(f"**{F('n_valid')}건 전부 실사 큐 한 줄**") + ln(f"일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건"),
-        [hd("TO-BE · 실사 줄 (정밀검사)")] + ln(f"**{F('n_rest')}건**: 일 유입 {F('inflow_day')}→{F('inflow_rest')}건({F('fast_pct')}% 감소)") + ln(f"B형 {F('n_B')}건 · 외주 전환 {F('n_extern_all')}건 · 재작업 집중 E형"),
-        [hd("TO-BE · 작업 줄 (즉시)")] + ln(f"**{F('n_fast')}건**: 기본 키트로 1회 방문") + ln(f"실사 {F('fast_svy_h')}h 생략, 수리 {F('fast_rep_h')}h")]],
+        [hd("TO-BE · 실사 대기 줄 (정밀 실사)")] + ln(f"**{F('n_rest')}건**: 일 유입 {F('inflow_day')}→{F('inflow_rest')}건({F('fast_pct')}% 감소)") + ln(f"B형 {F('n_B')}건 · 외주 전환 {F('n_extern_all')}건 · 재수리 집중 E형"),
+        [hd("TO-BE · Direct Booking 줄 (즉시)")] + ln(f"**{F('n_fast')}건**: 기본 키트로 1회 방문") + ln(f"실사 {F('fast_svy_h')}h 생략, 수리 {F('fast_rep_h')}h")]],
         pad_y=0.02, head=False, name="lanes")
     ban = Card([label("TWO LANES · 줄을 하나에서 둘로", ACC), lanes], pad=0.18, gap=0.04, name="common")
     bh = max(ban.natural_h(CW), BODY_BOTTOM - y)
@@ -321,13 +321,13 @@ def s17(doc, F):
     hero = Card([label("QUESTION & ANSWER", ACC), Gap(0.3),
                  Txt([T("Q & A", 64, True, INK, "m", align="c", balance=False)], structural=True, name="qa", role="body"),
                  Txt([T("검토해 주셔서 감사합니다", 22, True, INK, align="c", balance=False)], name="thx"),
-                 Txt([T("데이터 진단부터 병목 규명, 실행 전략까지 자유롭게 질문해 주십시오.", 12.5, False, INK2, align="c")], name="msg"),
+                 Txt([T("데이터 진단부터 병목 규명, 실행 전략까지", 12.5, False, INK2, align="c", balance=False), T("문의 사항은 언제든지 연락 주십시오.", 12.5, False, INK2, align="c", balance=False)], name="msg"),
                  Rule(),
                  Txt([T("조승훈 · 데이터 분석가 (신입) · 2026.10.27", 11, False, MUTED, "m", align="c", balance=False)], structural=True, name="who", role="body")],
                 pad=0.3, gap=0.16, name="hero", line=ACC)
     hero.draw(sl, rx, top, rw, H)
     assert_body(sl, top + H)
-    sl.notes(f"이상으로 발표를 마칩니다. {F('n_events')}행 전수 보존 전처리, {F('wait1')}시간의 실사 대기 병목과 원인 규명, 그리고 가정을 명시하고 실험 설계로 검증하는 TO-BE 시나리오까지 설명드렸습니다. 질문 주시면 답변드리겠습니다. 감사합니다.\n\n"
+    sl.notes(f"이상으로 보고를 마칩니다. {F('n_events')}행 전수 보존 전처리, {F('wait1')}시간의 실사 대기 병목과 원인 규명, 그리고 가정을 명시하고 실험 설계로 검증하는 TO-BE 시나리오까지 설명드렸습니다. 질문 주시면 답변드리겠습니다. 감사합니다.\n\n"
              f"[핵심 숫자 치트시트] 리드타임 {F('lead_total')}h · 대기 {F('wait_B')}h({F('wait_B_pct')}%) · 실사 대기 {F('wait1')}h · 유입 {F('inflow_day')} vs CAPA {F('capa_day')} · 적체 {F('wip_peak')}건 · 인계 {F('handover_ratio')}배 · "
              f"OLS 실사 {F('ols2_visit_b')}h/h · 사내수리 +{F('ols2_intern_b')}h · 자재 {F('wait2_intern')}h · 재수리 {F('n_rework')}건 +{F('rework_gap_mean')}h · 사전 적중 E→사내 {F('E_intern_pct')}%, P→즉시 {F('fast_p_prec')}% · 감축 ▼{F('eff_total_pct')}%")
     return sl

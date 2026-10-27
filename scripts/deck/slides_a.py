@@ -59,7 +59,7 @@ def s02(doc, F):
         ("03", GRN, "질문 3", GRN, GRN_BG, "TO-BE 개선 방안", 16,
          [f"사전 분류 적중(E→사내 {F('E_intern_pct')}%, P→즉시 {F('fast_p_prec')}%)과 정보 해상도 한계", "Direct Booking 전략: 하나의 병목 줄을 두 갈래로", "단축률 가정 시 감축 효과"],
          f"▼{F('eff_total_pct')}%", "전체 평균 감축(가정)"),
-        ("04", MUTED, "마무리", MUTED, SLATE_BG, "핵심 요약", 19,
+        ("04", MUTED, "마무리", MUTED, SLATE_BG, "마무리 및 Q&A", 19,
          ["파트별 핵심 결과 정리"],
          "Q&A", None),
     ]
@@ -102,7 +102,7 @@ def s03(doc, F):
               foot=Txt([T("DETAIL → p.07–15", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     c3 = Card([label("STEP 03 · 개선 시나리오", GRN), big("▼" + F("eff_total_pct"), "%", GRN, 44, name="n3"), body(f"{F('lead_total')}h → {F('tobe_total')}h (실사 대기 20% 단축 가정)", 12, INK, name="s3"),
                Gap(0.04), bullets([f"Direct Booking 전략: 하나의 병목 줄을 두 갈래로",
-                                   f"실사 줄 유입 {F('fast_pct')}% 감소",
+                                   f"실사 대기 줄 유입 {F('fast_pct')}% 감소",
                                    f"가정 단축률(실사 대기 20% 감소) 적용 시 −{F('eff_total')}h"], 12)], pad=0.22, name="step3",
               foot=Txt([T("DETAIL → p.16–18", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     hh = row(sl, MX, y, CW, [c1, c2, c3], gutter=0.2, h=BODY_BOTTOM - 0.12 - y)
