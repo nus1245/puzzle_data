@@ -100,7 +100,7 @@ def render_p04_eda_missing():
         "pct": null_pct.values
     }).sort_values(by="pct", ascending=True).reset_index(drop=True)
 
-    fig, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(16, 7.2), dpi=300, gridspec_kw={"width_ratios": [1.15, 1.0]})
+    fig, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(10.4, 4.7), dpi=300, gridspec_kw={"width_ratios": [1.15, 1.0]})
     fig.patch.set_facecolor(BG_COLOR)
     ax_left.set_facecolor(BG_COLOR)
     ax_right.set_facecolor(BG_COLOR)
@@ -159,7 +159,10 @@ def render_p04_eda_missing():
             ax_right.text(w + 0.003, y, "0.000% (0행)", va="center", ha="left", fontsize=10.5, fontweight="bold", color="#0F172A", zorder=4)
 
     plt.tight_layout()
-    save_fig(fig, "EDA-01.png")
+    out = os.path.join(DECK_DIR, "EDA-01.png")
+    fig.savefig(out, facecolor=fig.get_facecolor(), edgecolor="none", transparent=False, dpi=300, bbox_inches="tight")
+    print(f"✅ [저장 완료] {out} (deck 전용, 글자 크기 확대판)")
+    plt.close(fig)
 
 
 # -----------------------------------------------------------------------------
@@ -327,7 +330,7 @@ def render_p09_split():
     ch_labels = ["대면", "전화", "웹 (Web)", "우편"]
 
     def new_fig():
-        fig, ax = plt.subplots(figsize=(5.5, 3.3), dpi=300)
+        fig, ax = plt.subplots(figsize=(5.5, 3.8), dpi=300)
         fig.patch.set_facecolor(BG_COLOR)
         ax.set_facecolor(BG_COLOR)
         for sp in ("top", "right"):

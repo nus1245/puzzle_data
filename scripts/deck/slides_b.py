@@ -84,7 +84,7 @@ def s12(doc, F):
     top = BODY_TOP + 0.08
     cw_ = 8.55
     chart = Card([cap("FIG.12", "E2E 리드타임 결정 요인 회귀계수"),
-                  Img(os.path.join(FIG, "slide11_regression_leadtime_drivers.png"), max_h=3.5, name="ols")], pad=0.14, gap=0.06, name="ols-card")
+                  Img(os.path.join(FIG, "slide11_regression_leadtime_drivers.png"), max_h=3.7, name="ols")], pad=0.14, gap=0.06, name="ols-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, top, cw_, ch)
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2
@@ -114,7 +114,7 @@ def s13(doc, F):
     top = BODY_TOP + 0.08
     cw_ = 8.55
     chart = Card([cap("FIG.13", "수리 방식별 착수 대기와 사내 재수리 루프"),
-                  Img(os.path.join(DECK, "slide11_repair_delay_rework.png"), max_h=3.7, name="rw")], pad=0.14, gap=0.06, name="rw-card")
+                  Img(os.path.join(DECK, "slide11_repair_delay_rework.png"), max_h=3.9, name="rw")], pad=0.14, gap=0.06, name="rw-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, top, cw_, ch)
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2
@@ -307,7 +307,7 @@ def s16(doc, F):
 def s17(doc, F):
     sl = doc.new_slide(19, "Part 04")
     chrome(sl, sec_tag(19), "마무리 및 Q&A", source="퍼즐데이터 수리 프로세스 데이터 분석 과제 · 조승훈 · 2026.10.27")
-    top, H = BODY_TOP + 0.08, 4.75
+    top, H = BODY_TOP + 0.08, 5.15
     lw_ = 6.3
 
     def step(tag, col, head, desc):

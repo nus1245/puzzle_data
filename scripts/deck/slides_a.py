@@ -70,7 +70,7 @@ def s02(doc, F):
                heading(title, 16, INK, name="ttl"), Gap(0.04), bullets(bl, 11.5)]
         foot = Txt([P([R(kn, 28, True, {"01": INK, "02": RED, "03": GRN, "04": MUTED}[idx], "m")], lh=LH_BIG, balance=False)]
                    + ([T(kl, 11, False, MUTED, balance=False)] if kl else []), name="key")
-        cards.append(Card(els, pad=0.24, gap=0.12, min_h=4.7, name=f"tile-{idx}", link=target, foot=foot))
+        cards.append(Card(els, pad=0.24, gap=0.12, min_h=5.05, name=f"tile-{idx}", link=target, foot=foot))
     hh = row(sl, MX, 1.75, CW, cards, gutter=0.2)
     assert_body(sl, 1.75 + hh)
     sl.notes("오늘 발표는 4개 파트입니다. 질문 1에서 데이터 진단과 전처리를, 질문 2에서 프로세스 병목과 원인을, 질문 3에서 개선안과 기대 효과를 보고드리고 핵심 요약으로 마치겠습니다. "
@@ -122,7 +122,7 @@ def s04(doc, F):
     top = 1.75
     img_w = 8.9
     chart = Card([cap("FIG.04", "원천 13개 속성 결측률 분포 (EDA-01)"),
-                  Img(os.path.join(FIG, "EDA-01.png"), max_h=3.3, name="eda")], pad=0.14, gap=0.06, name="chart-card")
+                  Img(os.path.join(DECK, "EDA-01.png"), max_h=3.3, name="eda")], pad=0.14, gap=0.06, name="chart-card")
     ch = chart.natural_h(img_w)
     chart.draw(sl, MX, top, img_w, ch)
     rx, rw = MX + img_w + 0.2, CW - img_w - 0.2
@@ -324,7 +324,7 @@ def s09(doc, F):
               body("병목 = 일정 조율 공백", 11.5, INK2)],
              pad=0.2, gap=0.06, name="c3"),
     ]
-    hh = row(sl, MX, y, CW, chips, gutter=0.2)
+    hh = row(sl, MX, y, CW, chips, gutter=0.2, h=max(BODY_BOTTOM - y - 0.02, max(c.natural_h((CW - 0.4) / 3) for c in chips)))
     assert_body(sl, y + hh)
     sl.notes(f"접수 구간의 핵심은 이봉 분포입니다. 가운데 패널을 보면 전화·대면은 항상 15분 이내에 끝나지만, 웹·우편은 15분 이내 단기 접수({F('async_fast_pct')}%) 아니면 60분 초과 장기 대기({F('async_slow_pct')}%)로 갈리고(접수 소요시간은 최초 접수에서 방문 일정이 확정되기까지의 시간) 그 사이 15~60분 구간은 {F('async_mid_n')}건입니다. 즉 조금씩 늦어지는 것이 아니라 일정 조율이 막히는 순간 장기 지연으로 넘어갑니다. 교차 인계 {F('n_handover')}건은 전부 이 장기 대기 쪽에서, 웹·우편에서만 발생했습니다(물량과의 무관성은 다음 장에서 확인). "
              f"단독 처리 {F('n_single')}건은 평균 {F('single_h')}시간이지만 인계 {F('n_handover')}건은 {F('handover_h')}시간으로 {F('handover_ratio')}배입니다. 인계 {F('n_handover')}건은 전부 웹·우편에서만 발생했습니다. "
@@ -374,7 +374,7 @@ def s11r(doc, F):
     top = BODY_TOP + 0.08
     cw_ = 8.55
     chart = Card([cap("FIG.11", "접수 단독 OLS 회귀계수와 95% 신뢰구간"),
-                  Img(os.path.join(FIG, "reception_standalone_ols_coefficients.png"), max_h=3.75, name="ols")], pad=0.14, gap=0.06, name="rols-card")
+                  Img(os.path.join(FIG, "reception_standalone_ols_coefficients.png"), max_h=3.95, name="ols")], pad=0.14, gap=0.06, name="rols-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, top, cw_, ch)
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2
@@ -385,7 +385,7 @@ def s11r(doc, F):
     ty = top + ch + 0.15
     take = Card([Txt([rich(f"인계·채널이 접수 시간 변동의 **{F('ols1_r2_pct')}%**를 설명하고 물량은 기여하지 않는다. 병목은 용량이 아니라 **소통 구조**다.", 12.5, INK, accent=ACC)], name="take")],
                 pad=0.2, name="take-card")
-    th_ = take.natural_h(CW)
+    th_ = max(take.natural_h(CW), BODY_BOTTOM - ty - 0.02)
     take.draw(sl, MX, ty, CW, th_)
     assert_body(sl, ty + th_)
     sl.notes(f"접수 소요시간을 종속변수로 채널, 인계, 일별 접수량을 동시에 넣은 회귀입니다. 교차 인계는 다른 조건이 같을 때 접수 시간을 +{F('ols1_handover_b')}시간(95% 신뢰구간 {F('ols1_ho_ci_lo')}~{F('ols1_ho_ci_hi')}) 늘리고, "
