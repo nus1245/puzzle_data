@@ -50,7 +50,7 @@ def s10(doc, F):
 def s11(doc, F):
     sl = doc.new_slide(13, "Part 02")
     chrome(sl, sec_tag(13), f"Wait 1 원인: 일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건, 최대 적체 물량 {F('wip_peak')}건",
-           sub=f"실사 대기의 원인 — {F('n_surveyed')}건 전수가 방문 실사를 거치는 구조 · 소화율 {F('digest_pct')}% (같은 구간 기준 {F('digest_pct_samewin')}%)",
+           sub=f"실사 대기의 원인: {F('n_surveyed')}건 전수가 방문 실사를 거치는 구조 · 소화율 {F('digest_pct')}% (같은 구간 기준 {F('digest_pct_samewin')}%)",
            source="출처: analysis.sql L1556~1670·L1978~1981 · 유입 1/2~1/7 평균, CAPA 1/1~1/8 평균(기사 11인) · hypothesis 노트북 Cell 15")
     top = BODY_TOP + 0.08
     cw_ = 8.55
@@ -64,7 +64,7 @@ def s11(doc, F):
           Card([label("적체 피크 (DAY 7)", RED), big(F("wip_peak"), "건", RED, 24, name="c"), body(f"Day 1의 {F('wip_day1')}건에서 {F('wip_multiple')}배", 11, INK2)], pad=0.2, gap=0.06, name="m3", line=RED)]
     stack(sl, rx, top, rw, ms, gutter=0.12, h_total=ch)
     ty = top + ch + 0.15
-    take = Card([Txt([rich(f"**유입이 실사 처리 용량(CAPA)을 넘는 구조**가 적체와 {F('wait1')}h 대기의 원인 — 초과분이 하루 약 {F('wip_accum_day')}건씩 누적", 13, INK, accent=RED)], name="take")],
+    take = Card([Txt([rich(f"**유입이 실사 처리 용량(CAPA)을 넘는 구조**가 적체와 {F('wait1')}h 대기의 원인 · 초과분이 하루 약 {F('wip_accum_day')}건씩 누적", 13, INK, accent=RED)], name="take")],
                 pad=0.2, name="take-card")
     th_ = take.natural_h(CW)
     take.draw(sl, MX, ty, CW, th_)
@@ -109,7 +109,7 @@ def s12(doc, F):
 def s13(doc, F):
     sl = doc.new_slide(14, "Part 02")
     chrome(sl, sec_tag(14), f"Wait 2 요인: 사내수리는 자재 조달 {F('wait2_intern')}h, 재수리 시 +{F('rework_gap_mean')}h 지연",
-           sub=f"사내 재수리 {F('n_rework')}건은 평균 총 리드타임 {F('rework_lead_mean')}h — 전체 평균의 {F('rework_lead_x')}배",
+           sub=f"사내 재수리 {F('n_rework')}건은 평균 총 리드타임 {F('rework_lead_mean')}h · 전체 평균의 {F('rework_lead_x')}배",
            source="출처: analysis.sql L1403~1546 · hypothesis 노트북 Cell 16~17 (정정 차트: 최대 지연과 평균 리드타임 라벨 분리)")
     top = BODY_TOP + 0.08
     cw_ = 8.55
@@ -120,7 +120,7 @@ def s13(doc, F):
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2
     cs = [Card([label("사내수리 자재 대기", ORG), big(F("wait2_intern"), "h", RED, 24, name="a"), body(f"사내수리 {F('n_intern1')}건만 대기. 즉시·외주는 {F('wait2_imm')}h", 11, INK2)], pad=0.17, gap=0.06, name="k1"),
           Card([label("사내 재수리", RED), big(F("n_rework"), "건", RED, 24, name="b"), body(f"추가 대기 평균 +{F('rework_gap_mean')}h, 최대 {F('rework_gap_max_h')}h({F('rework_gap_max_d')}일)", 11, INK2)], pad=0.17, gap=0.06, name="k2"),
-          Card([label("E-1 · E-2 코드 집중", RED), big(F("n_rework_e12"), f"건 · {F('rework_e12_pct')}%", RED, 24, name="c"), body(f"E-1 {F('n_rework_e1')}건 + E-2 {F('n_rework_e2')}건 — 정밀검사 대상", 11, INK2)], pad=0.17, gap=0.06, name="k3")]
+          Card([label("E-1 · E-2 코드 집중", RED), big(F("n_rework_e12"), f"건 · {F('rework_e12_pct')}%", RED, 24, name="c"), body(f"E-1 {F('n_rework_e1')}건 + E-2 {F('n_rework_e2')}건 → 정밀검사 대상", 11, INK2)], pad=0.17, gap=0.06, name="k3")]
     stack(sl, rx, top, rw, cs, gutter=0.12, h_total=ch)
     ty = top + ch + 0.15
     take = Card([Txt([rich(f"1차 수리 완료 뒤 재수리 착수까지 **평균 +{F('rework_gap_mean')}h**, 가장 길게는 **{F('rework_gap_max_d')}일**을 더 기다린다.", 12.5, INK, accent=RED)], name="take")],
@@ -147,13 +147,13 @@ def s14(doc, F):
                     rich(f"P → 즉시수리 **{F('fast_p_prec')}%** ({F('n_fast')}/{F('n_P')}건)", 15, INK, accent=ACC)], name="n")], pad=0.2, gap=0.07, name="c1")
     spacer = Gap(0.0)      # 마무리 한 줄을 카드 남는 공간의 세로 가운데에 두는 스페이서
     c2 = Card([label("02 · 원인 규명", ACC), heading("정보 해상도 단절 → 한 줄", 15, INK, name="h"),
-               Card([label("접수 (현행)", MUTED), body("알파벳 3분류(B·P·E)만 수집 — 즉시 수리 여부를 가릴 수 없음", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxA"),
+               Card([label("접수 (현행)", MUTED), body("알파벳 3분류(B·P·E)만 수집 → 즉시 수리 여부를 가릴 수 없음", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxA"),
                Card([label("현장 (현행)", MUTED), body(f"{F('survey_work_min')}분 방문 실사 후 세부 코드(1~4) 판정", 11.5, INK2)], pad=0.14, gap=0.06, fill=SLATE_BG, name="boxB"),
                spacer, Txt([rich("채널이 달라도 **실사 대기 큐는 한 줄**", 15, INK, accent=ACC, align="c")], name="res")],
               pad=0.2, gap=0.1, name="c2")
     c3 = Card([label("03 · 분리 근거", GRN), heading("즉시 수리 건을 따로 뺀다", 15, INK, name="h"),
                big(F("n_fast"), "건 · " + F("fast_pct") + "%", INK, 36, name="n"),
-               body(f"접수 코드 P-1·3 — 건수는 {F('fast_pct')}%인데 실사 큐 점유시간은 {F('occ_fast_share')}%", 11.5, INK2),
+               body(f"접수 코드 P-1·3: 건수는 {F('fast_pct')}%인데 실사 큐 점유시간은 {F('occ_fast_share')}%", 11.5, INK2),
                bullets([f"실사→수리 간격 {F('fast_gap_h')}h, 같은 기사 {F('fast_same_worker_pct')}%",
                         f"건당 점유 {F('occ_fast_h')}h, 나머지({F('occ_rest_h')}h)의 {F('occ_ratio')}배"], 11.5)],
               pad=0.2, gap=0.08, name="c3")
@@ -199,7 +199,7 @@ def s15(doc, F):
         [c("줄 분리", INK, True), c(f"채널이 달라도 {F('n_valid')}건 전부 실사 큐 한 줄"),
          [rich("**즉시 수리 코드(P-1·3)** 건은 실사 줄에서 빼 **작업 줄**로 직행", 11.5, INK, accent=ACC)]],
         [c("일정 확정", INK, True), c(f"상담원 일정 회신(비동기), 교차 인계 {F('n_handover')}건 ({F('single_h')}h → {F('handover_h')}h)"),
-         [rich("**기사 캘린더**에서 고객이 슬롯을 직접 선택 — 상담원 개입 0", 11.5, INK, accent=ACC)]],
+         [rich("**기사 캘린더**에서 고객이 슬롯을 직접 선택 · 상담원 개입 0", 11.5, INK, accent=ACC)]],
         [c("방문", INK, True), c("실사 대기 후 방문, 사내수리는 부품 주문 → 재방문"),
          [rich("즉시 건은 **기본 키트로 1회 방문 수리**, 그 외는 **기존 실사 유지**", 11.5, INK, accent=ACC)]],
     ]
@@ -230,8 +230,8 @@ def s15(doc, F):
 
     lanes = Table([(1, "", "l"), (1, "", "l"), (1, "", "l")], [[
         [hd("AS-IS · 줄 1개")] + ln(f"**{F('n_valid')}건 전부 실사 큐 한 줄**") + ln(f"일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건"),
-        [hd("TO-BE · 실사 줄 (정밀검사)")] + ln(f"**{F('n_rest')}건** — 일 유입 {F('inflow_day')}→{F('inflow_rest')}건({F('fast_pct')}% 감소)") + ln(f"B형 {F('n_B')}건 · 외주 전환 {F('n_extern_all')}건 · 재작업 집중 E형"),
-        [hd("TO-BE · 작업 줄 (즉시)")] + ln(f"**{F('n_fast')}건** — 기본 키트로 1회 방문") + ln(f"실사 {F('fast_svy_h')}h 생략, 수리 {F('fast_rep_h')}h")]],
+        [hd("TO-BE · 실사 줄 (정밀검사)")] + ln(f"**{F('n_rest')}건**: 일 유입 {F('inflow_day')}→{F('inflow_rest')}건({F('fast_pct')}% 감소)") + ln(f"B형 {F('n_B')}건 · 외주 전환 {F('n_extern_all')}건 · 재작업 집중 E형"),
+        [hd("TO-BE · 작업 줄 (즉시)")] + ln(f"**{F('n_fast')}건**: 기본 키트로 1회 방문") + ln(f"실사 {F('fast_svy_h')}h 생략, 수리 {F('fast_rep_h')}h")]],
         pad_y=0.02, head=False, name="lanes")
     ban = Card([label("TWO LANES · 줄을 하나에서 둘로", ACC), lanes], pad=0.18, gap=0.04, name="common")
     bh = max(ban.natural_h(CW), BODY_BOTTOM - y)

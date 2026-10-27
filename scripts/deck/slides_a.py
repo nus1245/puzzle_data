@@ -260,7 +260,7 @@ def s07(doc, F):
                                                            rich(f"즉시→사내 {F('esc_imm_intern')} · 즉시→외주 {F('esc_imm_extern')} · 사내→외주 {F('esc_intern_extern')}", 11.5, INK2, accent=RED),
                                                            rich(f"총 {F('esc_total')}회 · **역행 {F('backflow_all')}건**", 11.5, INK2, accent=RED, align="c")], name="esc")], pad=0.2, gap=0.06, name="c2"),
         Card([label("03 · 정산", GRN), bullets(["수리 완료 후 **고객 통보·재무 전송** 병렬 시행",
-                                                f"티켓 발행 ≥ 병렬 종료 시각 **{F('n_valid')}건(100%)**, 역전 {F('ticket_before_n')}건 — 동시 {F('ticket_match_n')}건 · 결측 복원 {F('ticket_mismatch_n')}건(+{F('ticket_gap_min')}분)"], 11.5)], pad=0.2, gap=0.06, name="c3"),
+                                                f"티켓 발행 ≥ 병렬 종료 시각 **{F('n_valid')}건(100%)**, 역전 {F('ticket_before_n')}건: 동시 {F('ticket_match_n')}건 · 결측 복원 {F('ticket_mismatch_n')}건(+{F('ticket_gap_min')}분)"], 11.5)], pad=0.2, gap=0.06, name="c3"),
     ]
     hh = row(sl, MX, y, CW, chips, weights=[0.8, 1.1, 1.1], gutter=0.2)
     assert_body(sl, y + hh)
@@ -337,7 +337,7 @@ def s09(doc, F):
 def s10r(doc, F):
     sl = doc.new_slide(10, "Part 02")
     chrome(sl, sec_tag(10), "접수 시간은 인계·채널과 연동, 물량과는 무관",
-           sub="접수 국면 9개 변수의 피어슨 상관 — 방향을 보여주고, 다음 장의 OLS가 순수 효과를 분리한다",
+           sub="접수 국면 9개 변수의 피어슨 상관: 방향을 보여주고, 다음 장의 OLS가 순수 효과를 분리한다",
            source=f"출처: hypothesis 노트북 Cell 7 (피어슨 r, N={F('n_valid')}) · 전 칸 재계산 일치 · 소요시간 = 최초 접수 → 방문 일정 확정(조율 완료)")
     top, H = BODY_TOP + 0.08, 5.15
     lw_ = 5.75
@@ -347,13 +347,13 @@ def s10r(doc, F):
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
     stats = [
         Card([label("교차 인계 ↔ 접수 시간", ORG), big(f"r = +{F('corr_rec_ho')}", "", RED, 24, name="a"),
-              body(f"양(+)의 상관 — 인계 시 접수가 길어진다 (인계 {F('n_handover')}건)", 11, INK2)], pad=0.14, gap=0.06, name="s1"),
+              body(f"양(+)의 상관: 인계 시 접수가 길어진다 (인계 {F('n_handover')}건)", 11, INK2)], pad=0.14, gap=0.06, name="s1"),
         Card([label("실시간 채널 ↔ 접수 시간", ACC), big("r = −" + F("corr_rec_rt").lstrip("-"), "", ACC, 24, keep=True, name="b"),
               body(f"전화·대면은 빠르고 웹·우편은 느리다", 11, INK2)], pad=0.14, gap=0.06, name="s2"),
         Card([label("일별 접수량 ↔ 접수 시간", MUTED), big(f"r = {F('corr_daily_rec')}", "", "94A3B8", 24, name="c"),
-              body(f"물량 무관 — 현장 실사 대기와는 r = {F('corr_daily_visit')}", 11, INK2)], pad=0.14, gap=0.06, name="s3"),
+              body(f"물량 무관 · 현장 실사 대기와는 r = {F('corr_daily_visit')}", 11, INK2)], pad=0.14, gap=0.06, name="s3"),
         Card([label("교차 인계 ↔ 실시간 채널", ORG), big("r = −" + F("corr_ho_rt").lstrip("-"), "", ORG, 24, keep=True, name="d"),
-              body(f"인계 {F('n_handover')}건 전부 웹·우편 — 두 변수가 얽혀 OLS로 분리", 11, INK2)], pad=0.14, gap=0.06, name="s4"),
+              body(f"인계 {F('n_handover')}건 전부 웹·우편 → 두 변수가 얽혀 OLS로 분리", 11, INK2)], pad=0.14, gap=0.06, name="s4"),
     ]
     stack(sl, rx, top, rw, stats, gutter=0.12, h_total=H)
     assert_body(sl, top + H)
@@ -380,10 +380,10 @@ def s11r(doc, F):
     rx, rw = MX + cw_ + 0.2, CW - cw_ - 0.2
     cs = [Card([label("교차 인계 · 95% CI", ORG), big("+" + F("ols1_handover_b"), "h", RED, 24, name="a"), body(f"CI {F('ols1_ho_ci_lo')}~{F('ols1_ho_ci_hi')}h (p < 0.001)", 11, INK2)], pad=0.2, gap=0.06, name="k1"),
           Card([label("비실시간 채널 · 웹·우편", ACC), big("+" + F("ols1_async_b"), "h", ACC, 24, name="b"), body(f"웹 +{F('ols1b_web')}h · 우편 +{F('ols1b_letter')}h", 11, INK2)], pad=0.2, gap=0.06, name="k2"),
-          Card([label("일별 접수량 · +1건당", MUTED), big("+" + F("ols1_daily_b"), "h", INK, 24, name="c"), body(f"p = {F('ols1_p_daily')} — 기각, 물량 무관", 11, INK2)], pad=0.2, gap=0.06, name="k3")]
+          Card([label("일별 접수량 · +1건당", MUTED), big("+" + F("ols1_daily_b"), "h", INK, 24, name="c"), body(f"p = {F('ols1_p_daily')} · 기각, 물량 무관", 11, INK2)], pad=0.2, gap=0.06, name="k3")]
     stack(sl, rx, top, rw, cs, gutter=0.12, h_total=ch)
     ty = top + ch + 0.15
-    take = Card([Txt([rich(f"인계·채널이 접수 시간 변동의 **{F('ols1_r2_pct')}%**를 설명하고 물량은 기여하지 않는다 — 병목은 용량이 아니라 **소통 구조**다.", 12.5, INK, accent=ACC)], name="take")],
+    take = Card([Txt([rich(f"인계·채널이 접수 시간 변동의 **{F('ols1_r2_pct')}%**를 설명하고 물량은 기여하지 않는다. 병목은 용량이 아니라 **소통 구조**다.", 12.5, INK, accent=ACC)], name="take")],
                 pad=0.2, name="take-card")
     th_ = take.natural_h(CW)
     take.draw(sl, MX, ty, CW, th_)
