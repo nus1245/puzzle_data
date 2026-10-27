@@ -175,7 +175,7 @@ def s05(doc, F):
          [T(f"시각이 정상인 {F('date_selected')}행에 선·후행 업무 순서 구간 제약을 적용", 11.5, False, INK2)],
          [T(f"→ 단일 후보 {F('date_single')}행 + 앵커 최근접 {F('date_nearest')}행 (1970년 통일)", 11.5, True, GRN)]],
         [tg("CASE 5"), two("time", f"{F('time_total')}행 (결측 {F('time_missing')} + 더미 {F('time_dummy')})"),
-         [T(f"정상 접수 표본 {F('baseline_n')}케이스의 중앙값 {F('baseline_median_min')}분을 앵커로 역산", 11.5, False, INK2)],
+         [T(f"정상 접수 표본 {F('baseline_n')}케이스의 중앙값 {F('baseline_median_min')}분 · 앵커타임 기준 역산", 11.5, False, INK2)],
          [T(f"→ 정상 자정 {F('time_midnight_kept')}행 보존 + 역산 추정 {F('time_estimated')}행", 11.5, True, GRN)]],
     ]
     tbl = Table([(0.9, "CASE", "l"), (3.0, "속성 · 규모", "l"), (4.3, "근거", "l"), (4.8, "복원", "l")], rows_, pad_y=0.04, name="cases")
@@ -191,7 +191,7 @@ def s05(doc, F):
     hh = row(sl, MX, y, CW, badges, gutter=0.2)
     assert_body(sl, y + hh)
     sl.notes(f"복원 과정에서 단 한 행도 버리지 않았습니다. 시작·완료 담당자의 일치율 100%와 태스크 고유 속성을 근거로 CASE 1~3을 복원했고, 날짜는 시각이 정상인 {F('date_selected')}행에 순서 제약을 걸어 복원했습니다. "
-             f"시각은 정상 접수 표본 {F('baseline_n')}케이스의 중앙값 {F('baseline_median_min')}분을 앵커로 역산했습니다. 그 결과 시간 역전이 0건인 데이터셋을 확보했습니다. "
+             f"시각은 정상 접수 표본 {F('baseline_n')}케이스의 중앙값 {F('baseline_median_min')}분을 앵커타임 기준으로 역산했습니다. 그 결과 시간 역전이 0건인 데이터셋을 확보했습니다. "
              f"[예상 질문] 표본 수가 751건이 아닌가? → 현재 노트북(Cell 63) 재실행 기준 {F('baseline_n')}건(기준 케이스 {F('baseline_cases')}건)입니다.")
     return sl
 
