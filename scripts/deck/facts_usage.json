@@ -26,6 +26,7 @@
   "n_handover",
   "n_null_rows",
   "n_valid",
+  "n_wrongplace",
   "null_rows_pct",
   "rework_gap_mean",
   "stl_total",

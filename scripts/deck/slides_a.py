@@ -51,7 +51,7 @@ def s02(doc, F):
            source="PART 01 p.04–06 · PART 02 p.07–15 · PART 03 p.16–18 · PART 04 p.19")
     tiles = [
         ("01", ACC, "질문 1", ACC, ACC_BG, "데이터 진단 및 전처리", 4,
-         ["이벤트 로그 프로파일링과 결측 2원화", "순서 기반 결측 복원, 삭제 0건", f"시간 역전 0건, 분석 코호트 {F('n_valid')}건"],
+         ["이벤트 로그 프로파일링과 결측 2원화", "순서 기반 결측 복원, 삭제 0건", f"시간 역전 0건, 분석 대상 {F('n_valid')}건"],
          f"{F('n_events')}", "행 전수 보존"),
         ("02", ORG, "질문 2", ORG, ORG_BG, "AS-IS 심층 분석", 7,
          ["AS-IS 표준 프로세스 모델", "2개 병목 구간: 접수 · 실사", "1개 반복 작업: 반복 수리", "상관·OLS로 소요시간 영향 요인 실증"],
@@ -93,7 +93,7 @@ def s03(doc, F):
     c1 = Card([label("STEP 01 · 데이터 진단", ACC), big(F("n_events"), "행", ACC, 44, name="n1"), body("전수 보존 · 임의 삭제 0건", 12, INK, name="s1"),
                Gap(0.04), bullets([f"결측 {F('n_null_rows')}행({F('null_rows_pct')}%)을 업무 인과로 복원",
                                    f"정상 접수 표본 {F('baseline_n')}건({F('baseline_pct')}%)으로 대체 기준 확보",
-                                   f"시간 역전 0건, 분석 코호트 {F('n_valid')}건"], 12)], pad=0.22, name="step1",
+                                   f"시간 역전 0건, 분석 대상 {F('n_valid')}건 (오접수 {F('n_wrongplace')}건 제외)"], 12)], pad=0.22, name="step1",
               foot=Txt([T("DETAIL → p.04–06", 9.5, True, MUTED, "m", balance=False)], structural=True, role="label"))
     c2 = Card([label("STEP 02 · 병목 규명", ORG), big(F("wait1"), "h", RED, 44, name="n2"), body(f"실사 방문 대기, 현장 시간의 {F('wait1_pct')}%", 12, INK, name="s2"),
                Gap(0.04), bullets([f"일 유입 {F('inflow_day')}건 vs 기사 CAPA {F('capa_day')}건 → 적체 피크 {F('wip_peak')}건",
@@ -211,7 +211,7 @@ def s06(doc, F):
         [c("시간 왜곡·역전"), c(f"{F('lead_distort_before')}건 왜곡"), c(f"0건 · {F('pairs_checked')}개 페어 검증", GRN, True)],
     ]
     tbl = Table([(2.2, "검증 항목", "l"), (2.2, "BEFORE (원천)", "l"), (2.9, "AFTER (정제)", "l")], rows_, pad_y=0.1, name="ba")
-    callout = Txt([rich(f"분석 코호트 **{F('n_valid')}건** 확립 — 오접수 {F('n_wrongplace')}건({F('wrongplace_pct')}%) 제외", 12, GRN, accent=GRN, bold=True)], name="callout")
+    callout = Txt([rich(f"분석 대상 **{F('n_valid')}건** 확립 — 오접수 {F('n_wrongplace')}건({F('wrongplace_pct')}%) 제외", 12, GRN, accent=GRN, bold=True)], name="callout")
     checks = Txt([T(t, 11, False, INK2, balance=False) for t in [
         "① 케이스 내 모든 업무 쌍의 순서 위반 0건", "② 재작업 시작·완료 교대 위반 0건", "③ FirstContact가 케이스 최초가 아닌 행 0건",
         "④ TicketReady가 케이스 최종이 아닌 행 0건", "⑤ 소요시간 음수(complete < start) 0건"]], name="checks")
@@ -245,13 +245,13 @@ def s07(doc, F):
     chrome(sl, "[ 07 / Q2-1 · AS-IS PROCESS ]", "수리 프로세스(E2E) 라인 도출",
            source=f"※ 맵의 '+5.11h'는 채널 통제 OLS 계수, S09의 +{F('handover_penalty_h')}h는 단순 평균 차이 · 노드 EV = 이벤트 수")
     cw_ = CW
-    chart = Card([cap("FIG.07", "E2E 기준 프로세스 맵 (접수 → 현장 → 정산) · 케이스 기준 927건 코호트"),
+    chart = Card([cap("FIG.07", "E2E 기준 프로세스 맵 (접수 → 현장 → 정산) · 케이스 기준 927건"),
                   Img(os.path.join(FIG, "repair_process_map.png"), max_h=3.2, name="map")], pad=0.14, gap=0.06, name="map-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, BODY_TOP + 0.05, cw_, ch)
     y = BODY_TOP + 0.05 + ch + 0.15
     chips = [
-        Card([label("01 · 접수 국면", ACC), body(f"**{F('n_wrongplace')}건({F('wrongplace_pct')}%)** 오접수 조기 격리 → 분석 코호트 **{F('n_valid')}건**", 11.5, INK2, accent=ACC)], pad=0.2, gap=0.06, name="c1"),
+        Card([label("01 · 접수 국면", ACC), body(f"**{F('n_wrongplace')}건({F('wrongplace_pct')}%)** 오접수 조기 격리 → 분석 대상 **{F('n_valid')}건**", 11.5, INK2, accent=ACC)], pad=0.2, gap=0.06, name="c1"),
         Card([label("02 · 현장 국면 · 단방향 에스컬레이션"), Txt([rich("**즉시 → 사내 → 외주**로만 올라가는 단방향", 11.5, INK2, accent=ACC),
                                                            rich(f"즉시→사내 {F('esc_imm_intern')} · 즉시→외주 {F('esc_imm_extern')} · 사내→외주 {F('esc_intern_extern')} (총 {F('esc_total')}회), **역류 {F('backflow_all')}건**", 11.5, INK2, accent=RED)], name="esc")], pad=0.2, gap=0.06, name="c2"),
         Card([label("03 · 정산 국면", GRN), body(f"고객 통보 **{F('settle_client_first')}** : 재무 전송 **{F('settle_fin_first')}건** 병렬(AND), 마감 일치 **{F('ticket_match_n')}건({F('ticket_match_pct')}%)**", 11.5, INK2, accent=GRN)], pad=0.2, gap=0.06, name="c3"),
