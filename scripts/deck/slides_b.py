@@ -312,7 +312,7 @@ def s17(doc, F):
 
     steps = [step("PART 01 · 데이터 무결성", ACC, f"{F('n_events')}행 전수 보존, 결측 {F('n_null_rows')}행 복원", f"삭제 0건 · 시간 역전 0건 · 정상 접수 {F('n_valid')}건, 오접수 {F('n_wrongplace')}건"),
              step("PART 02 · 병목 규명", ORG, f"실사 대기 {F('wait1')}h, 적체 {F('wip_peak')}건, 인계 {F('handover_ratio')}배", f"일 유입 {F('inflow_day')}건 vs CAPA {F('capa_day')}건 · 소요시간은 실사 지연이 좌우"),
-             step("PART 03 · TO-BE 시나리오", GRN, f"전체 평균 ▼{F('eff_total_pct')}% ({F('lead_total')}h → {F('tobe_total')}h)", "Direct Booking 전략 · 하나의 병목 줄을 두 갈래로 · 단축률 가정 + 파일럿")]
+             step("PART 03 · TO-BE 시나리오", GRN, f"전체 평균 ▼{F('eff_total_pct')}% ({F('lead_total')}h → {F('tobe_total')}h)", "Direct Booking 전략 · 하나의 병목 줄을 두 갈래로 · 단축률 가정")]
     stack(sl, MX, top, lw_, steps, gutter=0.14, h_total=H)
     rx, rw = MX + lw_ + 0.2, CW - lw_ - 0.2
     hero = Card([label("QUESTION & ANSWER", ACC), Gap(0.3),
