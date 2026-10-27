@@ -78,7 +78,7 @@ def s11(doc, F):
 # ------------------------------------------------------------------ S12 OLS
 def s12(doc, F):
     sl = doc.new_slide(15, "Part 02")
-    chrome(sl, "[ 15 / Q2-3 · DRIVERS · OLS ]", "소요시간은 실사 지연과 사내수리가 좌우한다",
+    chrome(sl, "[ 15 / Q2-3 · DRIVERS · OLS ]", "E2E 리드타임 영향 요인: 실사 방문 대기 ≫ 사내수리 배정",
            sub=f"E2E 리드타임 OLS · R² {F('ols2_r2_pct')}% · F {F('ols2_f')} · N {F('n_valid')} · VIF 최대 {F('ols2_vif_max')}",
            source="출처: hypothesis 노트북 Cell 19 (statsmodels OLS, 재계산 일치) · 종속변수 total_hours")
     top = BODY_TOP + 0.08
