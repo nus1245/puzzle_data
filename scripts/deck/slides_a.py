@@ -249,19 +249,20 @@ def s07(doc, F):
            source=f"※ 맵의 '+5.11h'는 채널 통제 OLS 계수, S09의 +{F('handover_penalty_h')}h는 단순 평균 차이 · 노드 EV = 이벤트 수")
     cw_ = CW
     chart = Card([cap("FIG.07", "E2E 기준 프로세스 맵 (접수 → 현장 → 정산) · 케이스 기준 927건"),
-                  Img(os.path.join(FIG, "repair_process_map.png"), max_h=2.95, name="map")], pad=0.14, gap=0.06, name="map-card")
+                  Img(os.path.join(FIG, "repair_process_map.png"), max_h=3.2, name="map")], pad=0.14, gap=0.06, name="map-card")
     ch = chart.natural_h(cw_)
     chart.draw(sl, MX, BODY_TOP + 0.05, cw_, ch)
     y = BODY_TOP + 0.05 + ch + 0.15
     chips = [
-        Card([label("01 · 접수", ACC), body(f"**{F('n_wrongplace')}건({F('wrongplace_pct')}%)** 오접수 조기 격리 → 정상 접수 **{F('n_valid')}건**", 11.5, INK2, accent=ACC)], pad=0.2, gap=0.06, name="c1"),
+        Card([label("01 · 접수", ACC), Txt([rich(f"**{F('n_wrongplace')}건({F('wrongplace_pct')}%)** 오접수 격리", 11.5, INK2, accent=ACC),
+                                           rich(f"→ 정상 접수 **{F('n_valid')}건**", 11.5, INK2, accent=ACC)], name="c1t")], pad=0.2, gap=0.06, name="c1"),
         Card([label("02 · 현장 · 단방향 에스컬레이션"), Txt([rich("**즉시 → 사내 → 외주**로만 인계되는 단방향", 11.5, INK2, accent=ACC),
                                                            rich(f"즉시→사내 {F('esc_imm_intern')} · 즉시→외주 {F('esc_imm_extern')} · 사내→외주 {F('esc_intern_extern')}", 11.5, INK2, accent=RED),
                                                            rich(f"총 {F('esc_total')}회 · **역행 {F('backflow_all')}건**", 11.5, INK2, accent=RED, align="c")], name="esc")], pad=0.2, gap=0.06, name="c2"),
-        Card([label("03 · 정산", GRN), Txt([rich("수리 완료 알림 후 **고객 통보·재무 전송** 시스템 병렬 시행", 11.5, INK2, accent=GRN),
-                                       rich(f"병렬 수행 마지막 시각과 티켓 발행 시각 일치 **{F('ticket_match_n')}건({F('ticket_match_pct')}%)**, 나머지 {F('ticket_mismatch_n')}건은 {F('ticket_gap_min')}분 차이", 11.5, INK2, accent=GRN)], name="settle")], pad=0.2, gap=0.06, name="c3"),
+        Card([label("03 · 정산", GRN), bullets(["수리 완료 후 **고객 통보·재무 전송** 병렬 시행",
+                                                f"티켓 발행 = 병렬 종료 시각: **{F('ticket_match_n')}건({F('ticket_match_pct')}%)** 일치, {F('ticket_mismatch_n')}건은 {F('ticket_gap_min')}분 차이"], 11.5)], pad=0.2, gap=0.06, name="c3"),
     ]
-    hh = row(sl, MX, y, CW, chips, gutter=0.2)
+    hh = row(sl, MX, y, CW, chips, weights=[0.8, 1.1, 1.1], gutter=0.2)
     assert_body(sl, y + hh)
     sl.notes(f"병목 분석 전에, 모든 분석의 기준선이 될 E2E 프로세스 모델입니다. 접수 단계에서 오접수 {F('n_wrongplace')}건이 조기 이탈하고 {F('n_valid')}건이 정상 접수가 됩니다. "
              f"현장은 단방향 에스컬레이션입니다. 즉시수리에서 사내수리로 {F('esc_imm_intern')}건, 즉시수리에서 외주로 {F('esc_imm_extern')}건, 사내수리에서 외주로 {F('esc_intern_extern')}건, 총 {F('esc_total')}회 인계되기만 하고 외주 이후 되돌아간 전이는 {F('backflow_all')}건입니다. 정산은 고객 통보 {F('settle_client_first')}건 : 재무 전송 {F('settle_fin_first')}건({F('settle_client_first_pct')}% : {F('settle_fin_first_pct')}%)으로 대칭 선행하는 병렬 구조이며, "
