@@ -366,7 +366,7 @@ def s10r(doc, F):
 # ------------------------------------------------------------------ S11 접수 영향 요인② 접수 단독 OLS
 def s11r(doc, F):
     sl = doc.new_slide(11, "Part 02")
-    chrome(sl, "[ 11 / Q2-3 · RECEPTION OLS ]", f"접수 지연은 인계 +{F('ols1_handover_b')}h·채널 +{F('ols1_async_b')}h가 설명한다",
+    chrome(sl, "[ 11 / Q2-3 · RECEPTION OLS ]", "접수 지연 요인: 교차 인계·비실시간 채널, 물량은 무관",
            sub=f"접수 소요시간 OLS · R² {F('ols1_r2_pct')}% · F {F('ols1_f')} · N {F('n_valid')} · VIF 최대 {F('ols1_vif_max')}",
            source="출처: hypothesis 노트북 Cell 9 (statsmodels OLS, 재계산 일치) · 종속변수 receipt_hours · 채널 세분화는 전화 기준")
     top = BODY_TOP + 0.08
